@@ -1,0 +1,74 @@
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  min-width: 0;
+}
+
+.field-label {
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-body);
+  color: var(--color-text-primary);
+}
+
+/* Inputs sit one step below their card (bg), so textMuted placeholders keep 4.5:1. */
+.field-input {
+  width: 100%;
+  min-height: var(--size-field);
+  padding: 0 var(--space-md);
+  border-radius: var(--radius-field);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+  font-size: var(--text-body);
+}
+
+textarea.field-input {
+  padding: var(--space-sm) var(--space-md);
+  min-height: calc(var(--size-field) * 2.5);
+  resize: vertical;
+}
+
+.field-input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.field-input[aria-invalid='true'] {
+  border-color: var(--color-error);
+}
+
+.field-input:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 0;
+  border-color: transparent;
+}
+
+.field-select {
+  appearance: none;
+  padding-right: calc(var(--space-md) * 2.5);
+  background-image: linear-gradient(45deg, transparent 50%, var(--color-text-secondary) 50%),
+    linear-gradient(135deg, var(--color-text-secondary) 50%, transparent 50%);
+  background-position:
+    calc(100% - 22px) 50%,
+    calc(100% - 16px) 50%;
+  background-size: 6px 6px;
+  background-repeat: no-repeat;
+  cursor: pointer;
+}
+
+.field-select option {
+  background: var(--color-surface-raised);
+  color: var(--color-text-primary);
+}
+
+/* Dark calendar/clock pickers in Chromium. */
+.field-input::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  opacity: 0.7;
+  cursor: pointer;
+}
+
+.field-hint {
+  color: var(--color-text-secondary);
+  font-size: var(--text-caption);
+}

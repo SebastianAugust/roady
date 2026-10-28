@@ -1,0 +1,28 @@
+.mini-map {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-field);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+}
+
+.mini-map-canvas {
+  position: absolute;
+  inset: 0;
+  background: var(--color-bg);
+}
+
+.mini-map .leaflet-control-zoom a {
+  background: var(--color-surface-raised);
+  color: var(--color-text-primary);
+  border-color: var(--color-border);
+}
+
+.mini-map .leaflet-control-attribution {
+  background: var(--color-glass);
+  color: var(--color-text-secondary);
+}
+
+.mini-map .leaflet-control-attribution a {
+  color: var(--color-accent);
+}

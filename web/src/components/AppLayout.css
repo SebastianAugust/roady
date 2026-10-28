@@ -1,0 +1,21 @@
+/* The large glass panel under the navbar (radius 64 in glass-reference.html). */
+.app-main {
+  width: calc(100% - var(--space-page) * 2);
+  max-width: var(--size-content-max);
+  margin: 0 auto;
+  padding: var(--space-xl) calc(var(--space-page) + var(--space-md)) calc(var(--space-xl) * 2);
+  border-radius: var(--radius-panel);
+}
+
+@media (max-width: 900px) {
+  .app-main {
+    width: calc(100% - var(--space-md) * 2);
+    padding: var(--space-lg) var(--space-md);
+    border-radius: var(--radius-card);
+  }
+}
+
+.app-shell {
+  min-height: 100vh;
+  padding-bottom: var(--space-xl);
+}

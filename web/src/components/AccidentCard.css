@@ -1,0 +1,40 @@
+/* Figma archive cards (Arsip & Input, Kelola Data Kecelakaan): 346x180 in three columns ~19px apart; map on top,
+   date and victims bottom-left, DETAIL bottom-right. */
+.accident-grid {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--space-md);
+}
+
+.accident-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: var(--space-sm);
+  border-radius: var(--radius-field);
+}
+
+.accident-card-map {
+  height: 120px;
+}
+
+.accident-card-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: var(--space-sm);
+}
+
+.accident-card-text {
+  min-width: 0;
+}
+
+
+.accident-card-meta {
+  font-size: var(--text-caption);
+  color: var(--color-text-secondary);
+}

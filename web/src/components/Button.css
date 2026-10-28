@@ -1,0 +1,76 @@
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  min-height: var(--size-button);
+  min-width: var(--size-button-min-width);
+  padding: 0 var(--space-lg);
+  border-radius: var(--radius-button);
+  border: 1px solid transparent;
+  font-weight: var(--weight-extrabold);
+  font-size: var(--text-small);
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--color-button-primary);
+  color: var(--color-on-button-primary);
+}
+
+.btn-secondary {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  color: var(--color-text-primary);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--color-text-primary);
+  min-width: 0;
+}
+
+.btn-secondary:hover:not(:disabled),
+.btn-ghost:hover:not(:disabled) {
+  background: var(--color-surface-raised);
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+}
+
+.btn-primary:disabled {
+  background: var(--color-disabled);
+  color: var(--color-text-primary);
+}
+
+.btn[aria-busy='true'] {
+  cursor: progress;
+}
+
+/* White on statusDanger is 6.5:1. */
+.btn-danger {
+  background: var(--color-status-danger);
+  color: var(--color-white);
+}
+
+.btn-danger:disabled {
+  background: var(--color-disabled);
+}
+
+/* Compact buttons for table rows (Figma SETUJUI / TOLAK). */
+.btn-sm {
+  min-height: 34px;
+  min-width: 0;
+  padding: 0 var(--space-md);
+  font-size: var(--text-caption);
+}
+
+/* statusDanger on white is 6.5:1. */
+.btn-danger-outline {
+  background: var(--color-button-primary);
+  border-color: var(--color-status-danger);
+  color: var(--color-status-danger);
+}

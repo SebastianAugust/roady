@@ -1,0 +1,119 @@
+/* Figma 1044:5869: back button + "Profil Akun", a 205px round avatar on the left, name/email with KELUAR on the right,
+   then an "Informasi Akun" card in two columns. */
+.akun-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+}
+
+.akun-back {
+  width: 50px;
+  height: 50px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--color-text-primary);
+  cursor: pointer;
+}
+
+.akun-back:hover {
+  border-color: var(--color-accent);
+}
+
+.akun-title {
+  font-size: var(--text-h1);
+}
+
+.akun-body {
+  display: grid;
+  grid-template-columns: 205px minmax(0, 1fr);
+  gap: var(--space-xl);
+  margin-top: calc(var(--space-xl) * 2);
+  padding: 0 var(--space-page);
+}
+
+.akun-avatar {
+  width: 205px;
+  height: 205px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--color-button-primary);
+  color: var(--color-on-button-primary);
+  font-family: var(--font-display);
+  font-size: calc(var(--text-display) * 1.4);
+}
+
+.akun-main {
+  display: grid;
+  gap: var(--space-lg);
+  align-content: start;
+  padding-top: var(--space-page);
+}
+
+.akun-identity {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+}
+
+.akun-name {
+  font-family: var(--font-display);
+  font-size: var(--text-h1);
+  line-height: 1.2;
+}
+
+.akun-email {
+  color: var(--color-text-secondary);
+  font-size: var(--text-h2);
+}
+
+.akun-info {
+  padding: var(--space-lg) var(--space-page) var(--space-xl);
+  border-radius: var(--radius-field);
+}
+
+.akun-info-title {
+  font-size: var(--text-h2);
+  margin-bottom: var(--space-md);
+}
+
+.akun-fields {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-md) var(--space-xl);
+}
+
+.akun-fields dt {
+  color: var(--color-text-secondary);
+}
+
+.akun-fields dd {
+  margin: 0;
+  font-weight: var(--weight-bold);
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 900px) {
+  .akun-body {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    padding: 0;
+  }
+  .akun-avatar {
+    width: 120px;
+    height: 120px;
+    font-size: var(--text-display);
+  }
+  .akun-main {
+    width: 100%;
+    padding-top: 0;
+  }
+  .akun-fields {
+    grid-template-columns: 1fr;
+  }
+}

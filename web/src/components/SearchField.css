@@ -1,0 +1,27 @@
+.search {
+  position: relative;
+  min-width: 0;
+}
+
+.search-icon {
+  position: absolute;
+  left: var(--space-md);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-secondary);
+  pointer-events: none;
+}
+
+.search-input {
+  width: 100%;
+  min-height: var(--size-field);
+  padding: 0 var(--space-md) 0 calc(var(--space-md) * 2.75);
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+}
+
+.search-input::placeholder {
+  color: var(--color-text-muted);
+}

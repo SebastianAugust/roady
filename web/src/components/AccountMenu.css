@@ -1,0 +1,87 @@
+.account {
+  position: relative;
+}
+
+/* Figma: 358x79 rounded chip, right-aligned role and email, a white 52px avatar on the right. */
+.account-chip {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  min-width: 300px;
+  padding: var(--space-sm) var(--space-md) var(--space-sm) var(--space-lg);
+  border-radius: calc(var(--radius-card) + var(--space-xs));
+  cursor: pointer;
+  text-align: right;
+}
+
+.account-chip:hover,
+.account-chip[aria-expanded='true'] {
+  border-color: var(--color-accent);
+}
+
+.account-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.35;
+}
+
+.account-role {
+  font-weight: var(--weight-bold);
+}
+
+.account-email {
+  color: var(--color-text-secondary);
+}
+
+.account-avatar {
+  flex: none;
+  width: var(--size-avatar);
+  height: var(--size-avatar);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--color-button-primary);
+  color: var(--color-on-button-primary);
+  font-weight: var(--weight-extrabold);
+  font-size: var(--text-h2);
+}
+
+/* Figma 1036:7250: the chip's width, two rows with right-aligned label + icon, a rule between them. */
+.account-popup {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 2px);
+  z-index: 1100;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-radius: calc(var(--radius-card) + var(--space-xs));
+  overflow: hidden;
+}
+
+.account-popup li + li {
+  border-top: 1px solid var(--color-row-divider);
+}
+
+.account-item {
+  width: 100%;
+  min-height: var(--size-touch-min);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-md);
+  padding: var(--space-sm) var(--space-lg);
+  border: 0;
+  background: transparent;
+  color: var(--color-text-primary);
+  font-size: var(--text-body);
+  font-weight: var(--weight-semibold);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.account-item:hover {
+  background: var(--color-nav-item);
+}

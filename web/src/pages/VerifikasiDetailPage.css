@@ -1,0 +1,42 @@
+.verif-photo-card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-lg);
+  align-items: start;
+}
+
+.verif-photo-link {
+  display: block;
+  line-height: 0;
+}
+
+.verif-photo {
+  width: 100%;
+  max-height: 220px;
+  object-fit: cover;
+  border-radius: var(--radius-field);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+}
+
+.verif-meta {
+  margin: var(--space-md) 0 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-xs) var(--space-lg);
+  font-size: var(--text-small);
+}
+
+.verif-meta dt {
+  color: var(--color-text-secondary);
+}
+
+.verif-meta dd {
+  margin: 0;
+}
+
+@media (max-width: 900px) {
+  .verif-photo-card {
+    grid-template-columns: 1fr;
+  }
+}

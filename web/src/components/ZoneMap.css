@@ -1,0 +1,107 @@
+.peta-card {
+  position: relative;
+  height: 560px;
+  min-height: 420px;
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.peta-map {
+  position: absolute;
+  inset: 0;
+  background: var(--color-surface);
+}
+
+/* Glass legend, as on mobile. Above Leaflet's panes (z-index 400) but below its controls (1000). */
+.peta-legend {
+  position: absolute;
+  top: var(--space-md);
+  right: var(--space-md);
+  z-index: 500;
+  margin: 0;
+  padding: var(--space-sm) var(--space-md);
+  list-style: none;
+  display: grid;
+  gap: var(--space-xs);
+  border-radius: var(--radius-field);
+  background: var(--color-glass);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--color-border);
+  font-size: var(--text-small);
+  font-weight: var(--weight-semibold);
+}
+
+.peta-status {
+  position: absolute;
+  left: 50%;
+  bottom: var(--space-lg);
+  transform: translateX(-50%);
+  z-index: 500;
+  min-width: 320px;
+  border-radius: var(--radius-field);
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+}
+
+/* Leaflet chrome in the dark theme. */
+.peta-map .leaflet-popup-content-wrapper,
+.peta-map .leaflet-popup-tip {
+  background: var(--color-surface-raised);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+  box-shadow: none;
+}
+
+.peta-map .leaflet-popup-close-button {
+  color: var(--color-text-secondary);
+}
+
+.peta-map .leaflet-control-zoom a {
+  background: var(--color-surface-raised);
+  color: var(--color-text-primary);
+  border-color: var(--color-border);
+}
+
+.peta-map .leaflet-control-attribution {
+  background: var(--color-glass);
+  color: var(--color-text-secondary);
+}
+
+.peta-map .leaflet-control-attribution a {
+  color: var(--color-accent);
+}
+
+.zone-popup {
+  display: grid;
+  gap: var(--space-xs);
+  font-family: var(--font-body);
+  font-size: var(--text-small);
+}
+
+.zone-popup p {
+  margin: 0;
+}
+
+.zone-popup-title {
+  font-weight: var(--weight-extrabold);
+  font-size: var(--text-body);
+}
+
+.zone-popup dl {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 2px var(--space-md);
+  margin: 0;
+}
+
+.zone-popup dt {
+  color: var(--color-text-secondary);
+}
+
+.zone-popup dd {
+  margin: 0;
+  text-align: right;
+  font-weight: var(--weight-semibold);
+}

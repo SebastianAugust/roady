@@ -1,0 +1,64 @@
+/* Fixed behind everything, so the glass panels blur the same light and batik wherever the page is scrolled. */
+.app-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  background: var(--gradient-page);
+}
+
+/* Batik clusters: the PNG is only a mask, the visible colour is the white token at --opacity-batik. Positions and
+   sizes follow .b1-.b4 of glass-reference.html, expressed as fractions of each cluster's size token. */
+.app-bg-batik {
+  position: absolute;
+  aspect-ratio: 1;
+  background-color: var(--color-white);
+  opacity: var(--opacity-batik);
+  -webkit-mask: url('../assets/batik.png') center / contain no-repeat;
+  mask: url('../assets/batik.png') center / contain no-repeat;
+}
+
+.app-bg-b1 {
+  width: var(--size-batik-md);
+  left: calc(var(--size-batik-md) * -0.28);
+  top: calc(var(--size-batik-md) * -0.26);
+  transform: rotate(-8deg);
+}
+
+.app-bg-b2 {
+  width: var(--size-batik-sm);
+  left: calc(var(--size-batik-sm) * -0.5);
+  top: calc(var(--size-batik-sm) * 1.43);
+}
+
+.app-bg-b3 {
+  width: var(--size-batik-lg);
+  right: calc(var(--size-batik-lg) * -0.33);
+  bottom: calc(var(--size-batik-lg) * -0.37);
+  transform: rotate(12deg);
+}
+
+.app-bg-b4 {
+  width: var(--size-batik-xs);
+  right: calc(var(--size-batik-xs) * 0.42);
+  top: calc(var(--size-batik-xs) * -0.5);
+  opacity: var(--opacity-batik-soft);
+}
+
+/* Narrow screens: smaller clusters so they stay at the edges and away from the text. */
+@media (max-width: 900px) {
+  .app-bg-batik {
+    scale: 0.6;
+    transform-origin: center;
+  }
+  .app-bg-b2 {
+    display: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .app-bg-batik {
+    display: none;
+  }
+}

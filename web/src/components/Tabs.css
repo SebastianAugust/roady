@@ -1,0 +1,33 @@
+/* Same look as the navbar tabs, smaller: separate boxes, the selected one white with navy text. */
+.tabs {
+  display: inline-flex;
+  gap: var(--space-xs);
+  padding: var(--space-xs);
+  margin-bottom: var(--space-lg);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-glass-in-edge);
+  background: var(--gradient-glass-in);
+}
+
+.tab {
+  min-height: var(--size-touch-min);
+  min-width: 96px;
+  padding: 0 var(--space-lg);
+  border-radius: var(--radius-field);
+  border: 1px solid var(--color-nav-item-edge);
+  background: var(--color-nav-item);
+  color: var(--color-text-primary);
+  font-weight: var(--weight-semibold);
+  cursor: pointer;
+}
+
+.tab:hover {
+  border-color: var(--color-accent);
+}
+
+.tab[aria-selected='true'] {
+  background: var(--color-button-primary);
+  border-color: var(--color-button-primary);
+  color: var(--color-on-button-primary);
+  font-weight: var(--weight-extrabold);
+}

@@ -1,0 +1,32 @@
+.location-picker {
+  display: grid;
+  gap: var(--space-xs);
+}
+
+.location-map {
+  height: 296px;
+  border-radius: var(--radius-field);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+  cursor: crosshair;
+}
+
+.location-map .leaflet-control-zoom a {
+  background: var(--color-surface-raised);
+  color: var(--color-text-primary);
+  border-color: var(--color-border);
+}
+
+.location-map .leaflet-control-attribution {
+  background: var(--color-glass);
+  color: var(--color-text-secondary);
+}
+
+.location-map .leaflet-control-attribution a {
+  color: var(--color-accent);
+}
+
+.location-hint {
+  font-size: var(--text-caption);
+  color: var(--color-text-secondary);
+}

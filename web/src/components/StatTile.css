@@ -1,0 +1,33 @@
+/* Figma: four 289x151 cards, 32px apart, radius ~28, label 22px, number ~96px display. */
+.stat-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-xl);
+  margin-bottom: var(--space-xl);
+}
+
+.stat-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 151px;
+  padding: var(--space-md);
+  border-radius: var(--radius-tile);
+}
+
+.stat-label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-family: var(--font-display);
+  font-size: var(--text-h2);
+  color: var(--color-text-secondary);
+}
+
+.stat-value {
+  font-family: var(--font-display);
+  font-size: calc(var(--text-display) * 1.4);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}

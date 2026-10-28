@@ -1,0 +1,132 @@
+/* Values come from CSS variables written by src/theme/cssVars.ts (source: src/theme/tokens.ts). No literal colors here. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  /* The real background is the fixed AppBackground layer; this colour only shows while it loads. */
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+h1,
+h2 {
+  font-family: var(--font-display);
+  font-weight: var(--weight-regular);
+  line-height: 1.15;
+}
+
+a {
+  color: var(--color-accent);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---- Glass (docs/design/glass-reference.html) ----
+   .glass     outer layer with a real blur: navbar bar, account chip and its menu, main panel, table containers,
+              dialog, login sheet. One per region; never on rows or anything repeated dozens of times.
+   .glass-in  layer inside a .glass: tint and edge only, no backdrop-filter (cards, stat tiles, form groups).
+   Text on glass: textPrimary or textSecondary (checked >= 4.5:1 on the lightest spot); textMuted only on solid inputs. */
+.glass {
+  background: var(--gradient-glass);
+  -webkit-backdrop-filter: var(--effect-glass-filter);
+  backdrop-filter: var(--effect-glass-filter);
+  border: 1px solid var(--color-glass-edge);
+  box-shadow: var(--effect-glass-shadow);
+}
+
+.glass-in {
+  background: var(--gradient-glass-in);
+  border: 1px solid var(--color-glass-in-edge);
+  box-shadow: var(--effect-glass-in-shadow);
+}
+
+/* A .glass inside another .glass (table containers in the main panel) keeps its blur but takes the lighter .glass-in
+   tint; two full 16% tints stacked would drop secondary text to 4.1:1. */
+.glass .glass {
+  background: var(--gradient-glass-in);
+}
+
+/* Inside glass the light behind is brighter, so the secondary, link and error text colours step up to keep 4.5:1. */
+.glass,
+.glass-in {
+  --color-text-secondary: var(--color-text-secondary-on-glass);
+  --color-accent: var(--color-accent-on-glass);
+  --color-error: var(--color-error-on-glass);
+}
+
+/* Links on glass are near-white, so they keep an underline to stay recognisable. */
+.glass a:not(.btn, .navbar-tab, .menu-card, .account-item) {
+  text-decoration: underline;
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass {
+    background: var(--color-glass-fallback);
+  }
+}
+
+/* Card utility (403 page, empty states). */
+.card {
+  border-radius: var(--radius-card);
+  padding: var(--space-lg);
+}
+
+.muted {
+  color: var(--color-text-secondary);
+}
+
+.error-text {
+  color: var(--color-error);
+  font-size: var(--text-small);
+}
+
+/* A single centered card: 403 page, empty states. */
+.center-message {
+  max-width: calc(var(--size-form-width) + var(--space-page));
+  margin: 15vh auto;
+  display: grid;
+  justify-items: center;
+  gap: var(--space-md);
+  text-align: center;
+}

@@ -1,0 +1,62 @@
+/* Figma 1036:1392 on the 1440x1024 canvas: wordmark top-left, title centered, a full-width panel with a rounded
+   top edge from y=342, a 494px form column inside it. */
+.login {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.login-brand {
+  padding: var(--space-xl) var(--space-page) 0;
+  font-family: var(--font-display);
+  font-size: var(--text-brand);
+  line-height: 1.2;
+}
+
+.login-title {
+  text-align: center;
+  font-size: var(--text-display);
+  margin: var(--space-lg) 0 calc(var(--space-xl) * 3);
+}
+
+.login-panel {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  padding: calc(var(--space-xl) * 2) var(--space-md) var(--space-xl);
+  border-bottom: 0;
+  border-radius: var(--radius-panel) var(--radius-panel) 0 0;
+}
+
+.login-form {
+  width: 100%;
+  max-width: var(--size-form-width);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.login-form .field-input {
+  min-height: calc(var(--size-field) + var(--space-md));
+}
+
+.login-error {
+  min-height: 1.5em;
+  text-align: center;
+}
+
+.login-submit {
+  align-self: center;
+  min-width: calc(var(--size-button-min-width) + var(--space-page));
+  min-height: calc(var(--size-button) + var(--space-sm));
+}
+
+@media (max-width: 640px) {
+  .login-brand {
+    padding: var(--space-md) var(--space-md) 0;
+  }
+  .login-title {
+    font-size: var(--text-h1);
+    margin-bottom: var(--space-xl);
+  }
+}

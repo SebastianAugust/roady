@@ -1,0 +1,62 @@
+/* Home frames / glass-reference.html: the figure on the left, greeting, description and cards beside it, all centred
+   vertically in the panel; cards in two columns, 20px apart. */
+.home {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: calc(var(--space-page) * 1.8);
+  min-height: 560px;
+  padding: var(--space-page) 0;
+}
+
+.home-wave {
+  justify-self: center;
+  margin-left: var(--space-page);
+  color: var(--color-text-primary);
+}
+
+.home-main {
+  display: grid;
+  gap: var(--space-md);
+}
+
+.home-head {
+  margin-bottom: var(--space-md);
+}
+
+.home-title {
+  font-size: calc(var(--text-display) * 0.75);
+}
+
+.home-subtitle {
+  margin-top: var(--space-xs);
+  font-size: var(--text-h2);
+  color: var(--color-text-secondary);
+  max-width: 760px;
+}
+
+
+@media (max-width: 900px) {
+  .home {
+    grid-template-columns: 1fr;
+    min-height: 0;
+    padding: var(--space-md) 0;
+  }
+  .home-wave {
+    display: none;
+  }
+  .home-title {
+    font-size: var(--text-h1);
+  }
+}
+
+/* Two card columns as in both Home frames (Admin 2 cards, Dishub 2x2); one column on narrow screens. */
+.home .menu-cards {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (max-width: 700px) {
+  .home .menu-cards {
+    grid-template-columns: 1fr;
+  }
+}

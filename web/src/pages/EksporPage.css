@@ -1,0 +1,41 @@
+/* Figma: a 680px card centered about 90px under the header, "Pilih Jenis Data" title, two option cards, a wide button. */
+.ekspor-card {
+  width: min(100%, 680px);
+  margin: calc(var(--space-xl) * 2) auto 0;
+  padding: var(--space-lg);
+  display: grid;
+  gap: var(--space-md);
+  border-radius: var(--radius-field);
+}
+
+.ekspor-options {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  display: grid;
+  gap: var(--space-sm);
+}
+
+.ekspor-legend {
+  padding: 0;
+  margin-bottom: var(--space-md);
+  font-family: var(--font-display);
+  font-size: var(--text-h2);
+}
+
+.ekspor-format {
+  font-size: var(--text-small);
+  color: var(--color-text-secondary);
+}
+
+.ekspor-errors {
+  display: grid;
+  gap: var(--space-xs);
+}
+
+.ekspor-submit {
+  width: calc(100% - var(--space-page) * 1.2);
+  justify-self: center;
+  min-height: calc(var(--size-button) + var(--space-xs));
+  margin-top: var(--space-lg);
+}

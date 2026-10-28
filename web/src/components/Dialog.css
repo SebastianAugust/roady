@@ -1,0 +1,27 @@
+/* Dialog = .glass over a dark overlay (the blur only sees the overlay, so the text stays on a dark, even surface). */
+.dialog {
+  width: min(560px, calc(100% - var(--space-md) * 2));
+  padding: 0;
+  border-radius: var(--radius-tile);
+  color: var(--color-text-primary);
+}
+
+.dialog::backdrop {
+  background: var(--color-overlay);
+}
+
+.dialog-body {
+  padding: var(--space-lg);
+  display: grid;
+  gap: var(--space-md);
+}
+
+.dialog-title {
+  font-size: var(--text-h2);
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+}

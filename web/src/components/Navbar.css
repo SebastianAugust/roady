@@ -1,0 +1,98 @@
+/* Header (glass-reference.html): wordmark left, the account chip right, then the tab bar. */
+/* Same width as the main panel (.app-main), as in Figma where the bar spans the panel width. */
+.navbar {
+  width: calc(100% - var(--space-page) * 2);
+  max-width: var(--size-content-max);
+  margin: 0 auto;
+  padding: var(--space-xl) 0 var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.navbar-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.navbar-brand {
+  font-family: var(--font-display);
+  font-size: var(--text-brand);
+  line-height: 1;
+}
+
+/* glass-reference.html nav: a .glass bar (radius 26, padding 10, gap 14) with transparent pills. One row; scrolls
+   sideways when the tabs do not fit. The bar is the only blurred element here; the pills have no backdrop-filter. */
+.navbar-bar {
+  display: flex;
+  align-items: stretch;
+  padding: var(--space-sm);
+  border-radius: var(--radius-nav);
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.navbar-list {
+  flex: 1 0 auto;
+  display: flex;
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.navbar-list li {
+  flex: 1 0 auto;
+  display: flex;
+}
+
+/* Inactive pill: 7% white with a 14% edge; same height for all; label on one line. */
+.navbar-tab {
+  flex: 1 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 54px;
+  padding: 0 var(--space-lg);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-nav-item-edge);
+  background: var(--color-nav-item);
+  color: var(--color-text-secondary);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-h2);
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.navbar-tab:hover {
+  color: var(--color-text-primary);
+  border-color: var(--color-accent);
+}
+
+.navbar-tab:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Active pill: white with navy text (17:1) and a soft shadow. */
+.navbar-tab.active {
+  background: var(--color-button-primary);
+  border-color: var(--color-button-primary);
+  color: var(--color-on-button-primary);
+  box-shadow: var(--effect-active-shadow);
+}
+
+@media (max-width: 900px) {
+  .navbar {
+    width: calc(100% - var(--space-md) * 2);
+    padding: var(--space-md) 0;
+  }
+  .navbar-brand {
+    font-size: var(--text-h1);
+  }
+  .navbar-tab {
+    font-size: var(--text-body);
+  }
+}

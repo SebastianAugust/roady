@@ -1,0 +1,41 @@
+/* Shortcut cards (.glass-in): radius 18, padding 22, min-height 130 as in glass-reference.html. */
+.menu-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--space-md);
+}
+
+.menu-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  min-height: 130px;
+  padding: 22px;
+  border-radius: var(--radius-pill);
+  color: var(--color-text-primary);
+  text-decoration: none;
+}
+
+.menu-card:hover {
+  border-color: var(--color-accent);
+}
+
+.menu-card svg {
+  flex: none;
+  color: var(--color-text-primary);
+}
+
+.menu-card-text {
+  display: grid;
+  gap: 2px;
+}
+
+.menu-card-title {
+  font-family: var(--font-display);
+  font-size: var(--text-h2);
+}
+
+.menu-card-desc {
+  font-size: var(--text-small);
+  color: var(--color-text-secondary);
+}
