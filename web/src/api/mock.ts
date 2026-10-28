@@ -3,19 +3,30 @@ import { isInBandungRaya } from '../config';
 import { toCsv } from '../lib/csv';
 import { checkExport } from '../lib/exportRules';
 import { kategoriFromPercentile } from '../lib/risk';
-import { MOCK_ACCIDENTS, MOCK_HISTORY, MOCK_REPORTS, MOCK_ZONES, zonePlace, type StoredLaporan } from './mockData';
+import { alasanError } from '../lib/alasan';
+import { kodeOf, MOCK_ACCIDENTS, namaOf, MOCK_HISTORY, MOCK_REPORTS, MOCK_USERS, MOCK_ZONES, zonePlace, type StoredKecelakaan, type StoredLaporan } from './mockData';
 import { ApiError, type ApiClient } from './types';
-import type { CreateAccidentRequest, Cuaca, DishubReportsQuery, KategoriRisiko, KecelakaanResmi, Laporan, Role, User, Zona } from '../types';
+import type {
+  AccidentsQuery,
+  CreateAccidentRequest,
+  Cuaca,
+  DishubReportsQuery,
+  KategoriRisiko,
+  KecelakaanResmi,
+  KecelakaanTerhapus,
+  Laporan,
+  LaporanAdmin,
+  Page,
+  Role,
+  StatusLaporan,
+  User,
+  Zona,
+} from '../types';
 
 const DELAY_MS = 400;
 const wait = () => new Promise<void>((r) => setTimeout(r, DELAY_MS));
 
-// Seeded like the real backend: Dishub and Admin accounts are made by the team (same accounts as mobile/src/api/mock.ts).
-const users: (User & { password: string })[] = [
-  { id_user: 1, nama: 'Jane Doe', email: 'pengemudi@roady.test', password: 'password123', role: 'pengemudi', tanggal_terdaftar: '2026-09-01T03:00:00.000Z' },
-  { id_user: 2, nama: 'Petugas Dishub', email: 'dishub@roady.test', password: 'password123', role: 'dishub', tanggal_terdaftar: '2026-10-22T03:00:00.000Z' },
-  { id_user: 3, nama: 'Admin Roady', email: 'admin@roady.test', password: 'password123', role: 'admin', tanggal_terdaftar: '2026-10-22T03:00:00.000Z' },
-];
+const users = MOCK_USERS;
 
 const TOKEN_TTL_S = 8 * 60 * 60;
 
@@ -46,7 +57,10 @@ const DISHUB: readonly Role[] = ['dishub'];
 const ADMIN: readonly Role[] = ['admin'];
 
 /** NFR-006: the reporter's user_id never leaves the API. */
-const withoutReporter = ({ user_id: _omit, ...rest }: StoredLaporan): Laporan => rest;
+const withoutReporter = ({ user_id: _omit, ...rest }: StoredLaporan): LaporanAdmin => rest;
+
+/** Dishub does not see who verified a report; that trail is for the Admin. */
+const forDishub = ({ diverifikasi_oleh: _by, diverifikasi_oleh_kode: _kode, diverifikasi_oleh_nama: _nama, ...rest }: LaporanAdmin): Laporan => rest;
 
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -63,7 +77,7 @@ function filterReports({ zona_id, dari, sampai }: DishubReportsQuery) {
       .filter((r) => zona_id === undefined || r.zona_id === zona_id)
       .filter((r) => (!dari || r.tanggal_kejadian >= dari) && (!sampai || r.tanggal_kejadian <= sampai))
       .sort((a, b) => b.timestamp.localeCompare(a.timestamp))
-      .map(withoutReporter)
+      .map((r) => forDishub(withoutReporter(r)))
   );
 }
 
@@ -94,6 +108,7 @@ const LAPORAN_COLUMNS = [
   'foto_url',
 ] as const;
 
+const STATUS: readonly StatusLaporan[] = ['auto_rejected', 'pending_review', 'auto_approved', 'approved', 'rejected'];
 const CUACA: readonly Cuaca[] = ['cerah', 'hujan', 'lainnya'];
 
 const distanceMeters = (lat1: number, lng1: number, lat2: number, lng2: number) => {
@@ -117,14 +132,22 @@ export const mockApi: ApiClient = {
 
   async getMe() {
     await wait();
-    const { id_user, nama, email, role, tanggal_terdaftar } = authorize();
-    return { id_user, nama, email, role, tanggal_terdaftar };
+    const { id_user, nama, email, role, tanggal_terdaftar, kode_pengguna } = authorize();
+    return { id_user, nama, email, role, tanggal_terdaftar, kode_pengguna };
   },
 
   async getZones({ lat, lng, radius }) {
     await wait();
     authorize();
     return MOCK_ZONES.filter((z) => distanceMeters(lat, lng, z.center_latitude, z.center_longitude) <= radius);
+  },
+
+  async getZone(zonaId) {
+    await wait();
+    authorize();
+    const zone = MOCK_ZONES.find((z) => z.zona_id === zonaId);
+    if (!zone) throw new ApiError(404, 'Zona tidak ditemukan.');
+    return zone;
   },
 
   async getStatistics() {
@@ -136,13 +159,49 @@ export const mockApi: ApiClient = {
       rekap,
       total_zona: MOCK_ZONES.length,
       total_laporan: MOCK_REPORTS.filter((r) => r.status === 'approved' || r.status === 'auto_approved').length,
-      total_kecelakaan_resmi: MOCK_ACCIDENTS.length,
+      total_kecelakaan_resmi: active().length, // soft-deleted rows are not counted
       zona_teratas: [...MOCK_ZONES]
         .sort((a, b) => b.skor_risiko - a.skor_risiko)
         .slice(0, 10)
         .map((z) => ({ ...z, lokasi_teks: zonePlace(z.zona_id) })),
       riwayat_skor: MOCK_ZONES.map((z) => ({ zona_id: z.zona_id, titik: MOCK_HISTORY[z.zona_id] ?? [] })),
     };
+  },
+
+  async getDishubZones() {
+    await wait();
+    authorize(DISHUB);
+    return [...MOCK_ZONES].sort((a, b) => b.skor_risiko - a.skor_risiko).map((z) => ({ ...z, lokasi_teks: zonePlace(z.zona_id) }));
+  },
+
+  async getDishubZone(zonaId) {
+    await wait();
+    authorize(DISHUB);
+    const zone = MOCK_ZONES.find((z) => z.zona_id === zonaId);
+    if (!zone) throw new ApiError(404, 'Zona tidak ditemukan.');
+    const riwayat = MOCK_HISTORY[zonaId] ?? [];
+    return {
+      ...zone,
+      lokasi_teks: zonePlace(zonaId),
+      persentase_kejadian_saat_hujan: riwayat.at(-1)?.persentase_kejadian_saat_hujan ?? 0,
+      riwayat_skor: riwayat,
+      kecelakaan: active()
+        .filter((a) => a.zona_id === zonaId)
+        .sort(URUT.terbaru)
+        .map(publicAccident),
+      // auto_rejected rows are only a validation trace (as in API-012); the reporter's user_id is stripped.
+      laporan: MOCK_REPORTS.filter((r) => r.zona_id === zonaId && r.status !== 'auto_rejected')
+        .sort((a, b) => b.timestamp.localeCompare(a.timestamp))
+        .map((r) => forDishub(withoutReporter(r))),
+    };
+  },
+
+  async getDishubReport(id) {
+    await wait();
+    authorize(DISHUB);
+    const report = MOCK_REPORTS.find((r) => r.id_report === id && r.status !== 'auto_rejected');
+    if (!report) throw new ApiError(404, 'Laporan tidak ditemukan.');
+    return forDishub(withoutReporter(report));
   },
 
   async getDishubReports(query) {
@@ -167,60 +226,91 @@ export const mockApi: ApiClient = {
     await wait();
     const user = authorize(DISHUB);
     const fields = validateAccident(body);
-    const record: KecelakaanResmi = {
+    const record: StoredKecelakaan = {
       ...fields,
       id_kejadian: Math.max(0, ...MOCK_ACCIDENTS.map((a) => a.id_kejadian)) + 1,
       zona_id: zoneFor(fields.latitude, fields.longitude),
       input_by: user.id_user, // from the token, never from the body (API-010)
+      input_by_kode: user.kode_pengguna,
+      input_by_nama: user.nama,
       waktu_pelaporan: new Date().toISOString(),
+      dihapus_oleh: null,
+      waktu_hapus: null,
+      alasan_hapus: null,
     };
     MOCK_ACCIDENTS.push(record);
-    return record;
+    return publicAccident(record);
   },
 
   async getAdminReports({ status }) {
     await wait();
     authorize(ADMIN);
+    if (status !== undefined && !STATUS.includes(status)) throw new ApiError(422, 'Status tidak dikenal.', { status: 'Status tidak dikenal.' });
+    const decided = status === 'approved' || status === 'rejected';
     return (
       MOCK_REPORTS.filter((r) => !status || r.status === status)
-        // A queue: the report waiting longest comes first.
-        .sort((a, b) => a.timestamp.localeCompare(b.timestamp))
+        // The queue: the report waiting longest comes first. Decided lists: most recently decided first.
+        .sort((a, b) => (decided ? (b.waktu_verifikasi ?? '').localeCompare(a.waktu_verifikasi ?? '') : a.timestamp.localeCompare(b.timestamp)))
         .map(withoutReporter)
     );
   },
 
-  async verifyReport(id, { keputusan }) {
+  async verifyReport(id, { keputusan, alasan }) {
     await wait();
-    authorize(ADMIN);
+    const admin = authorize(ADMIN);
     const report = MOCK_REPORTS.find((r) => r.id_report === id);
     if (!report) throw new ApiError(404, 'Laporan tidak ditemukan.');
     if (keputusan !== 'approved' && keputusan !== 'rejected')
       throw new ApiError(422, 'Keputusan tidak valid.', { keputusan: 'Keputusan harus "approved" atau "rejected".' });
     if (report.status !== 'pending_review') throw new ApiError(409, 'Laporan ini sudah diverifikasi sebelumnya.');
+    if (keputusan === 'rejected' && alasanError(alasan)) throw new ApiError(422, 'Alasan penolakan wajib diisi.', { alasan: alasanError(alasan) as string });
     report.status = keputusan;
     report.waktu_verifikasi = new Date().toISOString();
+    report.diverifikasi_oleh = admin.id_user; // from the token
+    report.diverifikasi_oleh_kode = admin.kode_pengguna;
+    report.diverifikasi_oleh_nama = admin.nama;
+    report.alasan_penolakan = keputusan === 'rejected' ? (alasan as string).trim() : null;
     // Zone scores are NOT recomputed here: the scheduler adds a new KALKULASI_RISIKO row on its next run (docs/01).
     // ponytail: FCM goes out from the backend later; the mock only logs it, without the reporter's id.
     console.info(`[FCM mock] Notifikasi ke pelapor laporan #${id}: laporan ${keputusan === 'approved' ? 'disetujui' : 'ditolak'}.`);
     return { laporan: withoutReporter(report), notifikasi_terkirim: true };
   },
 
-  async getDishubAccidents() {
+  async getDishubAccidents(query = {}) {
     await wait();
     authorize(DISHUB);
-    return [...MOCK_ACCIDENTS].sort((a, b) => b.tanggal_waktu.localeCompare(a.tanggal_waktu));
+    return mapPage(queryAccidents(active(), query), publicAccident);
   },
 
-  async getAccidents() {
+  async getDishubAccident(id) {
+    await wait();
+    authorize(DISHUB);
+    return publicAccident(findAccident(id));
+  },
+
+  async getAccidents(query = {}) {
     await wait();
     authorize(ADMIN);
-    return [...MOCK_ACCIDENTS].sort((a, b) => b.tanggal_waktu.localeCompare(a.tanggal_waktu));
+    return mapPage(queryAccidents(active(), query), publicAccident);
+  },
+
+  async getDeletedAccidents(query = {}) {
+    await wait();
+    authorize(ADMIN);
+    return mapPage(
+      queryAccidents(
+        MOCK_ACCIDENTS.filter((a) => a.dihapus_oleh !== null),
+        query,
+        (a) => a.waktu_hapus ?? '',
+      ),
+      deletedAccident,
+    );
   },
 
   async getAccident(id) {
     await wait();
     authorize(ADMIN);
-    return findAccident(id);
+    return publicAccident(findAccident(id));
   },
 
   async updateAccident(id, body) {
@@ -230,20 +320,77 @@ export const mockApi: ApiClient = {
     const fields = validateAccident(body);
     // input_by and waktu_pelaporan keep their original values; only the accident data changes.
     Object.assign(record, fields, { zona_id: zoneFor(fields.latitude, fields.longitude) });
-    return { ...record };
+    return publicAccident(record);
   },
 
-  async deleteAccident(id) {
+  async deleteAccident(id, body) {
     await wait();
-    authorize(ADMIN);
-    const index = MOCK_ACCIDENTS.findIndex((a) => a.id_kejadian === id);
-    if (index < 0) throw new ApiError(404, 'Data kecelakaan tidak ditemukan.');
-    MOCK_ACCIDENTS.splice(index, 1);
+    const admin = authorize(ADMIN);
+    const record = findAccident(id);
+    if (alasanError(body?.alasan)) throw new ApiError(422, 'Alasan penghapusan wajib diisi.', { alasan: alasanError(body?.alasan) as string });
+    // Soft delete: the row stays with who, when and why; it leaves the lists and the zone counts.
+    record.dihapus_oleh = admin.id_user; // from the token
+    record.waktu_hapus = new Date().toISOString();
+    record.alasan_hapus = body.alasan.trim();
   },
 };
 
+const mapPage = <T, U>(page: Page<T>, fn: (row: T) => U): Page<U> => ({ ...page, data: page.data.map(fn) });
+
+/** Rows that are not soft-deleted. */
+const active = () => MOCK_ACCIDENTS.filter((a) => a.dihapus_oleh === null);
+
+/** The row as the API returns it: without the deletion columns (only the deleted list has them). */
+function publicAccident({ dihapus_oleh: _by, waktu_hapus: _at, alasan_hapus: _why, ...rest }: StoredKecelakaan): KecelakaanResmi {
+  return rest;
+}
+
+function deletedAccident(a: StoredKecelakaan): KecelakaanTerhapus {
+  return { ...publicAccident(a), dihapus_oleh: a.dihapus_oleh as number, dihapus_oleh_kode: kodeOf(a.dihapus_oleh as number), dihapus_oleh_nama: namaOf(a.dihapus_oleh as number), waktu_hapus: a.waktu_hapus as string, alasan_hapus: a.alasan_hapus as string };
+}
+
+const wibDate = (iso: string) => new Date(Date.parse(iso) + 7 * 3_600_000).toISOString().slice(0, 10);
+const URUT: Record<string, (a: StoredKecelakaan, b: StoredKecelakaan) => number> = {
+  terbaru: (a, b) => b.tanggal_waktu.localeCompare(a.tanggal_waktu),
+  terlama: (a, b) => a.tanggal_waktu.localeCompare(b.tanggal_waktu),
+  korban_terbanyak: (a, b) => b.jumlah_korban - a.jumlah_korban,
+  korban_tersedikit: (a, b) => a.jumlah_korban - b.jumlah_korban,
+};
+
+/** Filters, sorts and pages accident rows (query of GET /api/admin/accidents). 422 with errors per parameter when one is invalid. */
+function queryAccidents(rows: StoredKecelakaan[], query: AccidentsQuery, dateOf: (a: StoredKecelakaan) => string = (a) => a.tanggal_waktu): Page<StoredKecelakaan> {
+  const { tanggal_dari, tanggal_sampai, zona_id, lokasi, cuaca, jenis_kendaraan, korban_min, korban_max, diinput_oleh, q, urut = 'terbaru', halaman = 1, per_halaman = 20 } = query;
+  const errors: Record<string, string> = {};
+  if (tanggal_dari && !DATE.test(tanggal_dari)) errors.tanggal_dari = 'Format tanggal tidak valid.';
+  if (tanggal_sampai && !DATE.test(tanggal_sampai)) errors.tanggal_sampai = 'Format tanggal tidak valid.';
+  if (tanggal_dari && tanggal_sampai && tanggal_dari > tanggal_sampai) errors.tanggal_sampai = 'Tanggal akhir harus sama atau setelah tanggal awal.';
+  if (korban_min !== undefined && korban_max !== undefined && korban_min > korban_max) errors.korban_max = 'korban_max harus sama atau lebih besar dari korban_min.';
+  if (cuaca !== undefined && !CUACA.includes(cuaca)) errors.cuaca = 'Kondisi cuaca tidak dikenal.';
+  if (!(urut in URUT)) errors.urut = 'Urutan tidak dikenal.';
+  if (!Number.isInteger(halaman) || halaman < 1) errors.halaman = 'halaman harus bilangan bulat 1 atau lebih.';
+  if (!Number.isInteger(per_halaman) || per_halaman < 1 || per_halaman > 100) errors.per_halaman = 'per_halaman harus 1 sampai 100.';
+  if (Object.keys(errors).length) throw new ApiError(422, 'Filter tidak valid.', errors);
+
+  const has = (text: string | null | undefined, needle: string) => (text ?? '').toLowerCase().includes(needle.trim().toLowerCase());
+  const found = rows
+    .filter((a) => !tanggal_dari || wibDate(a.tanggal_waktu) >= tanggal_dari)
+    .filter((a) => !tanggal_sampai || wibDate(a.tanggal_waktu) <= tanggal_sampai)
+    .filter((a) => zona_id === undefined || a.zona_id === zona_id)
+    .filter((a) => !lokasi || has(a.lokasi_deskripsi, lokasi))
+    .filter((a) => !cuaca || a.kondisi_cuaca === cuaca)
+    .filter((a) => !jenis_kendaraan || has(a.jenis_kendaraan_terlibat, jenis_kendaraan))
+    .filter((a) => korban_min === undefined || a.jumlah_korban >= korban_min)
+    .filter((a) => korban_max === undefined || a.jumlah_korban <= korban_max)
+    .filter((a) => !diinput_oleh || a.input_by_kode === diinput_oleh)
+    .filter((a) => !q || has(a.lokasi_deskripsi, q) || has(a.jenis_kendaraan_terlibat, q) || has(a.input_by_kode, q))
+    // The deleted list is sorted by deletion time unless another order is asked for.
+    .sort(query.urut ? URUT[urut] : (a, b) => dateOf(b).localeCompare(dateOf(a)));
+  return { data: found.slice((halaman - 1) * per_halaman, halaman * per_halaman), total: found.length, halaman, per_halaman };
+}
+
 function findAccident(id: number) {
-  const record = MOCK_ACCIDENTS.find((a) => a.id_kejadian === id);
+  // Deleted rows are gone for every endpoint except /deleted.
+  const record = active().find((a) => a.id_kejadian === id);
   if (!record) throw new ApiError(404, 'Data kecelakaan tidak ditemukan.');
   return record;
 }

@@ -33,6 +33,11 @@ export const colors = {
   glass: 'rgba(18,41,77,0.78)',
   glassSheet: 'rgba(18,41,77,0.72)', // bottom sheet of the pre-login screens
   legendFill: 'rgba(10,26,51,0.72)', // map legend glass
+  // Glass (components/Glass.tsx), the counterpart of .glass / .glass-in on the web: a white tint over a blur, a thin white edge.
+  glassFill: 'rgba(255,255,255,0.10)',
+  glassEdge: 'rgba(255,255,255,0.20)',
+  glassInFill: 'rgba(255,255,255,0.06)', // a glass card inside a glass panel: no blur
+  glassInEdge: 'rgba(255,255,255,0.14)',
 } as const;
 
 /** Brand gradient, diagonal: navy900 -> navy700 -> navy500. Used with expo-linear-gradient. */
@@ -69,9 +74,9 @@ export const fontFamily = {
 } as const;
 
 export const fontSize = {
-  display: 40,
-  body: 16,
-  button: 14,
+  display: 28, // Login and Sign up title (at most 28 sp)
+  body: 15, // label, input and footer text of Login and Sign up
+  button: 15,
 } as const;
 
 // Design canvas the Figma frames were drawn on.

@@ -2,6 +2,7 @@ import { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { SvgXml } from 'react-native-svg';
 import { tintSvg } from '../lib/tintSvg';
+import { Glass } from './Glass';
 import { colors, fontFamily } from '../theme/tokens';
 
 export interface MenuItem {
@@ -19,10 +20,10 @@ export interface MenuItem {
   trailing?: ReactNode;
 }
 
-/** Light glass card with icon rows and hairline dividers (Profil, Bantuan and Pengaturan in Figma). */
+/** Glass card with icon rows and hairline dividers (Profil, Bantuan and Pengaturan in Figma). */
 export function GlassMenu({ items }: { items: MenuItem[] }) {
   return (
-    <View style={styles.card}>
+    <Glass radius={10}>
       {items.map((item, i) => {
         const content = (
           <>
@@ -53,7 +54,7 @@ export function GlassMenu({ items }: { items: MenuItem[] }) {
           </View>
         );
       })}
-    </View>
+    </Glass>
   );
 }
 
@@ -61,13 +62,6 @@ export function GlassMenu({ items }: { items: MenuItem[] }) {
 const ROW_PAD_X = 18;
 
 const styles = StyleSheet.create({
-  card: {
-    borderRadius: 10,
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    overflow: 'hidden',
-  },
   row: { minHeight: 60, flexDirection: 'row', alignItems: 'center', paddingHorizontal: ROW_PAD_X, paddingVertical: 8 },
   divider: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.border },
   pressed: { opacity: 0.7 },

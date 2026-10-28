@@ -130,3 +130,13 @@ textarea {
   gap: var(--space-md);
   text-align: center;
 }
+
+/* A table row that opens a detail on click (hooks/useRowNavigate.ts). Hover and keyboard focus (on the link inside) look the same. */
+tr.is-clickable {
+  cursor: pointer;
+}
+
+tr.is-clickable:hover,
+tr.is-clickable:focus-within {
+  background: var(--color-nav-item);
+}

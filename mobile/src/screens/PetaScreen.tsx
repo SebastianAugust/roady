@@ -1,23 +1,20 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
-import MapView, { Marker, Region } from 'react-native-maps';
+import MapView, { MapPressEvent, Marker, Region } from 'react-native-maps';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AppBackground } from '../components/AppBackground';
-import { BlurFill } from '../components/BlurFill';
 import { GeofenceDebugPanel } from '../components/GeofenceDebugPanel';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { ZoneSheet } from '../components/ZoneSheet';
-import { RiskDot, ZoneMarkers } from '../components/ZoneMarkers';
+import { ZoneAreas } from '../components/ZoneAreas';
+import { ZoneLegend } from '../components/ZoneLegend';
 import { BANDUNG_RAYA, isInBandungRaya } from '../config';
 import { LocationState, useCurrentLocation } from '../hooks/useCurrentLocation';
 import { useZones } from '../hooks/useZones';
 import { useDebugLocation } from '../lib/debugLocation';
 import { darkMapStyle } from '../lib/mapStyle';
-import { RISK_LABEL } from '../lib/risk';
+import { metersPerDp, zoneAtPoint } from '../lib/zoneArea';
 import { colors, fontFamily } from '../theme/tokens';
-import type { KategoriRisiko } from '../types';
-
-const LEGEND_ORDER: KategoriRisiko[] = ['merah', 'kuning', 'hijau'];
 
 const BANDUNG_REGION: Region = { ...BANDUNG_RAYA.center, latitudeDelta: 0.28, longitudeDelta: 0.28 };
 
@@ -36,6 +33,15 @@ export function PetaScreen({ onBack }: Props) {
   const { position: fakePosition } = useDebugLocation();
   const [selectedZoneId, setSelectedZoneId] = useState<number>();
   const closeSheet = useCallback(() => setSelectedZoneId(undefined), []);
+  // Zones are circles of real meters; how big a dp is on the ground follows the zoom, so keep the visible span and the map height.
+  const [latitudeDelta, setLatitudeDelta] = useState(BANDUNG_REGION.latitudeDelta);
+  const [mapHeight, setMapHeight] = useState(0);
+  const mpd = metersPerDp(latitudeDelta, mapHeight);
+  // A tap on the map selects the zone under it (or closes the sheet when there is none): the circles themselves are not tappable.
+  const selectAt = useCallback(
+    (e: MapPressEvent) => setSelectedZoneId(zoneAtPoint(zones, e.nativeEvent.coordinate, mpd)?.zona_id),
+    [zones, mpd],
+  );
 
   // Center on the user only when they are inside Bandung Raya; otherwise show the whole area.
   const region: Region =
@@ -65,7 +71,7 @@ export function PetaScreen({ onBack }: Props) {
 
         <GeofenceDebugPanel zones={zones} />
 
-        <View style={styles.card}>
+        <View style={styles.card} onLayout={(e) => setMapHeight(e.nativeEvent.layout.height)}>
           <MapView
             ref={mapRef}
             style={StyleSheet.absoluteFill}
@@ -73,21 +79,14 @@ export function PetaScreen({ onBack }: Props) {
             initialRegion={region}
             showsUserLocation={location.status === 'ready'}
             toolbarEnabled={false}
-            onPress={closeSheet}
+            onPress={selectAt}
+            onRegionChangeComplete={(r) => setLatitudeDelta(r.latitudeDelta)}
           >
-            <ZoneMarkers zones={zones} onSelect={(z) => setSelectedZoneId(z.zona_id)} />
+            <ZoneAreas zones={zones} metersPerDp={mpd} />
             {__DEV__ && fakePosition ? <Marker coordinate={fakePosition} title="Posisi palsu (debug)" pinColor="blue" /> : null}
           </MapView>
 
-          <View style={styles.legend} accessibilityLabel="Legenda: merah risiko tinggi, kuning risiko sedang, hijau risiko rendah">
-            <BlurFill radius={5} />
-            {LEGEND_ORDER.map((k) => (
-              <View key={k} style={styles.legendRow}>
-                <RiskDot kategori={k} />
-                <Text style={styles.legendText}>{RISK_LABEL[k]}</Text>
-              </View>
-            ))}
-          </View>
+          <ZoneLegend />
 
           {zonesState === 'loading' ? (
             <View style={styles.status} accessibilityLiveRegion="polite">
@@ -123,20 +122,6 @@ const styles = StyleSheet.create({
   locationLabel: { fontFamily: fontFamily.semibold, fontSize: 16, color: colors.textSecondary },
   locationValue: { fontFamily: fontFamily.extrabold, fontSize: 16, color: colors.textPrimary },
   card: { flex: 1, borderRadius: 4, overflow: 'hidden', backgroundColor: colors.surface },
-  legend: {
-    position: 'absolute',
-    left: 21,
-    top: 24,
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-    gap: 5,
-    borderRadius: 5,
-    backgroundColor: colors.legendFill,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  legendRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  legendText: { fontFamily: fontFamily.semibold, fontSize: 12, color: colors.textPrimary },
   status: {
     position: 'absolute',
     left: 16,

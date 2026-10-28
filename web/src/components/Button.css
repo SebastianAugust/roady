@@ -74,3 +74,8 @@
   border-color: var(--color-status-danger);
   color: var(--color-status-danger);
 }
+
+/* An inline icon never shrinks or wraps away from its label. */
+.btn svg {
+  flex: none;
+}

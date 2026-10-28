@@ -37,7 +37,7 @@ export function LoginScreen({ onSuccess, onGoToSignUp }: Props) {
   return (
     <AuthForm
       title="Login"
-      titleGap={111}
+      titleGap={40}
       footerText="Belum punya akun?"
       footerLink="Sign-up"
       onFooterPress={onGoToSignUp}

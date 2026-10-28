@@ -25,7 +25,7 @@ export function InputDataPage() {
       <SuccessScreen
         icon={<SentCheckIcon />}
         message="Terima kasih, input data sudah kami terima!"
-        detail={`Kejadian ${formatDateTime(saved.tanggal_waktu)} tercatat di Zona ${saved.zona_id}.`}
+        detail={`Kejadian ${formatDateTime(saved.tanggal_waktu)} tercatat di Zona ${saved.zona_id}, diinput oleh ${saved.input_by_kode} · ${saved.input_by_nama}.`}
         onDone={() => navigate(ROUTES.arsip)}
       />
     );

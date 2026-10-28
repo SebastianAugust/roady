@@ -26,3 +26,21 @@
 .mini-map .leaflet-control-attribution a {
   color: var(--color-accent);
 }
+
+/* Zone label over the map: a small glass chip, above Leaflet's panes. */
+.mini-map-zone {
+  position: absolute;
+  left: var(--space-sm);
+  bottom: 26px; /* above the attribution strip */
+  z-index: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  margin: 0;
+  padding: 2px var(--space-sm);
+  border-radius: var(--radius-field);
+  background: var(--color-glass);
+  border: 1px solid var(--color-border);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-semibold);
+}

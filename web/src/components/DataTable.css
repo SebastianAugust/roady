@@ -1,16 +1,16 @@
 /* Figma 1036:4305: a raised panel with Foto, Lokasi, Kejadian, Tanggal, Aksi and a rule under every row. */
-.verif-table-card {
+.data-table-card {
   padding: var(--space-md) var(--space-lg);
   border-radius: calc(var(--radius-sheet) + var(--space-sm));
   overflow-x: auto;
 }
 
-.verif-table {
+.data-table {
   width: 100%;
   border-collapse: collapse;
 }
 
-.verif-table thead th {
+.data-table thead th {
   padding: var(--space-sm) var(--space-md);
   font-family: var(--font-display);
   font-weight: var(--weight-regular);
@@ -18,35 +18,35 @@
   text-align: left;
 }
 
-.verif-table tbody tr {
+.data-table tbody tr {
   border-bottom: 1px solid var(--color-row-divider);
 }
 
-.verif-table tbody tr:last-child {
+.data-table tbody tr:last-child {
   border-bottom: none;
 }
 
-.verif-table td,
-.verif-table tbody th {
+.data-table td,
+.data-table tbody th {
   padding: var(--space-sm) var(--space-md);
   text-align: left;
   vertical-align: middle;
   color: var(--color-text-secondary);
 }
 
-.verif-table tbody th {
+.data-table tbody th {
   font-weight: var(--weight-regular);
   color: var(--color-text-primary);
 }
 
-.verif-table tbody th a {
+.data-table tbody th a {
   color: var(--color-text-primary);
 }
 
-.verif-id {
+.data-id {
   display: block;
   font-size: var(--text-caption);
-  color: var(--color-text-secondary);
+  color: var(--color-text-primary);
 }
 
 .verif-thumb {
@@ -62,4 +62,20 @@
 .verif-actions {
   display: flex;
   gap: var(--space-sm);
+}
+
+.data-table td.data-wrap {
+  max-width: 360px;
+}
+
+.data-who {
+  display: block;
+  color: var(--color-text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.data-who-name {
+  display: block;
+  font-size: var(--text-caption);
+  color: var(--color-text-secondary);
 }

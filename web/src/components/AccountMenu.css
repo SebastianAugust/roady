@@ -7,7 +7,7 @@
   display: flex;
   align-items: center;
   gap: var(--space-md);
-  min-width: 300px;
+  min-width: 280px;
   padding: var(--space-sm) var(--space-md) var(--space-sm) var(--space-lg);
   border-radius: calc(var(--radius-card) + var(--space-xs));
   cursor: pointer;
@@ -55,14 +55,17 @@
   z-index: 1100;
   width: 100%;
   margin: 0;
-  padding: 0;
+  padding: var(--space-xs) 0;
   list-style: none;
   border-radius: calc(var(--radius-card) + var(--space-xs));
   overflow: hidden;
 }
 
+/* Clear rule (1px, white at 30%) with room above and below it. */
 .account-popup li + li {
-  border-top: 1px solid var(--color-row-divider);
+  margin-top: var(--space-xs);
+  padding-top: var(--space-xs);
+  border-top: 1px solid var(--color-menu-divider);
 }
 
 .account-item {
@@ -83,5 +86,27 @@
 }
 
 .account-item:hover {
-  background: var(--color-nav-item);
+  background: var(--color-nav-item-edge);
+}
+
+.account-item:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: -2px;
+  background: var(--color-nav-item-edge);
+}
+
+/* Kode pengguna at the top of the popup: a label, not an action. */
+.account-code {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding: var(--space-xs) var(--space-lg);
+  font-size: var(--text-caption);
+  color: var(--color-text-secondary);
+}
+
+.account-code strong {
+  color: var(--color-text-primary);
+  font-size: var(--text-small);
+  font-variant-numeric: tabular-nums;
 }

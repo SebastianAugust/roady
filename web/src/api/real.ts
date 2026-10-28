@@ -38,20 +38,26 @@ export const realApi: ApiClient = {
   login: (body) => request('/api/auth/login', { method: 'POST', body: JSON.stringify(body) }),
   getMe: () => request('/api/users/me'),
   getZones: (q) => request(`/api/zones${query(q)}`),
+  getZone: (id) => request(`/api/zones/${id}`),
   getStatistics: () => request('/api/dishub/statistics'),
+  getDishubZones: () => request('/api/dishub/zones'),
+  getDishubZone: (id) => request(`/api/dishub/zones/${id}`),
+  getDishubReport: (id) => request(`/api/dishub/reports/${id}`),
   getDishubReports: (q) => request(`/api/dishub/reports${query(q)}`),
   async exportData(q) {
     const res = await send(`/api/dishub/export${query(q)}`);
     return { filename: filenameOf(res, `roady-${q.jenis}.csv`), content: await res.text() };
   },
   createAccident: (body) => request('/api/dishub/accidents', { method: 'POST', body: JSON.stringify(body) }),
-  getDishubAccidents: () => request('/api/dishub/accidents'),
+  getDishubAccidents: (q) => request(`/api/dishub/accidents${query(q ?? {})}`),
+  getDishubAccident: (id) => request(`/api/dishub/accidents/${id}`),
   getAdminReports: (q) => request(`/api/admin/reports${query(q)}`),
   verifyReport: (id, body) => request(`/api/admin/reports/${id}/verify`, { method: 'PATCH', body: JSON.stringify(body) }),
-  getAccidents: () => request('/api/admin/accidents'),
+  getAccidents: (q) => request(`/api/admin/accidents${query(q ?? {})}`),
+  getDeletedAccidents: (q) => request(`/api/admin/accidents/deleted${query(q ?? {})}`),
   getAccident: (id) => request(`/api/admin/accidents/${id}`),
   updateAccident: (id, body) => request(`/api/admin/accidents/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
-  async deleteAccident(id) {
-    await send(`/api/admin/accidents/${id}`, { method: 'DELETE' });
+  async deleteAccident(id, body) {
+    await send(`/api/admin/accidents/${id}`, { method: 'DELETE', body: JSON.stringify(body) });
   },
 };

@@ -16,6 +16,9 @@ export const ROUTES = {
 } as const;
 
 export const verifikasiDetail = (id: number) => `${ROUTES.verifikasi}/${id}`;
+export const zonaDetail = (id: number) => `${ROUTES.statistik}/${id}`;
+export const arsipDetail = (id: number) => `${ROUTES.arsip}/${id}`;
+export const laporanDetail = (id: number) => `${ROUTES.laporan}/${id}`;
 export const kecelakaanDetail = (id: number) => `${ROUTES.kecelakaan}/${id}`;
 
 export interface NavItem {

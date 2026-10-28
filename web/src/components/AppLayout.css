@@ -2,20 +2,48 @@
 .app-main {
   width: calc(100% - var(--space-page) * 2);
   max-width: var(--size-content-max);
-  margin: 0 auto;
-  padding: var(--space-xl) calc(var(--space-page) + var(--space-md)) calc(var(--space-xl) * 2);
+  margin: var(--space-md) auto 0;
+  padding: var(--space-lg) var(--space-xl) var(--space-xl);
   border-radius: var(--radius-panel);
+}
+
+.app-shell {
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding-bottom: var(--space-lg);
+}
+
+/* Beranda: header + navbar + a panel that takes the rest of the screen, so the page never scrolls. */
+.app-shell-fit {
+  height: 100vh;
+  height: 100dvh;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.app-shell-fit .app-main {
+  flex: 1;
+  min-height: 0;
+  margin-bottom: 0;
+  display: flex;
+  overflow: hidden;
 }
 
 @media (max-width: 900px) {
   .app-main {
     width: calc(100% - var(--space-md) * 2);
-    padding: var(--space-lg) var(--space-md);
+    padding: var(--space-md);
     border-radius: var(--radius-card);
   }
-}
-
-.app-shell {
-  min-height: 100vh;
-  padding-bottom: var(--space-xl);
+  /* Phones: the stacked cards need more room than the screen, so Beranda scrolls there. */
+  .app-shell-fit {
+    height: auto;
+    min-height: 100dvh;
+    overflow: visible;
+  }
+  .app-shell-fit .app-main {
+    overflow: visible;
+  }
 }

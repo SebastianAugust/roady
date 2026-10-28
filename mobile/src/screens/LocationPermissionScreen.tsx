@@ -3,7 +3,7 @@ import { ActivityIndicator, AppState, Linking, Pressable, StyleSheet, Text, View
 import * as Location from 'expo-location';
 import { SvgXml } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { AuthBackground } from '../components/AuthBackground';
+import { AppBackground } from '../components/AppBackground';
 import { GlassSheet } from '../components/GlassSheet';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { iconPin } from '../components/sheetArtSvg';
@@ -79,7 +79,7 @@ export function LocationPermissionScreen({ onDone }: { onDone: () => void }) {
 
   const denied = phase === 'denied';
   return (
-    <AuthBackground gradient>
+    <AppBackground>
       <View style={styles.root}>
         <View style={[styles.top, { paddingTop: insets.top + 8 }]}>
           <View style={styles.badge} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
@@ -97,7 +97,9 @@ export function LocationPermissionScreen({ onDone }: { onDone: () => void }) {
                 {denied ? 'Izin lokasi ditolak' : 'Aktifkan lokasi'}
               </Text>
               <Text style={styles.body} accessibilityLiveRegion="polite">
-                {denied
+                {denied && !canAskAgain
+                  ? `Izin lokasi dimatikan untuk ${APP_NAME} dan sistem tidak akan menanyakannya lagi. Buka pengaturan, pilih Izin lalu Lokasi, dan izinkan saat aplikasi digunakan. Tanpa izin ini peta tidak bisa memusatkan posisimu, peringatan dini tidak bekerja, dan laporan kejadian tidak bisa dikirim.`
+                  : denied
                   ? 'Tanpa izin lokasi, peta tidak bisa memusatkan posisimu, peringatan dini saat mendekati zona rawan tidak bisa bekerja, dan laporan kejadian tidak bisa dikirim. Kamu bisa mengaktifkannya kapan saja di pengaturan.'
                   : `${APP_NAME} memakai lokasimu untuk menampilkan zona rawan di sekitarmu, memberi peringatan dini saat kamu mendekati zona, dan mengisi lokasi laporan kejadian.`}
               </Text>
@@ -120,7 +122,7 @@ export function LocationPermissionScreen({ onDone }: { onDone: () => void }) {
           )}
         </GlassSheet>
       </View>
-    </AuthBackground>
+    </AppBackground>
   );
 }
 
@@ -128,7 +130,7 @@ const styles = StyleSheet.create({
   root: { flex: 1 },
   top: { flex: 0.36, alignItems: 'center', justifyContent: 'center', gap: 12 },
   badge: { width: 96, height: 96, borderRadius: 48, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border },
-  brand: { fontFamily: fontFamily.display, fontSize: 36, lineHeight: 40, color: colors.onButtonPrimary },
+  brand: { fontFamily: fontFamily.display, fontSize: 36, lineHeight: 40, color: colors.textPrimary },
   checking: { marginTop: 40 },
   title: { fontFamily: fontFamily.display, fontSize: 24, lineHeight: 30, color: colors.textPrimary, marginTop: 14 },
   body: { fontFamily: fontFamily.semibold, fontSize: 16, lineHeight: 24, color: colors.textPrimary, marginTop: 10 },

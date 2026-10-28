@@ -14,7 +14,7 @@ Aplikasi peringatan dini titik rawan kecelakaan di Bandung Raya (SDG 3.6), proye
 
 **Frontend dulu dengan data tiruan (mock), backend menyusul.** Urutan:
 1. `mobile/` (Expo): tema dari Figma, Login, Sign up, Peta, Lapor, Riwayat, Profil.
-2. `web/` (React + Vite): dashboard Dishub, lalu Admin.
+2. `web/` (React + Vite): dashboard Dishub dan dashboard Admin (dua halaman terpisah).
 3. `api/` (Node.js + Express + PostgreSQL/PostGIS): setelah layar utama jadi.
 
 Frontend memanggil API lewat satu lapisan (`src/api/`) yang punya dua implementasi: **mock** (default, data tiruan berbentuk sama dengan API asli) dan **real** (HTTP). Dipilih lewat env (`EXPO_PUBLIC_USE_MOCK` / `VITE_USE_MOCK`). Tipe data dan endpoint mengikuti `docs/03-api.md` dan `docs/02-database.md`, jadi pindah ke API asli cukup mengganti implementasi.
@@ -75,8 +75,9 @@ roady/
 ## Aktor dan hak akses
 
 - **Pengemudi** memakai aplikasi mobile. Daftar akun sendiri (role otomatis `pengemudi`).
-- **Dishub** memakai dashboard web. Akun dibuat tim, tidak ada pendaftaran.
-- **Admin** memakai dashboard web. Akun dibuat tim. Admin punya semua menu Dishub ditambah Verifikasi Laporan dan Kelola Data Kecelakaan.
+- **Dishub** memakai dashboard web. Akun dibuat tim, tidak ada pendaftaran. Menu: Beranda, Statistik Zona (tab Tabel | Peta), Arsip & Input, Detail Laporan, Ekspor Data.
+- **Admin** memakai dashboard web. Akun dibuat tim. Menu: Beranda, Verifikasi Laporan, Kelola Data Kecelakaan.
+- **Admin dan Dishub adalah dua halaman terpisah tanpa akses silang** (keputusan #30, menggantikan "Admin punya semua menu Dishub"). Admin tidak membuka layar Dishub dan sebaliknya; URL role lain → 403; endpoint role lain → 403.
 - Dishub **tidak** boleh Kelola Data Kecelakaan (hanya Admin).
 - Tampilan Dishub dan Admin tidak boleh memuat nama, email, atau id pelapor (NFR-006).
 
@@ -102,10 +103,10 @@ Tema gelap. Sumber kebenaran: `mobile/src/theme/tokens.ts`. Jangan menulis warna
 | `accent` | #9DB7E8 | ikon tab terpilih, ikon menu, link |
 | `disabled` | #4A5870 | elemen nonaktif |
 | `buttonPrimary` / `onButtonPrimary` | #FFFFFF / #0A1A33 | tombol utama (latar putih, teks navy) |
-| `gradients.brand` | navy900 → navy700 → navy500, diagonal | splash, onboarding, izin lokasi (`expo-linear-gradient`) |
+| `gradients.brand` | navy900 → navy700 → navy500, diagonal | latar semua layar lewat `AppBackground` (gradien + batik-soft, `expo-linear-gradient`) |
 | `riskMerah` / `riskKuning` / `riskHijau` | #FD0000 / #C5B94B / #3E8139 | hanya marker, badge, status zona (marker bertepi putih) |
 
-Hierarki lewat perbedaan permukaan (bg < surface < surfaceRaised), bukan bayangan. Panel kaca: `glass*` token + `BlurFill`. Target kontras 4,5:1 untuk teks biasa; `textMuted` hanya untuk petunjuk di atas `bg` atau `surface`.
+Hierarki lewat perbedaan permukaan (bg < surface < surfaceRaised), bukan bayangan. Panel kaca: komponen `Glass` (`expo-blur` + token `glassFill`/`glassEdge`); kartu di dalam panel kaca memakai `<Glass inner>` (tanpa blur). Area zona di peta: `ZoneAreas` (Circle `radius_zona`, isian 30%, garis 2 dp), legenda `ZoneLegend`. Target kontras 4,5:1 untuk teks biasa; `textMuted` hanya untuk petunjuk di atas `bg` atau `surface`.
 
 ## Perintah
 
@@ -120,3 +121,15 @@ Mobile (`mobile/`, jalankan dari folder itu):
 | `npm test` | Unit test (jest-expo), saat ini `src/geofence/__tests__/` |
 
 Navigasi memakai React Navigation (permintaan pemilik repo), bukan Expo Router seperti di `mobile/AGENTS.md`. Sesi login disimpan di `expo-secure-store`. Akun mock: `pengemudi@roady.test` / `password123` (lihat `src/api/mock.ts`).
+
+Web (`web/`, jalankan dari folder itu; salin `.env.example` ke `.env` bila perlu):
+
+| Perintah | Fungsi |
+|---|---|
+| `npm install` | Pasang dependensi |
+| `npm run dev` | Dev server Vite (http://localhost:5173) |
+| `npx tsc -b` | Type-check |
+| `npm run lint` | Lint (oxlint) |
+| `npm run build` | Type-check + build produksi |
+
+Token web di `web/src/theme/tokens.ts` (jadi CSS variables lewat `theme/cssVars.ts`); CSS memakai `var(--color-*)`, tidak ada warna langsung. Latar semua halaman (termasuk Login) adalah komponen `AppBackground` (gradien berlapis + tiga gugus `batik-soft.png` sebagai background-image biasa, tanpa mask; penempatan di `theme/batikLayout.ts`, aset dibuat oleh `node scripts/make-batik.mjs` dari `docs/design/batik.png`). Panel memakai `.glass` (blur nyata, satu per area) dan isi di dalamnya `.glass-in` (tanpa blur); jangan beri backdrop-filter ke baris tabel atau elemen berulang, dan jangan menulis latar solid baru untuk panel (keputusan #29, acuan `docs/design/glass-reference.html`). Acuan desain web ada sebagai PNG di `docs/design/`. Sesi JWT disimpan di `localStorage`. Akun mock: `dishub@roady.test` / `password123`, `admin@roady.test` / `password123`; `pengemudi@roady.test` ditolak di Login web. Menu per role ada di `NAV_ITEMS` (`web/src/routes.ts`); rute Dishub dan Admin di dua cabang `RequireRole` terpisah di `App.tsx` (tanpa akses silang, keputusan #30). Tile peta: Stadia Alidade Smooth terang (tanpa key di localhost), bisa diganti lewat `VITE_MAP_TILE_URL`; CARTO tidak bisa dipakai (semua tile minta API key). Zona digambar sebagai area (lingkaran `radius_zona`, isian 30%, garis tepi 2px warna risiko) lewat `ZoneArea`; peta Statistik Zona adalah `ZoneMap`, peta detail satu kejadian adalah `IncidentMap` (satu pin + lingkaran zona).

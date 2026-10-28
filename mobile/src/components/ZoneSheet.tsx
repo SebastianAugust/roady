@@ -6,7 +6,8 @@ import { formatDateTime } from '../lib/dateFormat';
 import { RISK_LABEL } from '../lib/risk';
 import { colors, fontFamily } from '../theme/tokens';
 import { DetailField } from './DetailField';
-import { RISK_COLOR, RiskDot } from './ZoneMarkers';
+import { Glass } from './Glass';
+import { RISK_COLOR, RiskDot } from './RiskDot';
 
 // The closed sheet is translated this far down; it must be taller than the sheet with its content.
 const HIDE_OFFSET = 520;
@@ -58,8 +59,9 @@ export function ZoneSheet({ zonaId, onClose }: Props) {
     <Animated.View
       pointerEvents={open ? 'auto' : 'none'}
       accessibilityViewIsModal={open}
-      style={[styles.sheet, { paddingBottom: Math.max(insets.bottom, 12) + 8, transform: [{ translateY }] }]}
+      style={[styles.sheetPosition, { transform: [{ translateY }] }]}
     >
+      <Glass fill={colors.glass} radius={24} style={[styles.sheet, { paddingBottom: Math.max(insets.bottom, 12) + 8 }]}>
       <View {...pan.panHandlers} style={styles.handleArea}>
         <View style={styles.handle} />
       </View>
@@ -107,25 +109,14 @@ export function ZoneSheet({ zonaId, onClose }: Props) {
           </View>
         </View>
       ) : null}
+      </Glass>
     </Animated.View>
   );
 }
 
 const styles = StyleSheet.create({
-  sheet: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
-    minHeight: 280,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    backgroundColor: colors.surfaceRaised,
-    borderWidth: 1,
-    borderBottomWidth: 0,
-    borderColor: colors.border,
-    paddingHorizontal: 20,
-  },
+  sheetPosition: { position: 'absolute', left: 0, right: 0, bottom: 0 },
+  sheet: { minHeight: 280, borderBottomLeftRadius: 0, borderBottomRightRadius: 0, borderBottomWidth: 0, paddingHorizontal: 20 },
   handleArea: { height: 28, alignItems: 'center', justifyContent: 'center' },
   handle: { width: 44, height: 5, borderRadius: 3, backgroundColor: colors.textMuted },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },

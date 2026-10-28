@@ -72,3 +72,64 @@ textarea.field-input {
   color: var(--color-text-secondary);
   font-size: var(--text-caption);
 }
+
+.field-control {
+  position: relative;
+  display: flex;
+}
+
+.field-input-adorned {
+  padding-right: calc(var(--size-touch-min) + var(--space-xs));
+}
+
+.field-adornment {
+  position: absolute;
+  inset: 0 0 0 auto;
+  display: flex;
+  align-items: center;
+}
+
+.field-adornment-button {
+  width: var(--size-touch-min);
+  height: 100%;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: var(--radius-field);
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+
+.field-adornment-button:hover {
+  color: var(--color-text-primary);
+}
+
+/* Quick reasons: small toggle pills; the chosen one is white with navy text, like the selected tab. */
+.quick-reasons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.quick-reason {
+  min-height: 34px;
+  padding: 0 var(--space-md);
+  border-radius: 999px;
+  border: 1px solid var(--color-nav-item-edge);
+  background: var(--color-nav-item);
+  color: var(--color-text-primary);
+  font-size: var(--text-small);
+  cursor: pointer;
+}
+
+.quick-reason:hover:not(:disabled) {
+  border-color: var(--color-accent);
+}
+
+.quick-reason[aria-pressed='true'] {
+  background: var(--color-button-primary);
+  border-color: var(--color-button-primary);
+  color: var(--color-on-button-primary);
+  font-weight: var(--weight-semibold);
+}

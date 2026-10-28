@@ -7,6 +7,7 @@ import { colors, fontFamily } from '../theme/tokens';
 import type { FieldErrors, UpdateProfileRequest, User } from '../types';
 import { LabeledInput } from './LabeledInput';
 import { PrimaryButton } from './PrimaryButton';
+import { Glass } from './Glass';
 
 /** Name, email and password fields with the Simpan button; mounted only once the profile is loaded so the fields start from real values. */
 export function EditProfilForm({ user, onDone }: { user: User; onDone: () => void }) {
@@ -50,7 +51,7 @@ export function EditProfilForm({ user, onDone }: { user: User; onDone: () => voi
           </View>
         </View>
 
-        <View style={styles.card}>
+        <Glass radius={10} style={styles.card}>
           <LabeledInput label="Nama" value={nama} onChangeText={setNama} autoCapitalize="words" error={errors.nama} />
           <LabeledInput label="Email" value={email} onChangeText={setEmail} keyboardType="email-address" error={errors.email} />
           <LabeledInput
@@ -61,7 +62,7 @@ export function EditProfilForm({ user, onDone }: { user: User; onDone: () => voi
             placeholder="Kosongkan jika tidak diganti"
             error={errors.password}
           />
-        </View>
+        </Glass>
       </ScrollView>
 
       <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 12) + 16 }]}>
@@ -84,7 +85,7 @@ const styles = StyleSheet.create({
   identityText: { flex: 1 },
   name: { fontFamily: fontFamily.semibold, fontSize: 20, lineHeight: 28, color: colors.textPrimary },
   email: { fontFamily: fontFamily.semibold, fontSize: 15, lineHeight: 21, color: colors.textPrimary },
-  card: { borderRadius: 10, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, padding: 14, gap: 12 },
+  card: { padding: 14, gap: 12 },
   footer: { paddingHorizontal: 11, paddingTop: 8, gap: 8 },
   formError: { fontFamily: fontFamily.semibold, fontSize: 13, lineHeight: 18, color: colors.error, textAlign: 'center' },
 });

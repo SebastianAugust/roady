@@ -4,6 +4,7 @@ import { placeText } from '../lib/address';
 import { formatDate } from '../lib/reportStatus';
 import { colors, fontFamily } from '../theme/tokens';
 import type { Laporan } from '../types';
+import { Glass } from './Glass';
 import { StatusPill } from './StatusPill';
 
 interface Props {
@@ -22,6 +23,7 @@ export function ReportCard({ report, onPress, showPhoto = false, showLocation = 
   const date = <Text style={styles.date}>{formatDate(report.tanggal_kejadian)}</Text>;
 
   return (
+    <Glass inner radius={10}>
     <Pressable
       accessibilityRole={onPress ? 'button' : undefined}
       accessibilityLabel={onPress ? `Laporan ${report.id_report}, buka detail` : undefined}
@@ -63,18 +65,12 @@ export function ReportCard({ report, onPress, showPhoto = false, showLocation = 
         <StatusPill status={report.status} />
       </View>
     </Pressable>
+    </Glass>
   );
 }
 
 const styles = StyleSheet.create({
-  card: {
-    borderRadius: 10,
-    backgroundColor: colors.surfaceRaised,
-    borderWidth: 1,
-    borderColor: colors.border,
-    paddingHorizontal: 15,
-    paddingVertical: 7,
-  },
+  card: { paddingHorizontal: 15, paddingVertical: 7 },
   pressed: { opacity: 0.8 },
   dateRight: { alignItems: 'flex-end' },
   photo: { height: 96, borderRadius: 4, marginTop: 4, marginHorizontal: -3, backgroundColor: colors.surface },

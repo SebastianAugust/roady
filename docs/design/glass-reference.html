@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="id"><head><meta charset="utf-8"><title>glass test</title>
+<style>
+:root{
+  --bg:#0A1A33; --navy700:#12294D; --navy500:#2A4A7F;
+  --text:#fff; --text2:#C5CEDB; --accent:#9DB7E8;
+}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%}
+body{
+  font-family:"Plus Jakarta Sans","Inter",system-ui,sans-serif; color:var(--text);
+  min-height:1024px; position:relative; overflow:hidden;
+  background:
+    radial-gradient(900px 520px at 50% -6%, rgba(150,178,222,.55), transparent 70%),
+    radial-gradient(700px 600px at 100% 100%, rgba(42,74,127,.75), transparent 70%),
+    radial-gradient(600px 500px at 0% 55%, rgba(42,74,127,.55), transparent 70%),
+    linear-gradient(160deg,#0f2447 0%,#0A1A33 55%,#08142a 100%);
+}
+/* batik: gugus motif dipotong di tepi, putih transparan via mask */
+.batik{position:absolute;pointer-events:none;background:#fff;opacity:.10;
+  -webkit-mask:url(batik.png) center/contain no-repeat;mask:url(batik.png) center/contain no-repeat}
+.b1{width:430px;height:430px;left:-120px;top:-110px;transform:rotate(-8deg)}
+.b2{width:300px;height:300px;left:-150px;top:430px}
+.b3{width:460px;height:460px;right:-150px;bottom:-170px;transform:rotate(12deg)}
+.b4{width:260px;height:260px;right:110px;top:-130px;opacity:.07}
+
+/* GLASS: lapisan 1 (blur nyata) */
+.glass{
+  background:linear-gradient(135deg,rgba(255,255,255,.16) 0%,rgba(255,255,255,.05) 100%);
+  -webkit-backdrop-filter:blur(22px) saturate(140%);backdrop-filter:blur(22px) saturate(140%);
+  border:1px solid rgba(255,255,255,.20);
+  box-shadow:0 10px 36px rgba(2,8,20,.45), inset 0 1px 0 rgba(255,255,255,.28);
+}
+/* lapisan 2 (di DALAM glass): tanpa blur, hanya isian transparan */
+.glass-in{
+  background:linear-gradient(135deg,rgba(255,255,255,.12),rgba(255,255,255,.04));
+  border:1px solid rgba(255,255,255,.16);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18);
+}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  .glass{background:#16315c}
+}
+.page{position:relative;z-index:1;width:1440px;margin:0 auto;padding:40px 50px}
+header{display:flex;justify-content:space-between;align-items:flex-start;height:92px}
+.logo{font-weight:800;font-size:40px;letter-spacing:-1px}
+.profile{display:flex;align-items:center;gap:18px;padding:12px 18px 12px 34px;border-radius:22px}
+.profile b{display:block;font-size:18px;text-align:right}
+.profile span{font-size:16px;color:var(--text2)}
+.avatar{width:54px;height:54px;border-radius:50%;background:#fff}
+nav.glass{display:flex;gap:14px;padding:10px;border-radius:26px;margin-top:6px}
+nav a{flex:1;text-align:center;padding:16px 10px;border-radius:18px;font-weight:700;font-size:20px;color:var(--text2);
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);text-decoration:none}
+nav a.on{background:#fff;color:#0A1A33;border-color:#fff;box-shadow:0 6px 18px rgba(0,0,0,.35)}
+main.glass{margin-top:22px;border-radius:64px;height:690px;padding:70px 100px;display:flex;align-items:center;gap:90px}
+.figure{width:230px;height:230px;flex:none}
+h1{font-size:46px;letter-spacing:-1px}
+p.lead{font-size:20px;color:var(--text2);margin:10px 0 28px;max-width:720px;line-height:1.35}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.card{border-radius:18px;padding:22px;display:flex;gap:16px;min-height:130px}
+.card h3{font-size:20px;margin-bottom:6px}
+.card p{font-size:14px;color:var(--text2);line-height:1.4}
+.ic{width:34px;height:34px;border:2px solid #fff;border-radius:8px;flex:none;opacity:.9}
+</style></head>
+<body>
+<div class="batik b1"></div><div class="batik b2"></div><div class="batik b3"></div><div class="batik b4"></div>
+<div class="page">
+  <header>
+    <div class="logo">Roady!</div>
+    <div class="profile glass"><div><b>Admin</b><span>admin@roadwatchers.id</span></div><div class="avatar"></div></div>
+  </header>
+  <nav class="glass"><a class="on">Beranda</a><a>Verifikasi Laporan</a><a>Kelola Data Kecelakaan</a></nav>
+  <main class="glass">
+    <svg class="figure" viewBox="0 0 24 24" fill="#fff" opacity=".95"><path d="M12 12c2.2 0 4-1.8 4-4s-1.8-4-4-4-4 1.8-4 4 1.8 4 4 4zm0 2c-2.7 0-8 1.3-8 4v2h16v-2c0-2.7-5.3-4-8-4z"/></svg>
+    <div>
+      <h1>Selamat Datang, Admin</h1>
+      <p class="lead">Pantau laporan warga dan tindak lanjuti data kecelakaan dengan cepat dan akurat</p>
+      <div class="cards">
+        <div class="card glass-in"><div class="ic"></div><div><h3>Verifikasi Laporan</h3><p>Periksa lampiran bukti dari pelapor, lalu tentukan untuk menyetujui atau menolak laporan</p></div></div>
+        <div class="card glass-in"><div class="ic"></div><div><h3>Kelola Data Kecelakaan</h3><p>Pantau, perbarui, dan atur seluruh rekam data kecelakaan yang tersimpan di dalam sistem</p></div></div>
+      </div>
+    </div>
+  </main>
+</div>
+</body></html>

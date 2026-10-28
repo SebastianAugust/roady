@@ -1,8 +1,6 @@
 .verif-photo-card {
   display: grid;
-  grid-template-columns: auto 1fr;
-  gap: var(--space-lg);
-  align-items: start;
+  gap: var(--space-md);
 }
 
 .verif-photo-link {
@@ -12,8 +10,8 @@
 
 .verif-photo {
   width: 100%;
-  max-height: 220px;
-  object-fit: cover;
+  max-height: 480px;
+  object-fit: contain;
   border-radius: var(--radius-field);
   border: 1px solid var(--color-border);
   background: var(--color-bg);

@@ -5,6 +5,7 @@ import { RequireRole } from './auth/RequireRole';
 import { AppLayout } from './components/AppLayout';
 import { ToastProvider } from './components/ToastProvider';
 import { AkunPage } from './pages/AkunPage';
+import { ArsipDetailPage } from './pages/ArsipDetailPage';
 import { ArsipPage } from './pages/ArsipPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { EksporPage } from './pages/EksporPage';
@@ -12,10 +13,12 @@ import { HomePage } from './pages/HomePage';
 import { InputDataPage } from './pages/InputDataPage';
 import { KecelakaanDetailPage } from './pages/KecelakaanDetailPage';
 import { KecelakaanListPage } from './pages/KecelakaanListPage';
+import { LaporanDetailPage } from './pages/LaporanDetailPage';
 import { LaporanPage } from './pages/LaporanPage';
 import { LoginPage } from './pages/LoginPage';
 import { VerifikasiDetailPage } from './pages/VerifikasiDetailPage';
 import { VerifikasiPage } from './pages/VerifikasiPage';
+import { ZonaDetailPage } from './pages/ZonaDetailPage';
 import { ROUTES } from './routes';
 
 const DISHUB_ONLY = ['dishub'] as const;
@@ -38,9 +41,12 @@ export function App() {
 
                 <Route element={<RequireRole roles={DISHUB_ONLY} />}>
                   <Route path={ROUTES.statistik} element={<DashboardPage />} />
+                  <Route path={`${ROUTES.statistik}/:zonaId`} element={<ZonaDetailPage />} />
                   <Route path={ROUTES.arsip} element={<ArsipPage />} />
                   <Route path={ROUTES.arsipInput} element={<InputDataPage />} />
+                  <Route path={`${ROUTES.arsip}/:id`} element={<ArsipDetailPage />} />
                   <Route path={ROUTES.laporan} element={<LaporanPage />} />
+                  <Route path={`${ROUTES.laporan}/:id`} element={<LaporanDetailPage />} />
                   <Route path={ROUTES.ekspor} element={<EksporPage />} />
                 </Route>
 

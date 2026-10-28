@@ -2,17 +2,26 @@ import { ApiClient, ApiError } from './types';
 import { isInBandungRaya } from '../config';
 import { MOCK_REPORTS } from './mockReports';
 import { MOCK_ZONES, distanceMeters } from './mockZones';
-import type { Laporan, StatusLaporan, User } from '../types';
+import type { Laporan, Role, StatusLaporan, User } from '../types';
 
 const DELAY_MS = 400;
 const wait = () => new Promise<void>((r) => setTimeout(r, DELAY_MS));
 
 // Seeded like the real backend: Dishub and Admin accounts are made by the team, not self-registered.
 const users: (User & { password: string })[] = [
-  { id_user: 1, nama: 'Jane Doe', email: 'pengemudi@roady.test', password: 'password123', role: 'pengemudi' },
-  { id_user: 2, nama: 'Petugas Dishub', email: 'dishub@roady.test', password: 'password123', role: 'dishub' },
-  { id_user: 3, nama: 'Admin Roady', email: 'admin@roady.test', password: 'password123', role: 'admin' },
+  { id_user: 1, nama: 'Jane Doe', email: 'pengemudi@roady.test', password: 'password123', role: 'pengemudi', kode_pengguna: '20260901-03-0001' },
+  { id_user: 2, nama: 'Petugas Dishub', email: 'dishub@roady.test', password: 'password123', role: 'dishub', kode_pengguna: '20261022-02-0001' },
+  { id_user: 3, nama: 'Admin Roady', email: 'admin@roady.test', password: 'password123', role: 'admin', kode_pengguna: '20261022-01-0001' },
 ];
+
+const ROLE_CODE: Record<Role, string> = { admin: '01', dishub: '02', pengemudi: '03' };
+
+/** kode_pengguna of a new account: today (YYYYMMDD) - role code - next number of that role, 4 digits. */
+function nextKode(role: Role) {
+  const date = new Date().toISOString().slice(0, 10).replaceAll('-', '');
+  const count = users.filter((u) => u.role === role).length + 1;
+  return `${date}-${ROLE_CODE[role]}-${String(count).padStart(4, '0')}`;
+}
 
 // The token carries the user id so getMe can tell who is signed in (a real JWT carries it too).
 const token = (u: User) => `mock.${u.id_user}.${u.role}.${Date.now()}`;
@@ -22,7 +31,7 @@ export const setMockToken = (t: string | undefined) => {
   currentToken = t;
 };
 
-const publicUser = ({ id_user, nama, email, role }: User): User => ({ id_user, nama, email, role });
+const publicUser = ({ id_user, nama, email, role, kode_pengguna }: User): User => ({ id_user, nama, email, role, kode_pengguna });
 
 /** Registered mock users live in memory only, so after an app reload a token for one of them is no longer valid (401). */
 function currentUser() {
@@ -65,6 +74,7 @@ export const mockApi: ApiClient = {
       email: normalized,
       password,
       role: 'pengemudi',
+      kode_pengguna: nextKode('pengemudi'),
     };
     users.push(user);
     return { token: token(user), role: user.role };
@@ -141,6 +151,7 @@ export const mockApi: ApiClient = {
       kondisi_cuaca_saat_kejadian,
       timestamp: new Date().toISOString(),
       status,
+      alasan_penolakan: null,
     };
     // Rejected reports are kept as a trace, as in docs/03, but the caller gets 422.
     MOCK_REPORTS.push(report);

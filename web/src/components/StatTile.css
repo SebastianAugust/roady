@@ -18,6 +18,7 @@
 
 .stat-label {
   display: inline-flex;
+  text-align: center;
   align-items: center;
   gap: var(--space-sm);
   font-family: var(--font-display);
@@ -26,8 +27,26 @@
 }
 
 .stat-value {
+  display: block;
   font-family: var(--font-display);
   font-size: calc(var(--text-display) * 1.4);
   line-height: 1;
   font-variant-numeric: tabular-nums;
+}
+
+/* A tile that filters: same card, plus hover and a white ring when it is the active filter. */
+.stat-tile-button {
+  width: 100%;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.stat-tile-button:hover {
+  border-color: var(--color-accent);
+}
+
+.stat-tile-button[aria-pressed='true'] {
+  border-color: var(--color-white);
+  box-shadow: 0 0 0 1px var(--color-white);
 }

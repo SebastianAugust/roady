@@ -10,6 +10,8 @@ Wilayah: Bandung Raya (Kota Bandung, Cimahi, Kab. Bandung, Kab. Bandung Barat, J
 
 Tiga aktor dengan generalisasi: Pengemudi → Dishub → Admin. Generalisasi hanya mewarisi hak akses, **bukan** menghapus kewajiban Login. Setiap aktor Login sendiri.
 
+> Catatan implementasi (28-10-2026, keputusan #30 di `05-decisions.md`): di dashboard web, Admin dan Dishub dibuat sebagai dua halaman terpisah **tanpa akses silang**; Admin tidak memakai menu atau endpoint Dishub. Bila diagram use case tetap memakai generalisasi, sesuaikan agar sama dengan keputusan ini.
+
 Pengemudi memakai aplikasi mobile. Dishub dan Admin memakai dashboard web.
 
 ## Use case

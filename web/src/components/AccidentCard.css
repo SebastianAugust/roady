@@ -38,3 +38,30 @@
   font-size: var(--text-caption);
   color: var(--color-text-secondary);
 }
+
+/* The card is one big link: the DETAIL button's ::after covers it, so a click anywhere opens the detail and the
+   keyboard has a single stop with a visible focus ring around the card. */
+.accident-card {
+  position: relative;
+}
+
+.accident-card-link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.accident-card:hover,
+.accident-card:focus-within {
+  border-color: var(--color-accent);
+}
+
+.accident-card-link:focus-visible {
+  outline: none;
+}
+
+.accident-card:has(.accident-card-link:focus-visible) {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}

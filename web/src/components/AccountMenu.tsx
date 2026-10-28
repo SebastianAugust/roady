@@ -62,6 +62,12 @@ export function AccountMenu() {
 
       {open ? (
         <ul id={popupId} className="account-popup glass" aria-label="Menu akun">
+          {user ? (
+            <li className="account-code">
+              <span>Kode pengguna</span>
+              <strong>{user.kode_pengguna}</strong>
+            </li>
+          ) : null}
           <li>
             <Link to={ROUTES.akun} className="account-item" onClick={() => setOpen(false)}>
               Profil akun

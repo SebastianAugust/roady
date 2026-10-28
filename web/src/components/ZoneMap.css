@@ -1,7 +1,6 @@
 .peta-card {
   position: relative;
-  height: 560px;
-  min-height: 420px;
+  height: clamp(440px, 72dvh, 680px);
   border-radius: var(--radius-card);
   overflow: hidden;
   border: 1px solid var(--color-border);
@@ -14,23 +13,89 @@
   background: var(--color-surface);
 }
 
-/* Glass legend, as on mobile. Above Leaflet's panes (z-index 400) but below its controls (1000). */
+/* Glass legend. Above Leaflet's panes (z-index 400) but below its controls (1000). */
 .peta-legend {
   position: absolute;
   top: var(--space-md);
   right: var(--space-md);
   z-index: 500;
-  margin: 0;
+  max-width: 260px;
   padding: var(--space-sm) var(--space-md);
-  list-style: none;
-  display: grid;
-  gap: var(--space-xs);
   border-radius: var(--radius-field);
   background: var(--color-glass);
   backdrop-filter: blur(12px);
   border: 1px solid var(--color-border);
   font-size: var(--text-small);
+}
+
+.peta-legend-title {
+  margin: 0 0 var(--space-xs);
+  font-weight: var(--weight-extrabold);
+}
+
+.peta-legend ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: var(--space-xs);
+}
+
+.peta-legend li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.peta-legend li > span:last-child {
+  display: grid;
+}
+
+.peta-legend .risk-label {
   font-weight: var(--weight-semibold);
+}
+
+.peta-legend-range,
+.peta-legend-note {
+  color: var(--color-text-secondary);
+  font-size: var(--text-caption);
+}
+
+.peta-legend-note {
+  margin: var(--space-sm) 0 0;
+}
+
+.peta-swatch {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border-style: solid;
+}
+
+/* Short notes over the map: the active filter (top left, under the zoom buttons) and a failed basemap (bottom). */
+.peta-filter,
+.peta-notice {
+  position: absolute;
+  z-index: 500;
+  margin: 0;
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-field);
+  background: var(--color-glass);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--color-border);
+  font-size: var(--text-small);
+}
+
+.peta-filter {
+  left: 60px;
+  top: var(--space-md);
+}
+
+.peta-notice {
+  left: var(--space-md);
+  right: var(--space-md);
+  bottom: var(--space-xl);
 }
 
 .peta-status {
@@ -104,4 +169,22 @@
   margin: 0;
   text-align: right;
   font-weight: var(--weight-semibold);
+}
+
+.zone-popup-place {
+  color: var(--color-text-secondary);
+}
+
+.zone-popup-link {
+  font-weight: var(--weight-semibold);
+}
+
+/* Leaflet colours every link in its container #0078A8, which is unreadable on the dark popup; use the accent instead. */
+.peta-map .leaflet-popup-content a.zone-popup-link {
+  color: var(--color-accent);
+  text-decoration: underline;
+}
+
+.zone-popup > .risk-badge {
+  justify-self: start;
 }

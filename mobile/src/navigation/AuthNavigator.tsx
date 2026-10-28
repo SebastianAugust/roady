@@ -1,8 +1,6 @@
-import { useEffect, useState } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useAuth } from '../auth/AuthContext';
-import { LoadingScreen } from '../components/LoadingScreen';
-import { FirstRun, loadFirstRun, markLocationPromptSeen, markOnboardingSeen } from '../lib/storage';
+import { FirstRun, markLocationPromptSeen, markOnboardingSeen } from '../lib/storage';
 import { LocationPermissionScreen } from '../screens/LocationPermissionScreen';
 import { LoginScreen } from '../screens/LoginScreen';
 import { OnboardingScreen } from '../screens/OnboardingScreen';
@@ -40,20 +38,9 @@ function SignUpRoute({ navigation }: AuthScreenProps<'SignUp'>) {
 
 /**
  * Shown while nobody is signed in: Onboarding and the location permission screen on first use, then Login and Sign up.
- * Signing in swaps this whole navigator for the app one.
+ * Signing in swaps this whole navigator for the app one. `firstRun` is read at launch while the splash is shown.
  */
-export function AuthNavigator() {
-  const [firstRun, setFirstRun] = useState<FirstRun>();
-
-  useEffect(() => {
-    let alive = true;
-    loadFirstRun().then((f) => alive && setFirstRun(f));
-    return () => {
-      alive = false;
-    };
-  }, []);
-
-  if (!firstRun) return <LoadingScreen />;
+export function AuthNavigator({ firstRun }: { firstRun: FirstRun }) {
   const initialRouteName = !firstRun.onboardingSeen ? 'Onboarding' : !firstRun.locationPromptSeen ? 'Permission' : 'Login';
 
   return (

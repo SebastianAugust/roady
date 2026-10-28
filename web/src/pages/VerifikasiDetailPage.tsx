@@ -4,13 +4,13 @@ import { api, ApiError } from '../api';
 import { Button } from '../components/Button';
 import { DetailHeader } from '../components/DetailHeader';
 import { LoadState } from '../components/LoadState';
-import { MiniMap } from '../components/MiniMap';
+import { IncidentMap } from '../components/IncidentMap';
 import { StatusPill } from '../components/StatusPill';
 import { VerifyDialog } from '../components/VerifyDialog';
 import { useApi } from '../hooks/useApi';
-import { CUACA_LABEL, formatCoords, formatDate, formatDateTime, KATEGORI_LABEL, placeText } from '../lib/format';
+import { CUACA_LABEL, formatCoords, formatDate, formatDateTime, KATEGORI_LABEL, placeText, STATUS_LABEL } from '../lib/format';
 import { ROUTES } from '../routes';
-import type { KeputusanVerifikasi, Laporan } from '../types';
+import type { KeputusanVerifikasi, LaporanAdmin } from '../types';
 import './VerifikasiDetailPage.css';
 
 /**
@@ -26,8 +26,8 @@ export function VerifikasiDetailPage() {
     return report;
   }, [id]);
   const { state, retry } = useApi(load);
-  const [updated, setUpdated] = useState<Laporan>();
-  const [pending, setPending] = useState<{ report: Laporan; keputusan: KeputusanVerifikasi }>();
+  const [updated, setUpdated] = useState<LaporanAdmin>();
+  const [pending, setPending] = useState<{ report: LaporanAdmin; keputusan: KeputusanVerifikasi }>();
 
   if (state.status === 'loading') return <LoadState state="loading" message="Memuat laporan…" />;
   if (state.status === 'error') return <LoadState state="error" message={state.message} onRetry={retry} />;
@@ -49,7 +49,7 @@ export function VerifikasiDetailPage() {
       />
       <div className="detail-body">
         <div>
-          <MiniMap latitude={report.latitude} longitude={report.longitude} className="detail-map" />
+          <IncidentMap latitude={report.latitude} longitude={report.longitude} zonaId={report.zona_id} className="detail-map" />
           <p className="detail-coords">
             Latitude: {report.latitude}
             <br />
@@ -95,9 +95,33 @@ export function VerifikasiDetailPage() {
               </Button>
             </div>
           ) : (
-            <p className="muted" role="status">
-              Laporan ini sudah diverifikasi.
-            </p>
+            <section className="glass-in detail-card" aria-labelledby="jejak-title">
+              <h2 id="jejak-title" className="detail-card-title">
+                Jejak Verifikasi
+              </h2>
+              {report.diverifikasi_oleh_kode && report.waktu_verifikasi ? (
+                <dl className="verif-meta">
+                  <dt>Keputusan</dt>
+                  <dd>{STATUS_LABEL[report.status]}</dd>
+                  <dt>Diputuskan oleh</dt>
+                  <dd>
+                    {report.diverifikasi_oleh_kode} · {report.diverifikasi_oleh_nama}
+                  </dd>
+                  <dt>Waktu</dt>
+                  <dd>{formatDateTime(report.waktu_verifikasi)}</dd>
+                  {report.status === 'rejected' ? (
+                    <>
+                      <dt>Alasan penolakan</dt>
+                      <dd>{report.alasan_penolakan}</dd>
+                    </>
+                  ) : null}
+                </dl>
+              ) : (
+                <p className="muted" role="status">
+                  Laporan ini diputuskan otomatis oleh sistem.
+                </p>
+              )}
+            </section>
           )}
         </div>
       </div>

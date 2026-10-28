@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AppBackground } from '../components/AppBackground';
+import { Glass } from '../components/Glass';
 import { DetailField } from '../components/DetailField';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { StatusPill } from '../components/StatusPill';
@@ -21,7 +22,7 @@ export function DetailLaporanScreen({ report, onBack }: { report: Laporan; onBac
       <View style={[styles.screen, { paddingTop: insets.top + 12 }]}>
         <ScreenHeader title={`Laporan #${report.id_report}`} onBack={onBack} />
         <ScrollView contentContainerStyle={[styles.content, { paddingBottom: Math.max(insets.bottom, 12) + 24 }]} showsVerticalScrollIndicator={false}>
-          <View style={styles.card}>
+          <Glass radius={10} style={styles.card}>
             <View style={styles.field}>
               <Text style={styles.label}>Status</Text>
               <StatusPill status={report.status} />
@@ -32,19 +33,28 @@ export function DetailLaporanScreen({ report, onBack }: { report: Laporan; onBac
             <DetailField label="Cuaca">{CUACA_LABEL[report.kondisi_cuaca_saat_kejadian]}</DetailField>
             <DetailField label="Lokasi">{placeText(report)}</DetailField>
             <DetailField label="Zona">{report.zona_id === null ? 'Belum masuk zona' : `Zona ${report.zona_id}`}</DetailField>
-          </View>
+          </Glass>
+
+          {report.status === 'rejected' && report.alasan_penolakan ? (
+            <View style={styles.section}>
+              <Text style={styles.sectionLabel}>Alasan Penolakan</Text>
+              <Glass radius={10} style={styles.card}>
+                <Text style={styles.value}>{report.alasan_penolakan}</Text>
+              </Glass>
+            </View>
+          ) : null}
 
           <View style={styles.section}>
             <Text style={styles.sectionLabel}>Deskripsi Kejadian</Text>
-            <View style={styles.card}>
+            <Glass radius={10} style={styles.card}>
               <Text style={styles.value}>{report.deskripsi}</Text>
-            </View>
+            </Glass>
           </View>
 
           {report.foto_url ? (
             <View style={styles.section}>
               <Text style={styles.sectionLabel}>Foto</Text>
-              <View style={styles.card}>
+              <Glass radius={10} style={styles.card}>
                 {photoFailed ? (
                   <Text style={styles.value}>Foto tidak dapat dimuat.</Text>
                 ) : (
@@ -55,7 +65,7 @@ export function DetailLaporanScreen({ report, onBack }: { report: Laporan; onBac
                     style={styles.photo}
                   />
                 )}
-              </View>
+              </Glass>
             </View>
           ) : null}
         </ScrollView>
@@ -67,7 +77,7 @@ export function DetailLaporanScreen({ report, onBack }: { report: Laporan; onBac
 const styles = StyleSheet.create({
   screen: { flex: 1, paddingHorizontal: 20 },
   content: { paddingHorizontal: 4, paddingTop: 22, gap: 14 },
-  card: { borderRadius: 10, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, padding: 14, gap: 10 },
+  card: { padding: 14, gap: 10 },
   field: { gap: 2, alignItems: 'flex-start' },
   label: { fontFamily: fontFamily.semibold, fontSize: 13, lineHeight: 18, color: colors.textSecondary },
   value: { fontFamily: fontFamily.semibold, fontSize: 15, lineHeight: 21, color: colors.textPrimary },

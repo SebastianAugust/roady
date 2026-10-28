@@ -23,28 +23,39 @@ Login ── Daftar Akun ── Form Pendaftaran
 
 Layar pendukung di desain: onboarding ×3, permission (izin lokasi), bantuan ×3. Letaknya di alur disesuaikan dengan use case; onboarding dan permission muncul sebelum Login pada pemakaian pertama.
 
-### Dishub (web)
+Admin dan Dishub adalah **dua aplikasi web terpisah tanpa akses silang** (keputusan #30 di `05-decisions.md`). Navbar dan urutannya persis seperti Figma (`docs/design/admin/Home.png`, `docs/design/dishub/Home.png`). Membuka URL role lain → halaman 403.
+
+### Dishub (web) — navbar: Beranda · Statistik Zona · Arsip & Input · Detail Laporan · Ekspor Data
 
 ```
 Login
-  └─ Halaman Utama (Dashboard Statistik)
-       ├─ Rekap Zona ── Riwayat Skor Zona
-       ├─ Peta Zona Risiko
-       ├─ Detail Laporan ── Filter Zona dan Tanggal, Ekspor Data (CSV)
-       ├─ Input Data Kecelakaan Resmi ── Form Input Data Resmi
-       └─ Akun ── Keluar
+  └─ Beranda (sapaan + kartu pintasan, tanpa data)                 /
+       ├─ Statistik Zona: 4 kartu angka (memfilter tabel), tab "Tabel | Peta"   /statistik
+       │     ├─ Tabel: Lokasi, Jumlah Kejadian, Skor Risiko, Kategori Zona (kolom bisa diurutkan, baris bisa diklik) ── Riwayat Skor Zona
+       │     │     └─ Detail Zona (belum ada desain Figma): ringkasan, grafik riwayat skor, kejadian resmi, laporan warga   /statistik/:zonaId
+       │     └─ Peta: Peta Zona Risiko (belum ada desain web; bukan item navbar)
+       ├─ Arsip & Input: grid arsip data resmi (kartu bisa diklik) ── INPUT DATA   /arsip
+       │     ├─ Detail kejadian resmi (read-only, tanpa ubah/hapus)   /arsip/:id
+       │     └─ Form Input Data Resmi ── Konfirmasi               /arsip/input
+       ├─ Detail Laporan ── Filter, DETAIL (kartu bisa diklik)      /laporan
+       │     └─ Detail laporan (halaman, tanpa identitas pelapor)   /laporan/:id
+       ├─ Ekspor Data (CSV) ── Konfirmasi                          /ekspor
+       └─ Akun (popup: Profil akun, Keluar)                         /akun
 ```
 
-### Admin (web)
+### Admin (web) — navbar: Beranda · Verifikasi Laporan · Kelola Data Kecelakaan
 
 ```
 Login
-  └─ Halaman Utama (Dashboard Admin)
-       ├─ Verifikasi Laporan ── Antrean Laporan Berfoto ── Detail dan Foto ── Setujui / Tolak
-       ├─ Kelola Data Kecelakaan ── Daftar Data Resmi ── Ubah Data, Hapus Data
-       ├─ Menu Dishub (diwarisi): Dashboard Statistik, Detail Laporan dan Ekspor, Input Data Resmi, Peta Zona Risiko
-       └─ Akun ── Keluar
+  └─ Beranda (sapaan + kartu pintasan, tanpa data)                 /
+       ├─ Verifikasi Laporan: 3 kartu angka + antrean berfoto ── Setujui / Tolak   /admin/verifikasi
+       │     └─ Detail laporan dan foto ── Setujui / Tolak         /admin/verifikasi/:id
+       ├─ Kelola Data Kecelakaan: grid data resmi ── DETAIL         /admin/kecelakaan
+       │     └─ Detail: peta, Informasi Kejadian, Hapus Data (konfirmasi)   /admin/kecelakaan/:id
+       └─ Akun (popup: Profil akun, Keluar)                         /akun
 ```
+
+Admin **tidak** memakai Statistik Zona, Arsip & Input, Detail Laporan, Ekspor Data, atau peta Dishub. Detail Kelola Data Kecelakaan tidak punya Ubah Data (tidak ada di desain).
 
 ## Layar Figma — USER mobile (`1110:1729`)
 
@@ -87,7 +98,7 @@ Login
 | akun admin (popup) | `1036:7250` |
 | d.progress, d.tipe_kecelakaan, d.cuaca | `1036:3189`, `1036:3214`, `1036:3235` |
 
-**Kekurangan desain Admin:** tidak ada menu Dishub (Dashboard Statistik, Detail Laporan, Ekspor, Input Data Resmi). Itu kesalahan desain; pakai ulang layar Dishub untuk Admin.
+~~**Kekurangan desain Admin:** tidak ada menu Dishub.~~ Bukan kekurangan: Admin memang tidak memakai menu Dishub (keputusan #30 menggantikan #1).
 
 ## Layar Figma — DISHUB web (`1110:1731`)
 
@@ -112,4 +123,6 @@ Login
 
 **ABAIKAN** dua frame `detail - Kelola data kecelakaan` di section Dishub (`1053:8881`, `1044:2829`). Dishub tidak boleh Kelola Data Kecelakaan.
 
-**Belum ada desain:** peta web untuk Dishub dan Admin. Adaptasi dari layar Peta mobile (`1032:5391`).
+**Belum ada desain:** peta web Dishub. Diadaptasi dari layar Peta mobile (`1032:5391`) dan ditaruh sebagai tab "Peta" di Statistik Zona. Admin tidak punya peta.
+
+**Acuan gambar:** frame web di atas tersedia sebagai PNG di `docs/design/admin/` dan `docs/design/dishub/`. Dua varian Input Data Resmi: `dishub - input data resmi.png` = arsip, `dishub - input data resmi-1.png` = form; keduanya dipakai (arsip → INPUT DATA → form).

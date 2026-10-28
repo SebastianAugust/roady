@@ -4,6 +4,7 @@ import { api, ApiError } from '../api';
 import { AuthField, InputHandle } from '../components/AuthField';
 import { AuthForm } from '../components/AuthForm';
 import { PrimaryButton } from '../components/PrimaryButton';
+import { confirmPasswordError } from '../lib/authValidation';
 import { spacing } from '../theme/tokens';
 import type { FieldErrors, LoginResponse } from '../types';
 
@@ -16,12 +17,20 @@ export function SignUpScreen({ onSuccess, onGoToLogin }: Props) {
   const [nama, setNama] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirm, setConfirm] = useState('');
   const [errors, setErrors] = useState<FieldErrors>({});
   const [loading, setLoading] = useState(false);
   const emailRef = useRef<InputHandle>(null);
   const passwordRef = useRef<InputHandle>(null);
+  const confirmRef = useRef<InputHandle>(null);
 
   const submit = async () => {
+    // The confirmation is checked here only; the API (API-001) takes nama, email and password.
+    const mismatch = confirmPasswordError(password, confirm);
+    if (mismatch) {
+      setErrors({ konfirmasi: mismatch });
+      return;
+    }
     setErrors({});
     setLoading(true);
     try {
@@ -36,7 +45,7 @@ export function SignUpScreen({ onSuccess, onGoToLogin }: Props) {
   return (
     <AuthForm
       title="Sign-up"
-      titleGap={33}
+      titleGap={28}
       footerText="Sudah punya akun?"
       footerLink="Login"
       onFooterPress={onGoToLogin}
@@ -73,9 +82,21 @@ export function SignUpScreen({ onSuccess, onGoToLogin }: Props) {
         onChangeText={setPassword}
         secureTextEntry
         autoComplete="new-password"
+        returnKeyType="next"
+        onSubmitEditing={() => confirmRef.current?.focus()}
+        error={errors.password ?? errors.form}
+      />
+      <AuthField
+        ref={confirmRef}
+        label="Konfirmasi Password"
+        placeholder="••••••"
+        value={confirm}
+        onChangeText={setConfirm}
+        secureTextEntry
+        autoComplete="new-password"
         returnKeyType="go"
         onSubmitEditing={submit}
-        error={errors.password ?? errors.form}
+        error={errors.konfirmasi}
       />
       <View style={{ marginTop: spacing.section }}>
         <PrimaryButton label="Signup" onPress={submit} loading={loading} />

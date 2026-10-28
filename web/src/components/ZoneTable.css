@@ -48,3 +48,36 @@
   font-size: var(--text-caption);
   color: var(--color-text-secondary);
 }
+
+/* Sortable headers: a plain button that looks like the header text, with a small direction mark. */
+.sort-button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-sm);
+  border: 1px solid transparent;
+  border-radius: var(--radius-field);
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.sort-button:hover {
+  border-color: var(--color-accent);
+}
+
+.sort-mark {
+  font-size: var(--text-caption);
+  color: var(--color-text-secondary);
+}
+
+th[aria-sort='ascending'] .sort-mark,
+th[aria-sort='descending'] .sort-mark {
+  color: var(--color-text-primary);
+}
+
+/* The place name is the real link of the row (underlined on glass, index.css) and keeps the row text color. */
+.zone-table tbody th a {
+  color: var(--color-text-primary);
+}

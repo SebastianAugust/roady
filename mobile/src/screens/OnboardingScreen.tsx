@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { BackHandler, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { AuthBackground } from '../components/AuthBackground';
+import { AppBackground } from '../components/AppBackground';
 import { GlassSheet } from '../components/GlassSheet';
 import { OnboardingProgress } from '../components/OnboardingProgress';
 import { PrimaryButton } from '../components/PrimaryButton';
@@ -34,7 +34,7 @@ export function OnboardingScreen({ onFinish }: { onFinish: () => void }) {
   }, [page]);
 
   return (
-    <AuthBackground gradient>
+    <AppBackground>
       <View style={styles.root}>
         <View style={[styles.top, { paddingTop: insets.top + 8 }]}>
           <Pressable accessibilityRole="button" accessibilityLabel="Lewati pengenalan" onPress={onFinish} style={styles.skip}>
@@ -59,7 +59,7 @@ export function OnboardingScreen({ onFinish }: { onFinish: () => void }) {
           </View>
         </GlassSheet>
       </View>
-    </AuthBackground>
+    </AppBackground>
   );
 }
 
@@ -67,10 +67,10 @@ const styles = StyleSheet.create({
   root: { flex: 1 },
   top: { flex: 0.36, paddingHorizontal: 24 },
   skip: { alignSelf: 'flex-end', minHeight: 44, justifyContent: 'center', paddingHorizontal: 8 },
-  skipText: { fontFamily: fontFamily.extrabold, fontSize: 14, letterSpacing: 1.25, color: colors.onButtonPrimary },
+  skipText: { fontFamily: fontFamily.extrabold, fontSize: 14, letterSpacing: 1.25, color: colors.textPrimary },
   titleBox: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingBottom: 24 },
-  titleSmall: { fontFamily: fontFamily.display, fontSize: 30, lineHeight: 34, color: colors.onButtonPrimary },
-  titleBig: { fontFamily: fontFamily.display, fontSize: 52, lineHeight: 56, color: colors.onButtonPrimary },
+  titleSmall: { fontFamily: fontFamily.display, fontSize: 30, lineHeight: 34, color: colors.textPrimary },
+  titleBig: { fontFamily: fontFamily.display, fontSize: 52, lineHeight: 56, color: colors.textPrimary },
   body: { fontFamily: fontFamily.semibold, fontSize: 16, lineHeight: 24, color: colors.textPrimary, marginTop: 22 },
   actions: { flex: 1, flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'flex-start', gap: 10, paddingTop: 36 },
 });

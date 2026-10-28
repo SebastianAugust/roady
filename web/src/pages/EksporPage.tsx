@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { api, ApiError } from '../api';
 import { useAuth } from '../auth/useAuth';
 import { Button } from '../components/Button';
-import { CloudDownloadIcon } from '../components/icons';
+import { CloudDownloadIcon, DownloadIcon } from '../components/icons';
 import { PageHeader } from '../components/PageHeader';
 import { RadioCard } from '../components/RadioCard';
 import { SuccessScreen } from '../components/SuccessScreen';
@@ -96,6 +96,7 @@ export function EksporPage() {
           </div>
         ) : null}
         <Button type="submit" busy={busy} className="ekspor-submit">
+          {busy ? null : <DownloadIcon />}
           {busy ? 'MENYIAPKAN FILE…' : 'UNDUH FILE CSV'}
         </Button>
       </form>

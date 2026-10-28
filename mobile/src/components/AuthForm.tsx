@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { AuthBackground } from './AuthBackground';
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { AppBackground } from './AppBackground';
 import { colors, fontFamily, fontSize, spacing } from '../theme/tokens';
 
 interface Props {
@@ -15,10 +15,13 @@ interface Props {
 
 /** Layout shared by Login and Sign up: title, fields/button, and a switch link below the panel. */
 export function AuthForm({ title, titleGap, children, footerText, footerLink, onFooterPress }: Props) {
+  // The space above the title follows the screen height (about 14%, between 72 and 140 dp) instead of the 244 of the Figma canvas.
+  const { height } = useWindowDimensions();
+  const top = Math.min(140, Math.max(72, Math.round(height * 0.14)));
   return (
-    <AuthBackground>
+    <AppBackground>
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-        <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+        <ScrollView contentContainerStyle={[styles.content, { paddingTop: top }]} keyboardShouldPersistTaps="handled">
           <Text accessibilityRole="header" style={[styles.title, { marginBottom: titleGap }]}>
             {title}
           </Text>
@@ -31,21 +34,21 @@ export function AuthForm({ title, titleGap, children, footerText, footerLink, on
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-    </AuthBackground>
+    </AppBackground>
   );
 }
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  content: { flexGrow: 1, paddingHorizontal: spacing.gutter, paddingTop: 244, paddingBottom: 48 },
+  content: { flexGrow: 1, paddingHorizontal: spacing.gutter, paddingBottom: 48 },
   title: {
     fontFamily: fontFamily.display,
     fontSize: fontSize.display,
-    lineHeight: 40,
+    lineHeight: 34,
     color: colors.textPrimary,
     textAlign: 'center',
   },
-  footer: { flexDirection: 'row', justifyContent: 'center', marginTop: 61 },
+  footer: { flexDirection: 'row', justifyContent: 'center', marginTop: 32 },
   footerText: { fontFamily: fontFamily.semibold, fontSize: fontSize.body, lineHeight: 22, color: colors.textPrimary },
   footerLink: { fontFamily: fontFamily.bold, fontSize: fontSize.body, lineHeight: 22, color: colors.accent, textDecorationLine: 'underline' },
 });

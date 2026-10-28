@@ -6,15 +6,22 @@ import { colors, fontFamily } from '../theme/tokens';
 // The wordmark has no "!" in Figma (1032:7012).
 const WORDMARK = APP_NAME.replace('!', '');
 
-/** Start screen (Figma "mulai app", 1032:7012): navy brand gradient, batik at 7%, white wordmark and a light tagline. Shown for a moment at launch. */
-export function SplashScreen() {
+/**
+ * Start screen (Figma "mulai app", 1032:7012): navy brand gradient, batik at 7%, white wordmark and a light tagline.
+ * `bare` leaves out the text: it is used until the fonts are loaded, so the wordmark never shows in a fallback font.
+ */
+export function SplashScreen({ bare = false }: { bare?: boolean }) {
   return (
     <SplashBackground>
       <View style={styles.center}>
-        <Text accessibilityRole="header" style={styles.wordmark}>
-          {WORDMARK}
-        </Text>
-        <Text style={styles.tagline}>{APP_TAGLINE}</Text>
+        {bare ? null : (
+          <>
+            <Text accessibilityRole="header" style={styles.wordmark}>
+              {WORDMARK}
+            </Text>
+            <Text style={styles.tagline}>{APP_TAGLINE}</Text>
+          </>
+        )}
       </View>
     </SplashBackground>
   );

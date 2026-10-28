@@ -47,6 +47,9 @@ export function ProfilScreen({ onHome, onReport, onOpenBantuan, onOpenPengaturan
           <View style={styles.identity}>
             <Text style={styles.name}>{user.nama}</Text>
             <Text style={styles.email}>{user.email}</Text>
+            <Text style={styles.kode} accessibilityLabel={`Kode pengguna ${user.kode_pengguna}`}>
+              {user.kode_pengguna}
+            </Text>
           </View>
         ) : userState === 'error' ? (
           <View style={styles.identity}>
@@ -96,6 +99,7 @@ const styles = StyleSheet.create({
   identity: { alignItems: 'center', marginTop: 12, minHeight: 50 },
   name: { fontFamily: fontFamily.semibold, fontSize: 20, lineHeight: 28, color: colors.textPrimary },
   email: { fontFamily: fontFamily.semibold, fontSize: 15, lineHeight: 21, color: colors.textPrimary },
+  kode: { fontFamily: fontFamily.semibold, fontSize: 13, lineHeight: 18, color: colors.textSecondary },
   retry: { minHeight: 44, justifyContent: 'center', paddingHorizontal: 16 },
   editButton: { alignSelf: 'center', width: 100, height: 28, borderRadius: 8, marginTop: 6, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border },
   editDisabled: { opacity: 0.5 },

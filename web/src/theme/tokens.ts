@@ -33,6 +33,9 @@ export const colors = {
   glass: 'rgba(18,41,77,0.78)', // map legend and attribution glass (small text over map tiles)
   gridLine: 'rgba(255,255,255,0.08)', // chart grid
   rowDivider: 'rgba(255,255,255,0.12)', // rules between table rows
+  mapPin: '#12294D', // the one-place pin on the light basemap (white edge); a place, not a risk category
+  mapAreaCasing: 'rgba(10,26,51,0.4)', // thin dark edge under a zone area so a yellow outline stays visible on the light map
+  menuDivider: 'rgba(255,255,255,0.3)', // rule between the items of the account popup
 
   // Page background (AppBackground), from docs/design/glass-reference.html: navy base with soft light.
   pageTop: '#0f2447',
@@ -86,8 +89,7 @@ export const effects = {
 } as const;
 
 export const opacity = {
-  batik: 0.1, // batik clusters at the screen edges (6-10%)
-  batikSoft: 0.07, // the smaller cluster at the top right
+  batik: 0.08, // batik clusters at the screen edges (6-10%)
 } as const;
 
 // px
@@ -115,17 +117,12 @@ export const radius = {
 export const size = {
   navbar: 216, // account chip + tab bar, with their padding
   touchMin: 44,
-  avatar: 52,
-  // Batik clusters of AppBackground (glass-reference.html .b1-.b4); the asset is 936px wide, so it is only scaled down.
-  batikLg: 460,
-  batikMd: 430,
-  batikSm: 300,
-  batikXs: 260,
-  field: 45,
-  button: 42,
+  avatar: 44,
+  field: 42,
+  button: 40,
   buttonMinWidth: 116,
-  formWidth: 494, // login form column on the 1440 canvas
-  contentMax: 1344,
+  formWidth: 420, // login form column
+  contentMax: 1280,
 } as const;
 
 export const fontFamily = {
@@ -134,13 +131,22 @@ export const fontFamily = {
 } as const;
 
 export const fontSize = {
-  display: 64,
-  brand: 44, // the wordmark top-left (Figma ~48)
-  h1: 32,
-  h2: 22,
-  body: 16,
-  small: 14,
+  display: 28, // Login title
+  brand: 28, // the wordmark top-left
+  h1: 30, // page titles
+  h2: 20,
+  body: 15,
+  small: 13,
   caption: 12,
+} as const;
+
+/** Fluid sizes (clamp with the maxima above); they replace the fixed --text-* of the same name in cssVars.ts. */
+export const fluidFontSize = {
+  display: 'clamp(24px, 1.2vw + 14px, 28px)',
+  brand: 'clamp(22px, 1vw + 14px, 28px)',
+  h1: 'clamp(22px, 1.3vw + 13px, 30px)',
+  h2: 'clamp(17px, 0.6vw + 12px, 20px)',
+  greeting: 'clamp(26px, 1.6vw + 12px, 34px)', // Beranda greeting
 } as const;
 
 export const fontWeight = {

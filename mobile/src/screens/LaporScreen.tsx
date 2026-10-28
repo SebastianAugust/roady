@@ -3,6 +3,7 @@ import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { api, ApiError } from '../api';
 import { AppBackground } from '../components/AppBackground';
+import { Glass } from '../components/Glass';
 import { Dropdown } from '../components/Dropdown';
 import { PhotoField } from '../components/PhotoField';
 import { PrimaryButton } from '../components/PrimaryButton';
@@ -83,7 +84,7 @@ export function LaporScreen({ onBack, onDone }: { onBack: () => void; onDone: ()
             <ScreenHeader title="Laporkan Kejadian" onBack={onBack} />
           </View>
           <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-            <View style={styles.card}>
+            <Glass radius={10} style={styles.card}>
               <Text style={styles.label}>
                 Lokasi Anda: <Text style={styles.value}>{locationText(location)}</Text>
               </Text>
@@ -92,7 +93,7 @@ export function LaporScreen({ onBack, onDone }: { onBack: () => void; onDone: ()
                   <Text style={styles.inlineActionText}>Coba lagi</Text>
                 </Pressable>
               ) : null}
-            </View>
+            </Glass>
 
             <View style={styles.dropdownRow}>
               <Dropdown placeholder="Kejadian" options={KATEGORI_OPTIONS} value={kategori} onChange={setKategori} hasError={!!errors.kategori} />
@@ -146,7 +147,7 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   headerPad: { paddingHorizontal: 20 },
   content: { paddingHorizontal: 24, paddingTop: 14, paddingBottom: 16, gap: 12 },
-  card: { borderRadius: 10, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, padding: 14, gap: 8 },
+  card: { padding: 14, gap: 8 },
   section: { gap: 6, paddingLeft: 2 },
   label: { fontFamily: fontFamily.semibold, fontSize: 16, lineHeight: 22, color: colors.textPrimary },
   value: { fontFamily: fontFamily.extrabold },

@@ -1,7 +1,6 @@
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/useAuth';
 import { Button } from '../components/Button';
-import { BackIcon } from '../components/icons';
+import { BackButton } from '../components/BackButton';
 import { LoadState } from '../components/LoadState';
 import { ROUTES } from '../routes';
 import type { Role } from '../types';
@@ -20,16 +19,12 @@ function longDate(iso: string | undefined) {
 /** Figma "dishub - akun" (1044:5869): the signed-in officer's own profile (GET /api/users/me) and Keluar. */
 export function AkunPage() {
   const { role, user, signOut } = useAuth();
-  const navigate = useNavigate();
-  // history.state.idx is React Router's position in its history stack; 0 means this page was opened directly.
-  const back = () => ((window.history.state as { idx?: number } | null)?.idx ? navigate(-1) : navigate(ROUTES.beranda));
 
   return (
     <section className="akun" aria-labelledby="akun-title">
       <header className="akun-header">
-        <button type="button" className="akun-back glass-in" onClick={back} aria-label="Kembali">
-          <BackIcon />
-        </button>
+        {/* navigate(-1) to the page before the profile; Beranda when the profile was opened directly. */}
+        <BackButton fallback={ROUTES.beranda} />
         <h1 id="akun-title" className="akun-title">
           Profil Akun
         </h1>
@@ -61,8 +56,8 @@ export function AkunPage() {
                   <dd>{user.nama}</dd>
                 </div>
                 <div>
-                  <dt>ID Pengguna:</dt>
-                  <dd>#{user.id_user}</dd>
+                  <dt>Kode Pengguna:</dt>
+                  <dd>{user.kode_pengguna}</dd>
                 </div>
                 <div>
                   <dt>Email:</dt>

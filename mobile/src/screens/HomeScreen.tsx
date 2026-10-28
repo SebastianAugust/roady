@@ -8,16 +8,22 @@ import { iconResize } from '../components/homeArtSvg';
 import { circleArrowRight } from '../components/petaArtSvg';
 import { ReportCard } from '../components/ReportCard';
 import { ReportPanel } from '../components/ReportPanel';
+import { ZoneAreas } from '../components/ZoneAreas';
 import { BANDUNG_RAYA } from '../config';
 import { darkMapStyle } from '../lib/mapStyle';
 import { APP_NAME } from '../constants';
 import { useMyReports } from '../hooks/useMyReports';
+import { useZones } from '../hooks/useZones';
+import { metersPerDp } from '../lib/zoneArea';
 import { colors, fontFamily } from '../theme/tokens';
 import type { Laporan } from '../types';
 
-// City-level view like the Figma frame (Cimahi to Bojongsoang); the full map with zone markers is the Peta screen.
+// City-level view like the Figma frame (Cimahi to Bojongsoang); the full map with the zone areas is the Peta screen.
 const MINI_MAP_REGION = { ...BANDUNG_RAYA.center, latitudeDelta: 0.12, longitudeDelta: 0.14 };
 const RECENT_COUNT = 2;
+const MINI_MAP_HEIGHT = 308;
+// The mini-map neither pans nor zooms, so the size of a dp on the ground is fixed.
+const MINI_MAP_MPD = metersPerDp(MINI_MAP_REGION.latitudeDelta, MINI_MAP_HEIGHT);
 
 interface Props {
   onOpenMap: () => void;
@@ -30,6 +36,7 @@ interface Props {
 export function HomeScreen({ onOpenMap, onOpenHistory, onOpenReport, onReport, onProfile }: Props) {
   const insets = useSafeAreaInsets();
   const { reports, state, retry } = useMyReports();
+  const { zones } = useZones();
 
   return (
     <AppBackground>
@@ -54,7 +61,9 @@ export function HomeScreen({ onOpenMap, onOpenHistory, onOpenReport, onReport, o
             toolbarEnabled={false}
             accessibilityElementsHidden
             importantForAccessibility="no-hide-descendants"
-          />
+          >
+            <ZoneAreas zones={zones} metersPerDp={MINI_MAP_MPD} />
+          </MapView>
           <Pressable accessibilityRole="button" accessibilityLabel="Buka peta penuh" onPress={onOpenMap} style={styles.expand}>
             <SvgXml xml={iconResize} width={28} height={28} />
           </Pressable>
@@ -102,7 +111,7 @@ const styles = StyleSheet.create({
   content: { paddingHorizontal: 25 },
   brand: { fontFamily: fontFamily.display, fontSize: 36, lineHeight: 40, color: colors.textPrimary, marginLeft: 3 },
   greeting: { fontFamily: fontFamily.semibold, fontSize: 16, lineHeight: 22, color: colors.textPrimary, marginTop: 14, marginLeft: 3 },
-  mapCard: { height: 308, marginTop: 18, borderRadius: 24, overflow: 'hidden', backgroundColor: colors.surface },
+  mapCard: { height: MINI_MAP_HEIGHT, marginTop: 18, borderRadius: 24, overflow: 'hidden', backgroundColor: colors.surface },
   expand: {
     position: 'absolute',
     right: 12,

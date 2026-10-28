@@ -1,18 +1,16 @@
 import { useCallback, useMemo, useState } from 'react';
 import { api } from '../api';
 import { Button } from '../components/Button';
-import { Dialog } from '../components/Dialog';
 import { LoadState } from '../components/LoadState';
 import { PageHeader } from '../components/PageHeader';
 import { ReportCard } from '../components/ReportCard';
-import { ReportDetail } from '../components/ReportDetail';
 import { SearchField } from '../components/SearchField';
 import { SelectField, type Option } from '../components/SelectField';
 import { TextField } from '../components/TextField';
-import { BANDUNG_RAYA, ZONES_FETCH_RADIUS_M } from '../config';
 import { useApi } from '../hooks/useApi';
+import { useZoneOptions } from '../hooks/useZoneOptions';
 import { CUACA_LABEL, KATEGORI_LABEL, STATUS_LABEL, todayIso } from '../lib/format';
-import type { Cuaca, Kategori, Laporan, StatusLaporan } from '../types';
+import type { Cuaca, Kategori, StatusLaporan } from '../types';
 import './LaporanPage.css';
 
 // auto_rejected never reaches Dishub (it is a validation trace), so it is not offered as a filter.
@@ -36,7 +34,6 @@ export function LaporanPage() {
   const [status, setStatus] = useState<StatusLaporan | ''>('');
   const [kategori, setKategori] = useState<Kategori | ''>('');
   const [cuaca, setCuaca] = useState<Cuaca | ''>('');
-  const [selected, setSelected] = useState<Laporan>();
 
   const rangeError = dari && sampai && dari > sampai ? 'Tanggal akhir harus sama atau setelah tanggal awal.' : undefined;
   // An invalid range keeps the last valid request instead of sending one the API would answer with 422.
@@ -56,18 +53,7 @@ export function LaporanPage() {
   );
   const { state, retry } = useApi(loadReports);
 
-  const loadZones = useCallback(
-    () => api.getZones({ lat: BANDUNG_RAYA.center.latitude, lng: BANDUNG_RAYA.center.longitude, radius: ZONES_FETCH_RADIUS_M }),
-    [],
-  );
-  const { state: zonesState } = useApi(loadZones);
-  const zoneOptions = useMemo(
-    () =>
-      zonesState.status === 'ready'
-        ? [...zonesState.data].sort((a, b) => a.zona_id - b.zona_id).map((z) => ({ value: String(z.zona_id), label: `Zona ${z.zona_id}` }))
-        : [],
-    [zonesState],
-  );
+  const zoneOptions = useZoneOptions();
 
   const reports = useMemo(() => {
     if (state.status !== 'ready') return [];
@@ -138,7 +124,7 @@ export function LaporanPage() {
             <ul className="report-grid">
               {reports.map((r) => (
                 <li key={r.id_report}>
-                  <ReportCard report={r} onDetail={setSelected} />
+                  <ReportCard report={r} />
                 </li>
               ))}
             </ul>
@@ -148,9 +134,6 @@ export function LaporanPage() {
         </>
       ) : null}
 
-      <Dialog open={selected !== undefined} title={selected ? `Laporan #${selected.id_report}` : ''} onClose={() => setSelected(undefined)}>
-        {selected ? <ReportDetail report={selected} /> : null}
-      </Dialog>
     </>
   );
 }

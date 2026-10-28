@@ -6,6 +6,8 @@ export interface User {
   nama: string;
   email: string;
   role: Role;
+  /** USERS.kode_pengguna (usulan, docs/02): YYYYMMDD of registration - RR (01 admin, 02 dishub, 03 pengemudi) - NNNN. */
+  kode_pengguna: string;
 }
 
 export interface LoginRequest {
@@ -72,6 +74,8 @@ export interface Laporan {
   kondisi_cuaca_saat_kejadian: Cuaca;
   timestamp: string;
   status: StatusLaporan;
+  /** LAPORAN_KEJADIAN.alasan_penolakan (usulan): why an Admin rejected it; null otherwise. The verifier's identity is never sent to the driver. */
+  alasan_penolakan?: string | null;
 }
 
 export interface CreateReportRequest {

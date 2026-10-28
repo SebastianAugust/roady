@@ -5,6 +5,7 @@ import { useAuth } from '../auth/useAuth';
 import { RoleNotAllowedError } from '../auth/jwt';
 import { AppBackground } from '../components/AppBackground';
 import { Button } from '../components/Button';
+import { EyeIcon, EyeOffIcon } from '../components/icons';
 import { TextField } from '../components/TextField';
 import { APP_NAME } from '../constants';
 import { canOpen } from '../routes';
@@ -22,6 +23,7 @@ export function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string>();
   const [busy, setBusy] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   if (role) return <Navigate to={canOpen(role, from) ? from : '/'} replace />;
 
@@ -62,8 +64,19 @@ export function LoginPage() {
           />
           <TextField
             label="Password"
-            type="password"
+            type={showPassword ? 'text' : 'password'}
             autoComplete="current-password"
+            endAdornment={
+              <button
+                type="button"
+                className="field-adornment-button"
+                aria-label={showPassword ? 'Sembunyikan password' : 'Tampilkan password'}
+                aria-pressed={showPassword}
+                onClick={() => setShowPassword((s) => !s)}
+              >
+                {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+              </button>
+            }
             placeholder="••••••"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
