@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { formatWib } from '../lib/format';
+import { JENIS_LABEL } from '../lib/reportTemplates';
 import type { KecelakaanResmi } from '../types';
 import { MiniMap } from './MiniMap';
 import './AccidentCard.css';
@@ -20,7 +21,7 @@ export function AccidentCard({ accident: a, to, showInputter = false }: Props) {
       <div className="accident-card-foot">
         <div className="accident-card-text">
           <p className="accident-card-meta">{formatWib(a.tanggal_waktu)}</p>
-          <p className="accident-card-meta">{a.jumlah_korban} korban</p>
+          <p className="accident-card-meta">{a.jenis === 'kecelakaan' ? `${a.jumlah_korban} korban` : JENIS_LABEL[a.jenis]}</p>
           {showInputter ? <p className="accident-card-meta">Diinput oleh {a.input_by_kode}</p> : null}
         </div>
         <Link to={to} className="btn btn-primary btn-sm accident-card-link" aria-label={`Detail kecelakaan ${a.lokasi_deskripsi}`}>

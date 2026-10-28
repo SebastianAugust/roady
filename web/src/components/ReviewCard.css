@@ -1,0 +1,31 @@
+.review-info {
+  margin: 0 0 var(--space-xs);
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--space-sm) var(--space-lg);
+  align-items: baseline;
+  font-size: var(--text-small);
+}
+
+.review-info dt {
+  color: var(--color-text-secondary);
+}
+
+.review-info dd {
+  margin: 0;
+  font-weight: var(--weight-semibold);
+}
+
+.review-code {
+  margin-left: var(--space-xs);
+  color: var(--color-text-secondary);
+  font-weight: var(--weight-regular);
+  font-variant-numeric: tabular-nums;
+}
+
+/* The reason is written text: normal weight, wraps, keeps line breaks. */
+.review-reason {
+  font-weight: var(--weight-regular);
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}

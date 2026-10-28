@@ -2,12 +2,12 @@ import { useState } from 'react';
 import { api, ApiError } from '../api';
 import { useAuth } from '../auth/useAuth';
 import { errorMessage } from '../hooks/useApi';
-import { alasanError, QUICK_REJECT_REASONS } from '../lib/alasan';
+import { ALASAN_VERIFIKASI_MIN_LENGTH, alasanError, composeAlasan, QUICK_APPROVE_REASONS, QUICK_REJECT_REASONS } from '../lib/alasan';
 import { KATEGORI_LABEL, placeText } from '../lib/format';
 import type { KeputusanVerifikasi, Laporan, LaporanAdmin } from '../types';
 import { Button } from './Button';
 import { Dialog } from './Dialog';
-import { ReasonField } from './ReasonField';
+import { PresetReasonField } from './PresetReasonField';
 import { useToast } from './toastContext';
 
 interface Props {
@@ -21,41 +21,46 @@ interface Props {
 const VERB: Record<KeputusanVerifikasi, string> = { approved: 'disetujui', rejected: 'ditolak' };
 
 /**
- * Asks before API-008, because the decision notifies the reporter and cannot be undone from the web.
- * On success it shows a toast that includes the (simulated) notification; zone scores wait for the scheduler.
+ * Asks before API-008, because the decision notifies the reporter and cannot be undone from the web. Approving and
+ * rejecting both need a written reason (a ready-made one and/or a note, min. 15 characters together); it is kept with
+ * who decided and when, and shown on the report's Peninjauan card. On success it shows a toast that includes the
+ * (simulated) notification; zone scores wait for the scheduler.
  */
 export function VerifyDialog({ pending, onClose, onDecided }: Props) {
   const { signOut } = useAuth();
   const toast = useToast();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string>();
-  const [alasan, setAlasan] = useState('');
+  const [preset, setPreset] = useState('');
+  const [note, setNote] = useState('');
   const [alasanMsg, setAlasanMsg] = useState<string>();
 
-  const close = () => {
+  const alasan = composeAlasan(preset, note);
+  const invalid = alasanError(alasan, ALASAN_VERIFIKASI_MIN_LENGTH) !== undefined;
+
+  const reset = () => {
     setError(undefined);
-    setAlasan('');
+    setPreset('');
+    setNote('');
     setAlasanMsg(undefined);
+  };
+  const close = () => {
+    reset();
     onClose();
   };
 
   async function confirm() {
-    if (!pending) return;
+    if (!pending || invalid) return;
     const { report, keputusan } = pending;
-    // A rejection needs a written reason (min. 10 characters) before anything is sent.
-    if (keputusan === 'rejected' && alasanError(alasan)) {
-      setAlasanMsg(alasanError(alasan));
-      return;
-    }
     setBusy(true);
     setError(undefined);
     try {
-      const { laporan, notifikasi_terkirim } = await api.verifyReport(report.id_report, keputusan === 'rejected' ? { keputusan, alasan: alasan.trim() } : { keputusan });
+      const { laporan, notifikasi_terkirim } = await api.verifyReport(report.id_report, { keputusan, alasan });
       toast(
         `Laporan #${laporan.id_report} ${VERB[keputusan]}.` +
           (notifikasi_terkirim ? ' Notifikasi dikirim ke pelapor (simulasi).' : ' Notifikasi ke pelapor gagal dikirim.'),
       );
-      setAlasan('');
+      reset();
       onDecided(laporan);
     } catch (err) {
       if (err instanceof ApiError && err.status === 401) signOut();
@@ -77,7 +82,7 @@ export function VerifyDialog({ pending, onClose, onDecided }: Props) {
           <Button variant="secondary" onClick={close} disabled={busy}>
             Batal
           </Button>
-          <Button variant={approve ? 'primary' : 'danger'} onClick={confirm} busy={busy} disabled={!approve && alasanError(alasan) !== undefined}>
+          <Button variant={approve ? 'primary' : 'danger'} onClick={confirm} busy={busy} disabled={invalid}>
             {approve ? 'SETUJUI' : 'TOLAK'}
           </Button>
         </>
@@ -92,21 +97,25 @@ export function VerifyDialog({ pending, onClose, onDecided }: Props) {
             {approve
               ? 'Laporan yang disetujui dihitung dengan bobot penuh pada perhitungan skor zona berikutnya.'
               : 'Laporan yang ditolak tidak dihitung pada skor zona.'}{' '}
-            Pelapor akan menerima notifikasi{approve ? '' : ' beserta alasannya'}. Skor zona diperbarui oleh penjadwal, bukan seketika.
+            Pelapor akan menerima notifikasi beserta alasannya. Alasan, nama Anda, dan waktunya tersimpan di riwayat peninjauan. Skor zona diperbarui oleh penjadwal, bukan seketika.
           </p>
-          {approve ? null : (
-            <ReasonField
-              label="Alasan penolakan"
-              value={alasan}
-              error={alasanMsg}
-              disabled={busy}
-              quickReasons={QUICK_REJECT_REASONS}
-              onChange={(v) => {
-                setAlasan(v);
-                setAlasanMsg(undefined);
-              }}
-            />
-          )}
+          <PresetReasonField
+            label={approve ? 'Alasan persetujuan' : 'Alasan penolakan'}
+            presets={approve ? QUICK_APPROVE_REASONS : QUICK_REJECT_REASONS}
+            preset={preset}
+            onPresetChange={(p) => {
+              setPreset(p);
+              setAlasanMsg(undefined);
+            }}
+            note={note}
+            onNoteChange={(n) => {
+              setNote(n);
+              setAlasanMsg(undefined);
+            }}
+            min={ALASAN_VERIFIKASI_MIN_LENGTH}
+            error={alasanMsg}
+            disabled={busy}
+          />
           {error ? (
             <p className="error-text" role="alert">
               {error}

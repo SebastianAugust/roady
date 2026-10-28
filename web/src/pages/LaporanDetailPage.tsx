@@ -1,18 +1,21 @@
 import { useCallback } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { api } from '../api';
 import { DetailHeader } from '../components/DetailHeader';
 import { LoadState } from '../components/LoadState';
+import { LocationDetail } from '../components/LocationDetail';
+import { ReviewCard } from '../components/ReviewCard';
 import { IncidentMap } from '../components/IncidentMap';
 import { StatusPill } from '../components/StatusPill';
 import { useApi } from '../hooks/useApi';
-import { CUACA_LABEL, formatCoords, formatDate, formatDateTime, KATEGORI_LABEL, placeText } from '../lib/format';
-import { ROUTES, zonaDetail } from '../routes';
+import { CUACA_LABEL, formatDate, formatDateTime, KATEGORI_LABEL, placeText } from '../lib/format';
+import { ROUTES } from '../routes';
 import './LaporanDetailPage.css';
 
 /**
  * Detail of one crowd report for Dishub (replaces the DETAIL dialog of Detail Laporan). Built only from Laporan, which
- * has no reporter identity (NFR-006). The photo is for the Admin's review, so here it only says whether one exists.
+ * has no reporter identity (NFR-006). Cards: Lokasi (address, zone), Informasi Laporan, Deskripsi and Peninjauan (who reviewed
+ * it, when and why). The photo is for the Admin's review, so here it only says whether one exists.
  * Data: GET /api/dishub/reports/{id} (usulan, docs/03).
  */
 export function LaporanDetailPage() {
@@ -47,6 +50,7 @@ export function LaporanDetailPage() {
           </p>
         </div>
         <div className="detail-cards">
+          <LocationDetail report={r} zoneLink />
           <section className="glass-in detail-card" aria-labelledby="info-title">
             <h2 id="info-title" className="detail-card-title">
               Informasi Laporan
@@ -69,14 +73,6 @@ export function LaporanDetailPage() {
                 <dd>{formatDateTime(r.timestamp)}</dd>
               </div>
               <div>
-                <dt>Zona:</dt>
-                <dd>{r.zona_id === null ? '-' : <Link to={zonaDetail(r.zona_id)}>Zona {r.zona_id}</Link>}</dd>
-              </div>
-              <div>
-                <dt>Koordinat:</dt>
-                <dd>{formatCoords(r.latitude, r.longitude)}</dd>
-              </div>
-              <div>
                 <dt>Foto:</dt>
                 <dd>{r.foto_url ? 'Ada (ditinjau Admin)' : 'Tidak ada'}</dd>
               </div>
@@ -88,6 +84,7 @@ export function LaporanDetailPage() {
             </h2>
             <p>{r.deskripsi}</p>
           </section>
+          <ReviewCard report={r} />
         </div>
       </div>
     </article>

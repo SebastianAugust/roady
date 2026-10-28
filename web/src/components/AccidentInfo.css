@@ -26,3 +26,13 @@
   font-weight: var(--weight-regular);
   line-height: 1;
 }
+
+/* Written answers (kronologi, deskripsi): normal weight, wrap, keep line breaks. */
+.accident-info-text {
+  overflow-wrap: anywhere;
+}
+
+.accident-info-wide .accident-info-text {
+  font-weight: var(--weight-regular);
+  white-space: pre-line;
+}

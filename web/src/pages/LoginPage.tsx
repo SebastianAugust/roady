@@ -12,9 +12,10 @@ import { canOpen } from '../routes';
 import './LoginPage.css';
 
 /**
- * Login (docs/design/admin/Login.png, docs/design/dishub/Login.png; the same screen for both). Dishub and Admin sign in
- * here; pengemudi accounts are turned away. Afterwards it returns to the page that asked for a login only when the
- * new role may open it (e.g. not to an Admin URL after signing in as Dishub); otherwise to Beranda.
+ * Login (docs/design/admin/Login.png, docs/design/dishub/Login.png; the same screen for both) as a compact glass card
+ * centred on the screen, the wordmark top-left. Dishub and Admin sign in here; pengemudi accounts are turned away.
+ * Afterwards it returns to the page that asked for a login only when the new role may open it (e.g. not to an Admin
+ * URL after signing in as Dishub); otherwise to Beranda.
  */
 export function LoginPage() {
   const { role, signIn } = useAuth();
@@ -51,8 +52,8 @@ export function LoginPage() {
     <div className="login">
       <AppBackground />
       <header className="login-brand">{APP_NAME}</header>
-      <h1 className="login-title">Login</h1>
-      <main className="login-panel glass">
+      <main className="login-card glass">
+        <h1 className="login-title">Login</h1>
         <form className="login-form" onSubmit={submit} noValidate>
           <TextField
             label="Email"

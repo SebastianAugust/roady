@@ -4,11 +4,13 @@ import { api, ApiError } from '../api';
 import { Button } from '../components/Button';
 import { DetailHeader } from '../components/DetailHeader';
 import { LoadState } from '../components/LoadState';
+import { LocationDetail } from '../components/LocationDetail';
+import { ReviewCard } from '../components/ReviewCard';
 import { IncidentMap } from '../components/IncidentMap';
 import { StatusPill } from '../components/StatusPill';
 import { VerifyDialog } from '../components/VerifyDialog';
 import { useApi } from '../hooks/useApi';
-import { CUACA_LABEL, formatCoords, formatDate, formatDateTime, KATEGORI_LABEL, placeText, STATUS_LABEL } from '../lib/format';
+import { CUACA_LABEL, formatDate, formatDateTime, KATEGORI_LABEL, placeText } from '../lib/format';
 import { ROUTES } from '../routes';
 import type { KeputusanVerifikasi, LaporanAdmin } from '../types';
 import './VerifikasiDetailPage.css';
@@ -16,6 +18,7 @@ import './VerifikasiDetailPage.css';
 /**
  * One photo report for the Admin to judge. Layout from the detail frame with "Foto Kejadian" and "Deskripsi"
  * (the "detail - Kelola data kecelakaan" frame, which shows a crowd report with its status; docs/05 #26).
+ * Cards: Lokasi (address and zone), Foto, Deskripsi and Peninjauan (status, who reviewed it, when and the full reason).
  * There is no single-report endpoint, so it reads API-007 and picks the id.
  */
 export function VerifikasiDetailPage() {
@@ -57,6 +60,7 @@ export function VerifikasiDetailPage() {
           </p>
         </div>
         <div className="detail-cards">
+          <LocationDetail report={report} />
           <section className="glass-in detail-card verif-photo-card" aria-labelledby="foto-title">
             <h2 id="foto-title" className="detail-card-title">
               Foto Kejadian
@@ -81,12 +85,9 @@ export function VerifikasiDetailPage() {
               <dd>{CUACA_LABEL[report.kondisi_cuaca_saat_kejadian]}</dd>
               <dt>Dikirim</dt>
               <dd>{formatDateTime(report.timestamp)}</dd>
-              <dt>Zona</dt>
-              <dd>{report.zona_id === null ? '-' : `Zona ${report.zona_id}`}</dd>
-              <dt>Koordinat</dt>
-              <dd>{formatCoords(report.latitude, report.longitude)}</dd>
             </dl>
           </section>
+          <ReviewCard report={report} />
           {open ? (
             <div className="detail-actions">
               <Button onClick={() => setPending({ report, keputusan: 'approved' })}>SETUJUI</Button>
@@ -94,35 +95,7 @@ export function VerifikasiDetailPage() {
                 TOLAK
               </Button>
             </div>
-          ) : (
-            <section className="glass-in detail-card" aria-labelledby="jejak-title">
-              <h2 id="jejak-title" className="detail-card-title">
-                Jejak Verifikasi
-              </h2>
-              {report.diverifikasi_oleh_kode && report.waktu_verifikasi ? (
-                <dl className="verif-meta">
-                  <dt>Keputusan</dt>
-                  <dd>{STATUS_LABEL[report.status]}</dd>
-                  <dt>Diputuskan oleh</dt>
-                  <dd>
-                    {report.diverifikasi_oleh_kode} · {report.diverifikasi_oleh_nama}
-                  </dd>
-                  <dt>Waktu</dt>
-                  <dd>{formatDateTime(report.waktu_verifikasi)}</dd>
-                  {report.status === 'rejected' ? (
-                    <>
-                      <dt>Alasan penolakan</dt>
-                      <dd>{report.alasan_penolakan}</dd>
-                    </>
-                  ) : null}
-                </dl>
-              ) : (
-                <p className="muted" role="status">
-                  Laporan ini diputuskan otomatis oleh sistem.
-                </p>
-              )}
-            </section>
-          )}
+          ) : null}
         </div>
       </div>
 

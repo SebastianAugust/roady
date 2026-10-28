@@ -1,5 +1,5 @@
 import { kategoriFromPercentile } from '../lib/risk';
-import type { Cuaca, Kategori, KecelakaanResmi, LaporanAdmin, RiwayatSkorPoint, Role, StatusLaporan, User, Zona } from '../types';
+import type { Cuaca, JenisLaporan, Kategori, KecelakaanResmi, LaporanAdmin, RiwayatSkorPoint, Role, StatusLaporan, User, Zona } from '../types';
 
 // Seeded like the real backend: Dishub and Admin accounts are made by the team (the first three match mobile/src/api/mock.ts).
 // kode_pengguna = YYYYMMDD of registration - role code (01 admin, 02 dishub, 03 pengemudi) - number within the role.
@@ -66,6 +66,32 @@ export const MOCK_ZONES: Zona[] = zoneRows.map(([lat, lng, n, skor, wet], i) => 
 }));
 
 /** Street name of a zone, used as the place text of the synthetic reports. */
+// [street, kelurahan, kecamatan, kota or kabupaten] per zone, in the order of zoneRows: the parts of a saved address.
+const zoneAddressRows: [string, string, string, string][] = [
+  ['Jl. Soekarno Hatta', 'Cisaranten Kidul', 'Gedebage', 'Kota Bandung'],
+  ['Jl. Soekarno Hatta', 'Margasari', 'Buahbatu', 'Kota Bandung'],
+  ['Jl. Soekarno Hatta', 'Cijaura', 'Buahbatu', 'Kota Bandung'],
+  ['Jl. Soekarno Hatta', 'Kebon Lega', 'Bojongloa Kidul', 'Kota Bandung'],
+  ['Jl. Soekarno Hatta', 'Situsaeur', 'Bojongloa Kidul', 'Kota Bandung'],
+  ['Jl. Raya Cibiru', 'Cipadung', 'Cibiru', 'Kota Bandung'],
+  ['Jl. Raya Cinunuk', 'Cinunuk', 'Cileunyi', 'Kab. Bandung'],
+  ['Jl. Raya Jatinangor', 'Cibeusi', 'Jatinangor', 'Kab. Sumedang'],
+  ['Jl. Raya Rancaekek', 'Linggar', 'Rancaekek', 'Kab. Bandung'],
+  ['Jl. Raya Cicalengka', 'Cicalengka Wetan', 'Cicalengka', 'Kab. Bandung'],
+  ['Jl. Dipati Ukur', 'Lebakgede', 'Coblong', 'Kota Bandung'],
+  ['Jl. Dr. Djundjunan', 'Pasteur', 'Sukajadi', 'Kota Bandung'],
+  ['Jl. Asia Afrika', 'Braga', 'Sumur Bandung', 'Kota Bandung'],
+  ['Jl. Amir Machmud', 'Setiamanah', 'Cimahi Tengah', 'Kota Cimahi'],
+  ['Jl. Raya Bojongsoang', 'Bojongsoang', 'Bojongsoang', 'Kab. Bandung'],
+  ['Jl. Raya Lembang', 'Lembang', 'Lembang', 'Kab. Bandung Barat'],
+];
+
+/** A full saved address in the format of alamat_teks: "Jl. Dipati Ukur No. 35, Lebakgede, Kec. Coblong, Kota Bandung". */
+export function zoneAddress(zonaId: number, houseNumber: number): string {
+  const [street, kelurahan, kecamatan, kota] = zoneAddressRows[zonaId - 1] ?? zoneAddressRows[0];
+  return `${street} No. ${houseNumber}, ${kelurahan}, Kec. ${kecamatan}, ${kota}`;
+}
+
 export const zonePlace = (zonaId: number): string | null => zoneRows[zonaId - 1]?.[5] ?? null;
 
 // Eight weekly KALKULASI_RISIKO rows per zone ending at the current score; the drift is fixed per zone so it is stable.
@@ -124,6 +150,12 @@ const reportRows: [number, Kategori, Cuaca, StatusLaporan, string, boolean, stri
   [7, 'near_miss', 'hujan', 'rejected', '2026-10-09', true, 'Hampir tertabrak truk di Cinunuk.', 'Deskripsi tidak sesuai dengan foto; waktu dan lokasi pada foto berbeda.'],
 ];
 
+const APPROVE_REASONS = [
+  'Bukti foto jelas dan lokasi sesuai dengan koordinat laporan.',
+  'Dilaporkan oleh beberapa pengguna di lokasi yang sama.',
+  'Deskripsi sesuai dengan foto kejadian, waktu dan lokasi masuk akal.',
+];
+
 // Reporters are drivers 1, 4, 5, 6 in the mock user table; they never appear in any Dishub response.
 const REPORTERS = [1, 4, 5, 6];
 
@@ -138,8 +170,8 @@ export const MOCK_REPORTS: StoredLaporan[] = reportRows.map(([zonaId, kategori, 
     zona_id: zonaId,
     latitude: Number((zone.center_latitude + offset).toFixed(5)),
     longitude: Number((zone.center_longitude - offset).toFixed(5)),
-    // Every fourth report has no saved address (failed lookup), so the UI shows coordinates instead.
-    alamat_teks: i % 4 === 3 ? null : zonePlace(zonaId),
+    // Every report carries its saved address (docs/05 #12); the house number varies so the sample data does not repeat itself.
+    alamat_teks: zoneAddress(zonaId, 5 + ((i * 7) % 60)),
     kategori,
     deskripsi,
     // ponytail: one placeholder image for every mock photo until the storage (docs/05 open item 7) exists.
@@ -154,6 +186,8 @@ export const MOCK_REPORTS: StoredLaporan[] = reportRows.map(([zonaId, kategori, 
     diverifikasi_oleh: decided ? (i % 2 ? 8 : 3) : null,
     diverifikasi_oleh_kode: decided ? kodeOf(i % 2 ? 8 : 3) : null,
     diverifikasi_oleh_nama: decided ? namaOf(i % 2 ? 8 : 3) : null,
+    // Both decisions carry a written reason (min. 15 characters); alasan_penolakan repeats it for rejected rows.
+    alasan_verifikasi: status === 'approved' ? APPROVE_REASONS[i % APPROVE_REASONS.length] : status === 'rejected' ? (alasan ?? 'Laporan tidak memenuhi syarat verifikasi.') : null,
     alasan_penolakan: status === 'rejected' ? (alasan ?? 'Laporan tidak memenuhi syarat verifikasi.') : null,
   };
 });
@@ -188,6 +222,10 @@ export const MOCK_ACCIDENTS: StoredKecelakaan[] = accidentRows.map(
     input_by,
     input_by_kode: kodeOf(input_by),
     input_by_nama: namaOf(input_by),
+    // Entries made before the templates existed: plain kecelakaan, no photo, no template answers.
+    jenis: 'kecelakaan' as JenisLaporan,
+    foto_url: null,
+    detail: null,
     tanggal_waktu,
     lokasi_deskripsi,
     latitude,
@@ -201,3 +239,80 @@ export const MOCK_ACCIDENTS: StoredKecelakaan[] = accidentRows.map(
     alasan_hapus: deleted?.[1] ?? null,
   }),
 );
+
+// Entries made with the Dishub templates (shared/reportTemplates.ts): one of each kind, so the archive shows all three.
+const templateAccidents: Omit<StoredKecelakaan, 'id_kejadian' | 'input_by_kode' | 'input_by_nama' | 'dihapus_oleh' | 'waktu_hapus' | 'alasan_hapus' | 'waktu_pelaporan'>[] = [
+  {
+    jenis: 'kecelakaan',
+    zona_id: 11,
+    input_by: 2,
+    tanggal_waktu: '2026-10-24T01:20:00.000Z',
+    lokasi_deskripsi: zoneAddress(11, 35),
+    latitude: -6.8937,
+    longitude: 107.6152,
+    jumlah_korban: 3,
+    jenis_kendaraan_terlibat: 'Motor, Mobil',
+    kondisi_cuaca: 'hujan',
+    foto_url: '/mock-foto.svg#arsip-14',
+    detail: {
+      kendaraan: ['motor', 'mobil'],
+      korban_meninggal: 0,
+      korban_luka_berat: 1,
+      korban_luka_ringan: 2,
+      kondisi_jalan: 'basah_licin',
+      dugaan_penyebab: 'kecepatan',
+      kronologi: 'Motor melaju kencang di turunan Dipati Ukur saat hujan, tidak sempat mengerem dan menabrak bagian belakang mobil yang berhenti di lampu merah. Pengendara motor dilarikan ke rumah sakit.',
+    },
+  },
+  {
+    jenis: 'nyaris_celaka',
+    zona_id: 13,
+    input_by: 7,
+    tanggal_waktu: '2026-10-25T00:45:00.000Z',
+    lokasi_deskripsi: zoneAddress(13, 65),
+    latitude: -6.9216,
+    longitude: 107.6074,
+    jumlah_korban: 0,
+    jenis_kendaraan_terlibat: 'Motor, Angkot',
+    kondisi_cuaca: 'cerah',
+    foto_url: null,
+    detail: {
+      kendaraan: ['motor', 'angkot'],
+      hampir_terjadi: 'tabrakan_kendaraan',
+      penyebab: 'pengemudi_lain',
+      kronologi: 'Angkot berhenti mendadak di jalur kanan untuk menurunkan penumpang tanpa memberi tanda. Motor di belakangnya mengerem keras dan hampir menabrak.',
+    },
+  },
+  {
+    jenis: 'masalah_jalan',
+    zona_id: 6,
+    input_by: 2,
+    tanggal_waktu: '2026-10-26T02:10:00.000Z',
+    lokasi_deskripsi: zoneAddress(6, 18),
+    latitude: -6.9181,
+    longitude: 107.7254,
+    jumlah_korban: 0,
+    jenis_kendaraan_terlibat: null,
+    kondisi_cuaca: null,
+    foto_url: '/mock-foto.svg#arsip-16',
+    detail: {
+      jenis_masalah: 'lubang',
+      tingkat_bahaya: 'tinggi',
+      deskripsi: 'Lubang sedalam kira-kira 15 cm di lajur kiri setelah lampu merah, tertutup genangan sehingga tidak terlihat oleh pengendara motor.',
+    },
+  },
+];
+
+templateAccidents.forEach((a) => {
+  const id = MOCK_ACCIDENTS.length + 1;
+  MOCK_ACCIDENTS.push({
+    ...a,
+    id_kejadian: id,
+    input_by_kode: kodeOf(a.input_by),
+    input_by_nama: namaOf(a.input_by),
+    waktu_pelaporan: new Date(Date.parse(a.tanggal_waktu) + 2 * 3_600_000).toISOString(),
+    dihapus_oleh: null,
+    waktu_hapus: null,
+    alasan_hapus: null,
+  });
+});

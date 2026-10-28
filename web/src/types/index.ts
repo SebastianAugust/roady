@@ -1,4 +1,8 @@
 // Shapes follow docs/02-database.md and docs/03-api.md (same names as mobile/src/types).
+import type { JenisLaporan, ReportDetail } from '../lib/reportTemplates';
+
+export type { JenisLaporan, ReportDetail };
+
 export type Role = 'pengemudi' | 'dishub' | 'admin';
 
 export interface User {
@@ -39,6 +43,11 @@ export interface Zona {
   jumlah_kejadian: number;
   weather_dependent: boolean;
   last_updated: string;
+  /**
+   * Place name of the zone (usulan; ZONA has no name column, the server derives it from the latest alamat_teks or
+   * lokasi_deskripsi). Present on GET /api/zones/{id} so Admin and Dishub can name the zone of a report; null when unknown.
+   */
+  lokasi_teks?: string | null;
 }
 
 export interface ZonesQuery {
@@ -68,19 +77,27 @@ export interface Laporan {
   status: StatusLaporan;
   /** When an Admin approved or rejected it (usulan column, for "Disetujui Hari Ini"); null or absent before that. */
   waktu_verifikasi?: string | null;
-  /** LAPORAN_KEJADIAN.alasan_penolakan (usulan): required (min. ALASAN_MIN_LENGTH) when status is rejected; null otherwise. */
+  /**
+   * Who decided it (usulan): kode_pengguna and nama of the Admin (joined by the server), shown to both Admin and Dishub.
+   * Never the reporter (NFR-006). Null while pending and for automatic decisions.
+   */
+  diverifikasi_oleh_kode?: string | null;
+  diverifikasi_oleh_nama?: string | null;
+  /** LAPORAN_KEJADIAN.alasan_verifikasi (usulan): the written reason of the decision, required for approved and rejected (min. ALASAN_VERIFIKASI_MIN_LENGTH). */
+  alasan_verifikasi?: string | null;
+  /** LAPORAN_KEJADIAN.alasan_penolakan (usulan): the same text as alasan_verifikasi when status is rejected; null otherwise. Kept for the driver's Riwayat. */
   alasan_penolakan?: string | null;
 }
 
 /**
- * A report as the Admin sees it (API-007/008): adds who decided it. diverifikasi_oleh is an Admin (USERS FK), shown by
- * kode_pengguna; the reporter is still not part of it (NFR-006). Dishub never receives these two fields.
+ * A report as the Admin sees it (API-007/008): adds the id of the Admin who decided it (USERS FK). Dishub gets the kode
+ * and nama but not the id; the reporter is never part of it (NFR-006).
  */
 export interface LaporanAdmin extends Laporan {
   diverifikasi_oleh: number | null;
   diverifikasi_oleh_kode: string | null;
-  /** nama of that Admin (shown next to the kode in the Admin app). */
   diverifikasi_oleh_nama: string | null;
+  alasan_verifikasi: string | null;
 }
 
 /** API-012 query (usulan). Dates are YYYY-MM-DD and inclusive, compared with tanggal_kejadian. */
@@ -153,7 +170,11 @@ export interface ExportFile {
   content: string;
 }
 
-/** API-010 body. input_by is taken from the token by the server and is deliberately not part of this type. */
+/**
+ * API-010 body. input_by is taken from the token by the server and is deliberately not part of this type.
+ * `jenis` (usulan) is what the Dishub template form asked for: a kecelakaan, a nyaris celaka or a masalah jalan, with the
+ * answers of that template in `detail` (shared/reportTemplates.ts). Without `jenis` it is a plain kecelakaan, as before.
+ */
 export interface CreateAccidentRequest {
   /** ISO date-time */
   tanggal_waktu: string;
@@ -163,6 +184,10 @@ export interface CreateAccidentRequest {
   jumlah_korban: number;
   jenis_kendaraan_terlibat?: string | null;
   kondisi_cuaca?: Cuaca | null;
+  jenis?: JenisLaporan;
+  /** File name of the attached photo; the server stores the file and answers with foto_url (storage is still open, docs/05). */
+  foto_nama?: string | null;
+  detail?: ReportDetail | null;
 }
 
 /** API-007 query. Without status the admin gets every report (still without reporter identity). */
@@ -175,8 +200,8 @@ export type KeputusanVerifikasi = 'approved' | 'rejected';
 /** API-008 PATCH /api/admin/reports/{id}/verify body (usulan in docs/03). */
 export interface VerifyRequest {
   keputusan: KeputusanVerifikasi;
-  /** Required (min. ALASAN_MIN_LENGTH characters) when keputusan is rejected; ignored for approved. */
-  alasan?: string;
+  /** Required for both decisions (min. ALASAN_VERIFIKASI_MIN_LENGTH characters): a ready-made reason plus an optional note, joined. */
+  alasan: string;
 }
 
 /**
@@ -189,8 +214,13 @@ export interface VerifyResponse {
 }
 
 /** KECELAKAAN_RESMI row. zona_id is assigned by the server (clustering, docs/01). */
-export interface KecelakaanResmi extends CreateAccidentRequest {
+export interface KecelakaanResmi extends Omit<CreateAccidentRequest, 'jenis' | 'foto_nama' | 'detail'> {
   id_kejadian: number;
+  /** Kind of entry (usulan column). Only kecelakaan rows count in zone scores; the others are for review. */
+  jenis: JenisLaporan;
+  foto_url: string | null;
+  /** Answers of the template (usulan JSON column); null for entries made before templates existed. */
+  detail: ReportDetail | null;
   zona_id: number;
   /** USERS FK of the Dishub or Admin who entered it, with that user's kode_pengguna (joined by the server). */
   input_by: number;

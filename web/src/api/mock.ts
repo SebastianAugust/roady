@@ -3,7 +3,8 @@ import { isInBandungRaya } from '../config';
 import { toCsv } from '../lib/csv';
 import { checkExport } from '../lib/exportRules';
 import { kategoriFromPercentile } from '../lib/risk';
-import { alasanError } from '../lib/alasan';
+import { ALASAN_VERIFIKASI_MIN_LENGTH, alasanError } from '../lib/alasan';
+import { MIN_LENGTH, type KecelakaanDetail, type MasalahJalanDetail, type NyarisCelakaDetail } from '../lib/reportTemplates';
 import { kodeOf, MOCK_ACCIDENTS, namaOf, MOCK_HISTORY, MOCK_REPORTS, MOCK_USERS, MOCK_ZONES, zonePlace, type StoredKecelakaan, type StoredLaporan } from './mockData';
 import { ApiError, type ApiClient } from './types';
 import type {
@@ -11,6 +12,7 @@ import type {
   CreateAccidentRequest,
   Cuaca,
   DishubReportsQuery,
+  JenisLaporan,
   KategoriRisiko,
   KecelakaanResmi,
   KecelakaanTerhapus,
@@ -59,8 +61,8 @@ const ADMIN: readonly Role[] = ['admin'];
 /** NFR-006: the reporter's user_id never leaves the API. */
 const withoutReporter = ({ user_id: _omit, ...rest }: StoredLaporan): LaporanAdmin => rest;
 
-/** Dishub does not see who verified a report; that trail is for the Admin. */
-const forDishub = ({ diverifikasi_oleh: _by, diverifikasi_oleh_kode: _kode, diverifikasi_oleh_nama: _nama, ...rest }: LaporanAdmin): Laporan => rest;
+/** Dishub sees who reviewed a report (kode and nama of the Admin), when and why, but not the Admin's user id. */
+const forDishub = ({ diverifikasi_oleh: _by, ...rest }: LaporanAdmin): Laporan => rest;
 
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -139,7 +141,7 @@ export const mockApi: ApiClient = {
   async getZones({ lat, lng, radius }) {
     await wait();
     authorize();
-    return MOCK_ZONES.filter((z) => distanceMeters(lat, lng, z.center_latitude, z.center_longitude) <= radius);
+    return MOCK_ZONES.filter((z) => distanceMeters(lat, lng, z.center_latitude, z.center_longitude) <= radius).map((z) => ({ ...z, lokasi_teks: zonePlace(z.zona_id) }));
   },
 
   async getZone(zonaId) {
@@ -147,7 +149,7 @@ export const mockApi: ApiClient = {
     authorize();
     const zone = MOCK_ZONES.find((z) => z.zona_id === zonaId);
     if (!zone) throw new ApiError(404, 'Zona tidak ditemukan.');
-    return zone;
+    return { ...zone, lokasi_teks: zonePlace(zonaId) };
   },
 
   async getStatistics() {
@@ -159,7 +161,7 @@ export const mockApi: ApiClient = {
       rekap,
       total_zona: MOCK_ZONES.length,
       total_laporan: MOCK_REPORTS.filter((r) => r.status === 'approved' || r.status === 'auto_approved').length,
-      total_kecelakaan_resmi: active().length, // soft-deleted rows are not counted
+      total_kecelakaan_resmi: active().filter(isKecelakaan).length, // soft-deleted rows and the nyaris celaka / masalah jalan entries are not counted
       zona_teratas: [...MOCK_ZONES]
         .sort((a, b) => b.skor_risiko - a.skor_risiko)
         .slice(0, 10)
@@ -186,7 +188,7 @@ export const mockApi: ApiClient = {
       persentase_kejadian_saat_hujan: riwayat.at(-1)?.persentase_kejadian_saat_hujan ?? 0,
       riwayat_skor: riwayat,
       kecelakaan: active()
-        .filter((a) => a.zona_id === zonaId)
+        .filter((a) => a.zona_id === zonaId && isKecelakaan(a))
         .sort(URUT.terbaru)
         .map(publicAccident),
       // auto_rejected rows are only a validation trace (as in API-012); the reporter's user_id is stripped.
@@ -225,10 +227,15 @@ export const mockApi: ApiClient = {
   async createAccident(body) {
     await wait();
     const user = authorize(DISHUB);
-    const fields = validateAccident(body);
+    const { fields, jenis, detail, hasFoto } = validateAccident(body);
+    const id = Math.max(0, ...MOCK_ACCIDENTS.map((a) => a.id_kejadian)) + 1;
     const record: StoredKecelakaan = {
       ...fields,
-      id_kejadian: Math.max(0, ...MOCK_ACCIDENTS.map((a) => a.id_kejadian)) + 1,
+      id_kejadian: id,
+      jenis,
+      // ponytail: no photo storage yet (docs/05 open item 7), so every attached photo is the one placeholder image.
+      foto_url: hasFoto ? `/mock-foto.svg#arsip-${id}` : null,
+      detail,
       zona_id: zoneFor(fields.latitude, fields.longitude),
       input_by: user.id_user, // from the token, never from the body (API-010)
       input_by_kode: user.kode_pengguna,
@@ -263,13 +270,16 @@ export const mockApi: ApiClient = {
     if (keputusan !== 'approved' && keputusan !== 'rejected')
       throw new ApiError(422, 'Keputusan tidak valid.', { keputusan: 'Keputusan harus "approved" atau "rejected".' });
     if (report.status !== 'pending_review') throw new ApiError(409, 'Laporan ini sudah diverifikasi sebelumnya.');
-    if (keputusan === 'rejected' && alasanError(alasan)) throw new ApiError(422, 'Alasan penolakan wajib diisi.', { alasan: alasanError(alasan) as string });
+    // Both decisions need a written reason (a ready-made one and/or a note, min. 15 characters together).
+    const alasanMsg = alasanError(alasan, ALASAN_VERIFIKASI_MIN_LENGTH);
+    if (alasanMsg) throw new ApiError(422, 'Alasan peninjauan wajib diisi.', { alasan: alasanMsg });
     report.status = keputusan;
     report.waktu_verifikasi = new Date().toISOString();
     report.diverifikasi_oleh = admin.id_user; // from the token
     report.diverifikasi_oleh_kode = admin.kode_pengguna;
     report.diverifikasi_oleh_nama = admin.nama;
-    report.alasan_penolakan = keputusan === 'rejected' ? (alasan as string).trim() : null;
+    report.alasan_verifikasi = alasan.trim();
+    report.alasan_penolakan = keputusan === 'rejected' ? alasan.trim() : null;
     // Zone scores are NOT recomputed here: the scheduler adds a new KALKULASI_RISIKO row on its next run (docs/01).
     // ponytail: FCM goes out from the backend later; the mock only logs it, without the reporter's id.
     console.info(`[FCM mock] Notifikasi ke pelapor laporan #${id}: laporan ${keputusan === 'approved' ? 'disetujui' : 'ditolak'}.`);
@@ -317,7 +327,7 @@ export const mockApi: ApiClient = {
     await wait();
     authorize(ADMIN);
     const record = findAccident(id);
-    const fields = validateAccident(body);
+    const { fields } = validateAccident(body);
     // input_by and waktu_pelaporan keep their original values; only the accident data changes.
     Object.assign(record, fields, { zona_id: zoneFor(fields.latitude, fields.longitude) });
     return publicAccident(record);
@@ -395,10 +405,53 @@ function findAccident(id: number) {
   return record;
 }
 
-/** API-010 and API-009 PUT share these rules: 422 with one message per field. Returns the cleaned fields. */
-function validateAccident(body: CreateAccidentRequest): CreateAccidentRequest {
+const isKecelakaan = (a: StoredKecelakaan) => a.jenis === 'kecelakaan';
+
+const JENIS: readonly JenisLaporan[] = ['kecelakaan', 'nyaris_celaka', 'masalah_jalan'];
+
+/** Template answers of API-010 (usulan): the checks the template form makes in the browser, repeated on the server. */
+function validateDetail(body: CreateAccidentRequest, jenis: JenisLaporan, errors: Record<string, string>): { detail: StoredKecelakaan['detail']; hasFoto: boolean } {
+  const hasFoto = Boolean(body.foto_nama?.trim());
+  const detail = body.detail;
+  if (!detail) {
+    // Entries without template answers are only valid as the plain kecelakaan of before.
+    if (jenis !== 'kecelakaan') errors.detail = 'Isian laporan tidak lengkap.';
+    return { detail: null, hasFoto };
+  }
+  const long = (s: unknown, min: number) => typeof s === 'string' && s.trim().length >= min;
+  if (jenis === 'kecelakaan') {
+    const d = detail as KecelakaanDetail;
+    if (!Array.isArray(d.kendaraan) || d.kendaraan.length === 0) errors.kendaraan = 'Pilih minimal satu jenis kendaraan.';
+    const counts = [d.korban_meninggal, d.korban_luka_berat, d.korban_luka_ringan];
+    if (!counts.every((n) => Number.isInteger(n) && n >= 0)) errors.jumlah_korban = 'Jumlah korban harus bilangan bulat 0 atau lebih.';
+    else if (counts.reduce((a, b) => a + b, 0) !== body.jumlah_korban)
+      errors.jumlah_korban = 'Jumlah korban harus sama dengan jumlah korban meninggal, luka berat, dan luka ringan.';
+    if (!d.kondisi_jalan) errors.kondisi_jalan = 'Pilih kondisi jalan.';
+    if (!d.dugaan_penyebab) errors.dugaan_penyebab = 'Pilih dugaan penyebab.';
+    if (!long(d.kronologi, MIN_LENGTH.kronologiKecelakaan)) errors.kronologi = `Kronologi minimal ${MIN_LENGTH.kronologiKecelakaan} karakter.`;
+    if (!hasFoto) errors.foto = 'Bukti foto wajib dilampirkan.';
+  } else if (jenis === 'nyaris_celaka') {
+    const d = detail as NyarisCelakaDetail;
+    if (!Array.isArray(d.kendaraan) || d.kendaraan.length === 0) errors.kendaraan = 'Pilih minimal satu jenis kendaraan.';
+    if (!d.hampir_terjadi) errors.hampir_terjadi = 'Pilih hal yang hampir terjadi.';
+    if (!d.penyebab) errors.penyebab = 'Pilih penyebab.';
+    if (!long(d.kronologi, MIN_LENGTH.kronologiNyaris)) errors.kronologi = `Kronologi minimal ${MIN_LENGTH.kronologiNyaris} karakter.`;
+  } else {
+    const d = detail as MasalahJalanDetail;
+    if (!d.jenis_masalah) errors.jenis_masalah = 'Pilih jenis masalah.';
+    if (!d.tingkat_bahaya) errors.tingkat_bahaya = 'Pilih tingkat bahaya.';
+    if (!long(d.deskripsi, MIN_LENGTH.deskripsiMasalah)) errors.deskripsi = `Deskripsi minimal ${MIN_LENGTH.deskripsiMasalah} karakter.`;
+    if (!hasFoto) errors.foto = 'Foto wajib dilampirkan.';
+  }
+  return { detail, hasFoto };
+}
+
+/** API-010 and API-009 PUT share these rules: 422 with one message per field. Returns the cleaned core fields, the kind and the template answers. */
+function validateAccident(body: CreateAccidentRequest) {
   const { tanggal_waktu, lokasi_deskripsi, latitude, longitude, jumlah_korban, jenis_kendaraan_terlibat, kondisi_cuaca } = body;
+  const jenis = body.jenis ?? 'kecelakaan';
   const errors: Record<string, string> = {};
+  if (!JENIS.includes(jenis)) errors.jenis = 'Jenis laporan tidak dikenal.';
   const when = Date.parse(tanggal_waktu);
   if (Number.isNaN(when)) errors.tanggal_waktu = 'Tanggal dan waktu wajib diisi.';
   else if (when > Date.now()) errors.tanggal_waktu = 'Tanggal kejadian tidak boleh di masa depan.';
@@ -407,15 +460,21 @@ function validateAccident(body: CreateAccidentRequest): CreateAccidentRequest {
   else if (!isInBandungRaya(latitude, longitude)) errors.koordinat = 'Koordinat berada di luar wilayah Bandung Raya.';
   if (!Number.isInteger(jumlah_korban) || jumlah_korban < 0) errors.jumlah_korban = 'Jumlah korban harus bilangan bulat 0 atau lebih.';
   if (kondisi_cuaca != null && !CUACA.includes(kondisi_cuaca)) errors.kondisi_cuaca = 'Kondisi cuaca tidak dikenal.';
+  const { detail, hasFoto } = validateDetail(body, jenis, errors);
   if (Object.keys(errors).length) throw new ApiError(422, 'Data tidak valid.', errors);
   return {
-    tanggal_waktu: new Date(when).toISOString(),
-    lokasi_deskripsi: lokasi_deskripsi.trim(),
-    latitude,
-    longitude,
-    jumlah_korban,
-    jenis_kendaraan_terlibat: jenis_kendaraan_terlibat?.trim() || null,
-    kondisi_cuaca: kondisi_cuaca ?? null,
+    fields: {
+      tanggal_waktu: new Date(when).toISOString(),
+      lokasi_deskripsi: lokasi_deskripsi.trim(),
+      latitude,
+      longitude,
+      jumlah_korban,
+      jenis_kendaraan_terlibat: jenis_kendaraan_terlibat?.trim() || null,
+      kondisi_cuaca: kondisi_cuaca ?? null,
+    },
+    jenis,
+    detail,
+    hasFoto,
   };
 }
 

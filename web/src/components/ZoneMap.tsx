@@ -44,6 +44,8 @@ function ZoomTracker({ onZoom }: { onZoom: (zoom: number) => void }) {
 
 interface Props {
   zones: ZonaTeratas[];
+  /** The zone picked above the table: it is highlighted, the view fits to it and the other zones are dimmed. */
+  selectedId?: number;
   /** Text for a filtered view, e.g. "Zona Merah", shown on the map so a missing zone is not a mystery. */
   filterLabel?: string;
 }
@@ -55,10 +57,18 @@ interface Props {
  * A click opens a compact popup with a link to the Detail Zona page. The map pans and zooms, fits all zones at first
  * and stays inside Bandung Raya. At a far zoom a zone whose real radius is under a few pixels is drawn a little larger.
  */
-export function ZoneMap({ zones, filterLabel }: Props) {
+export function ZoneMap({ zones, selectedId, filterLabel }: Props) {
   const [zoom, setZoom] = useState<number>();
-  // Casings first, then the areas, with the highest risk on top.
-  const ordered = useMemo(() => [...zones].sort((a, b) => RISK_ORDER.indexOf(b.kategori_risiko) - RISK_ORDER.indexOf(a.kategori_risiko)), [zones]);
+  // Casings first, then the areas, with the highest risk on top; the picked zone goes last so it is drawn over its neighbours.
+  const ordered = useMemo(
+    () =>
+      [...zones].sort(
+        (a, b) => Number(a.zona_id === selectedId) - Number(b.zona_id === selectedId) || RISK_ORDER.indexOf(b.kategori_risiko) - RISK_ORDER.indexOf(a.kategori_risiko),
+      ),
+    [zones, selectedId],
+  );
+  const selected = selectedId === undefined ? undefined : zones.find((z) => z.zona_id === selectedId);
+  const emphasisOf = (z: ZonaTeratas) => (selected ? (z.zona_id === selected.zona_id ? ('selected' as const) : ('dim' as const)) : undefined);
   // A basemap that fails to load (blocked, a tile account that refuses the domain) is announced instead of leaving a silent grey map.
   const [tiles, setTiles] = useState({ loaded: 0, failed: 0 });
 
@@ -86,12 +96,12 @@ export function ZoneMap({ zones, filterLabel }: Props) {
         />
         <MapResizer />
         <ZoomTracker onZoom={setZoom} />
-        <FitToZones zones={zones} />
+        <FitToZones zones={selected ? [selected] : zones} />
         {ordered.map((z) => (
-          <ZoneAreaCasing key={`casing-${z.zona_id}`} zone={z} zoom={zoom} />
+          <ZoneAreaCasing key={`casing-${z.zona_id}`} zone={z} zoom={zoom} emphasis={emphasisOf(z)} />
         ))}
         {ordered.map((z) => (
-          <ZoneArea key={z.zona_id} zone={z} zoom={zoom}>
+          <ZoneArea key={z.zona_id} zone={z} zoom={zoom} emphasis={emphasisOf(z)}>
             <Tooltip sticky>
               Zona {z.zona_id} · {RISK_LABEL[z.kategori_risiko]}
             </Tooltip>
@@ -138,6 +148,7 @@ export function ZoneMap({ zones, filterLabel }: Props) {
       </div>
 
       {filterLabel ? <p className="peta-filter">Menampilkan: {filterLabel}</p> : null}
+      {selected ? <p className="peta-filter">Zona {selected.zona_id} disorot; zona lain diredupkan</p> : null}
       {tiles.failed > 0 && tiles.loaded === 0 ? (
         <p className="peta-notice" role="status">
           Peta dasar tidak dapat dimuat. Area zona tetap ditampilkan; periksa koneksi atau pengaturan penyedia peta (docs/05 #35).

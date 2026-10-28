@@ -1,0 +1,117 @@
+/* Simple motion, CSS only. Everything lives inside prefers-reduced-motion: no-preference, so with reduced motion
+   requested nothing here animates or transitions.
+   rise-in  pages and cards: fade in while moving up 8px, 220ms ease-out.
+   pop-in   dropdown, dialog, toast: scale .96 to 1 plus fade, 160ms.
+   Beranda cards rise one after another (40ms apart). Only `backwards` fill is used, so no transform is left on an
+   element once its animation ends. */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes rise-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes pop-in {
+    from {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* Pages: whatever the route renders inside the main panel (Beranda animates its own parts below), and the Login card. */
+  .app-main > :not(.home),
+  .login-card,
+  .home-wave,
+  .home-head {
+    animation: rise-in 220ms ease-out backwards;
+  }
+
+  .menu-cards > .menu-card {
+    animation: rise-in 220ms ease-out backwards;
+  }
+  .menu-cards > .menu-card:nth-child(2) {
+    animation-delay: 40ms;
+  }
+  .menu-cards > .menu-card:nth-child(3) {
+    animation-delay: 80ms;
+  }
+  .menu-cards > .menu-card:nth-child(4) {
+    animation-delay: 120ms;
+  }
+  .menu-cards > .menu-card:nth-child(5) {
+    animation-delay: 160ms;
+  }
+  .menu-cards > .menu-card:nth-child(n + 6) {
+    animation-delay: 200ms;
+  }
+
+  .account-popup {
+    transform-origin: top right;
+    animation: pop-in 160ms ease-out backwards;
+  }
+
+  .dialog[open] {
+    animation: pop-in 160ms ease-out backwards;
+  }
+
+  .dialog[open]::backdrop {
+    animation: fade-in 160ms ease-out backwards;
+  }
+
+  .toast {
+    animation: pop-in 160ms ease-out backwards;
+  }
+
+  /* Interactive elements: a soft change instead of a jump. */
+  .btn,
+  .navbar-tab,
+  .menu-card,
+  .account-chip,
+  .account-item,
+  .quick-reason,
+  .field-input {
+    transition:
+      background-color 140ms ease,
+      border-color 140ms ease,
+      color 140ms ease,
+      box-shadow 140ms ease,
+      filter 140ms ease,
+      transform 140ms ease;
+  }
+
+  .btn:hover:not(:disabled, [aria-busy='true']) {
+    filter: brightness(0.92);
+    transform: translateY(-1px);
+  }
+
+  .btn:active:not(:disabled, [aria-busy='true']) {
+    filter: brightness(0.85);
+    transform: translateY(0) scale(0.98);
+  }
+
+  .menu-card:hover {
+    transform: translateY(-2px);
+  }
+
+  .menu-card:active {
+    transform: translateY(0) scale(0.99);
+  }
+}

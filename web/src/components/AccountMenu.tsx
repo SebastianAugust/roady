@@ -61,7 +61,7 @@ export function AccountMenu() {
       </button>
 
       {open ? (
-        <ul id={popupId} className="account-popup glass" aria-label="Menu akun">
+        <ul id={popupId} className="account-popup" aria-label="Menu akun">
           {user ? (
             <li className="account-code">
               <span>Kode pengguna</span>
@@ -75,7 +75,7 @@ export function AccountMenu() {
             </Link>
           </li>
           <li>
-            <button type="button" className="account-item" onClick={signOut}>
+            <button type="button" className="account-item account-item-danger" onClick={signOut}>
               Keluar
               <LogoutIcon />
             </button>

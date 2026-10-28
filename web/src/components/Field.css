@@ -133,3 +133,38 @@ textarea.field-input {
   color: var(--color-on-button-primary);
   font-weight: var(--weight-semibold);
 }
+
+.field-optional {
+  font-weight: var(--weight-regular);
+  color: var(--color-text-secondary);
+}
+
+/* A group of toggle buttons (ChipGroup): a fieldset without its default frame. */
+.chip-group {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+  display: grid;
+  gap: var(--space-xs);
+}
+
+.chip-group legend {
+  padding: 0;
+  margin-bottom: var(--space-xs);
+}
+
+/* Photo input: the native file button on the dark field. */
+.photo-input {
+  padding: var(--space-sm) var(--space-md);
+  cursor: pointer;
+}
+
+.photo-chosen {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  font-size: var(--text-small);
+  overflow-wrap: anywhere;
+}

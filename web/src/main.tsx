@@ -2,6 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import 'leaflet/dist/leaflet.css';
 import './index.css';
+import './motion.css';
 import { App } from './App';
 import { APP_NAME } from './constants';
 import { applyCssVars } from './theme/cssVars';

@@ -1,0 +1,40 @@
+/* Measured on the 1440x1024 Figma frames (Home and Login, Admin and Dishub are identical), in vw of the 1440 width:
+   top-left      600px wide (41.7vw), 21px off the left edge and 19px off the top; four stars and the first X of
+                 public/batik-soft.png start behind the wordmark.
+   bottom-right  468px wide (32.5vw), the image mirrored left-right (public/batik-soft-flip.png, so no transform is
+                 needed), 98px off the right edge and 103px off the bottom.
+   Straight, no rotate/skew/transform. 8% white (--opacity-batik, 6-10%), under the content, never catches the pointer. */
+.batik {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.batik-cluster {
+  position: absolute;
+  aspect-ratio: 936 / 948;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  opacity: var(--opacity-batik);
+}
+
+.batik-top-left {
+  width: 41.7vw;
+  left: -1.5vw;
+  top: -1.3vw;
+  background-image: url('/batik-soft.png');
+}
+
+.batik-bottom-right {
+  width: 32.5vw;
+  right: -6.8vw;
+  bottom: -7.2vw;
+  background-image: url('/batik-soft-flip.png');
+}
+
+@media (forced-colors: active) {
+  .batik {
+    display: none;
+  }
+}

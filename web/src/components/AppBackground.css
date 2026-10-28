@@ -7,18 +7,3 @@
   pointer-events: none;
   background: var(--gradient-page);
 }
-
-/* batik-soft.png is already white with faded edges; it is an ordinary background-image at a low opacity. */
-.app-bg-batik {
-  position: absolute;
-  aspect-ratio: 936 / 948;
-  background-size: 100% 100%;
-  background-repeat: no-repeat;
-  opacity: var(--opacity-batik);
-}
-
-@media (forced-colors: active) {
-  .app-bg-batik {
-    display: none;
-  }
-}

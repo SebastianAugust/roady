@@ -1,13 +1,20 @@
-/* Figma 1036:1392 (Login) scaled down: wordmark top-left, title centered, a full-width glass panel with a rounded top
-   edge, a 420px form column inside it. */
+/* Figma 1036:1392 (Login), reduced to a compact card: wordmark top-left, one glass card (max 400px) centred on the
+   screen holding the title and the form. The vertical padding is the same top and bottom, so the card is centred on the
+   screen and never runs under the wordmark; at 768px height it fits without scrolling. */
 .login {
+  position: relative;
   min-height: 100vh;
   min-height: 100dvh;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  place-items: center;
+  padding: 72px var(--space-md);
 }
 
 .login-brand {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
   width: min(100% - var(--space-page) * 2, var(--size-content-max));
   margin: 0 auto;
   padding: var(--space-lg) 0 0;
@@ -16,38 +23,38 @@
   line-height: 1.2;
 }
 
-.login-title {
-  text-align: center;
-  font-size: var(--text-display);
-  margin: var(--space-md) 0 clamp(24px, 6dvh, 72px);
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  padding: 30px;
+  border-radius: var(--radius-tile);
 }
 
-.login-panel {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  padding: clamp(32px, 7dvh, 72px) var(--space-md) var(--space-xl);
-  border-bottom: 0;
-  border-radius: var(--radius-panel) var(--radius-panel) 0 0;
+.login-title {
+  text-align: center;
+  font-size: var(--text-h2);
+  margin-bottom: var(--space-md);
 }
 
 .login-form {
-  width: 100%;
-  max-width: var(--size-form-width);
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
+  gap: var(--space-sm);
 }
 
-.login-form .field-label,
-.login-form .field-input,
-.login-submit {
-  font-size: var(--text-body);
+.login-form .field-label {
+  font-size: var(--text-small);
+}
+
+.login-form .field-input {
+  min-height: 44px;
+  font-size: var(--text-small);
 }
 
 .login-error {
   min-height: 1.5em;
   text-align: center;
+  font-size: var(--text-caption);
 }
 
 .login-submit {

@@ -47,21 +47,25 @@
   font-size: var(--text-h2);
 }
 
-/* Figma 1036:7250: the chip's width, two rows with right-aligned label + icon, a rule between them. */
+/* Figma 1036:7250: the chip's width, two rows with right-aligned label + icon, a rule between them. Solid surfaceRaised
+   (not glass) so the menu stays readable over any page content, above everything but dialogs and toasts. */
 .account-popup {
   position: absolute;
   right: 0;
-  top: calc(100% + 2px);
+  top: calc(100% + var(--space-xs));
   z-index: 1100;
   width: 100%;
   margin: 0;
   padding: var(--space-xs) 0;
   list-style: none;
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-menu-border);
   border-radius: calc(var(--radius-card) + var(--space-xs));
+  box-shadow: var(--effect-menu-shadow);
   overflow: hidden;
 }
 
-/* Clear rule (1px, white at 30%) with room above and below it. */
+/* Clear rule (1px, white at 20%) with 6px above and below it. */
 .account-popup li + li {
   margin-top: var(--space-xs);
   padding-top: var(--space-xs);
@@ -86,13 +90,18 @@
 }
 
 .account-item:hover {
-  background: var(--color-nav-item-edge);
+  background: var(--color-menu-item-hover);
 }
 
 .account-item:focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: -2px;
-  background: var(--color-nav-item-edge);
+  background: var(--color-menu-item-hover);
+}
+
+/* Keluar: soft red so it reads as a different kind of action from Profil akun. */
+.account-item-danger {
+  color: var(--color-menu-danger);
 }
 
 /* Kode pengguna at the top of the popup: a label, not an action. */

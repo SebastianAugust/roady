@@ -4,6 +4,7 @@ import { api } from '../api';
 import { Button } from '../components/Button';
 import { LoadState } from '../components/LoadState';
 import { PageHeader } from '../components/PageHeader';
+import { StatusPill } from '../components/StatusPill';
 import { StatTile } from '../components/StatTile';
 import { Tabs } from '../components/Tabs';
 import { VerifyDialog } from '../components/VerifyDialog';
@@ -26,7 +27,7 @@ const EMPTY: Record<View, string> = {
 /**
  * Figma "Verifikasi Laporan" (docs/design/admin/Verifikasi Laporan.png): three counters, then the reports in three
  * tabs (Menunggu Tinjauan | Disetujui | Ditolak; API-007 with status). The queue has SETUJUI / TOLAK per row (API-008);
- * the two decided tabs show who decided (kode pengguna + nama) and when. A click on a row opens the detail.
+ * the two decided tabs show who reviewed it (nama + kode pengguna), when and the reason. Every row has a status badge. A click on a row opens the detail.
  * No reporter name, email or id anywhere (NFR-006).
  */
 export function VerifikasiPage() {
@@ -92,12 +93,14 @@ export function VerifikasiPage() {
                       <th scope="col">Lokasi</th>
                       <th scope="col">Kejadian</th>
                       <th scope="col">Tanggal</th>
+                      <th scope="col">Status</th>
                       {isQueue ? (
                         <th scope="col">Aksi</th>
                       ) : (
                         <>
-                          <th scope="col">Diputuskan oleh</th>
+                          <th scope="col">Ditinjau oleh</th>
                           <th scope="col">Waktu</th>
+                          <th scope="col">Alasan</th>
                         </>
                       )}
                     </tr>
@@ -114,6 +117,9 @@ export function VerifikasiPage() {
                         </th>
                         <td>{KATEGORI_LABEL[r.kategori]}</td>
                         <td>{formatDate(r.tanggal_kejadian)}</td>
+                        <td>
+                          <StatusPill status={r.status} />
+                        </td>
                         {isQueue ? (
                           <td>
                             <div className="verif-actions">
@@ -128,10 +134,11 @@ export function VerifikasiPage() {
                         ) : (
                           <>
                             <td>
-                              <span className="data-who">{r.diverifikasi_oleh_kode ?? '-'}</span>
-                              <span className="data-who-name">{r.diverifikasi_oleh_nama ?? ''}</span>
+                              <span className="data-who">{r.diverifikasi_oleh_nama ?? '-'}</span>
+                              <span className="data-who-name">{r.diverifikasi_oleh_kode ?? ''}</span>
                             </td>
                             <td>{r.waktu_verifikasi ? formatDateTime(r.waktu_verifikasi) : '-'}</td>
+                            <td className="data-wrap">{r.alasan_verifikasi ?? '-'}</td>
                           </>
                         )}
                       </tr>

@@ -35,7 +35,12 @@ export const colors = {
   rowDivider: 'rgba(255,255,255,0.12)', // rules between table rows
   mapPin: '#12294D', // the one-place pin on the light basemap (white edge); a place, not a risk category
   mapAreaCasing: 'rgba(10,26,51,0.4)', // thin dark edge under a zone area so a yellow outline stays visible on the light map
-  menuDivider: 'rgba(255,255,255,0.3)', // rule between the items of the account popup
+  // Account popup: a solid surfaceRaised panel so it never blends into the page behind it.
+  menuBorder: 'rgba(255,255,255,0.18)',
+  menuDivider: 'rgba(255,255,255,0.2)', // 1px rule between Profil akun and Keluar
+  menuItemHover: 'rgba(255,255,255,0.10)',
+  menuDanger: '#FFB4AB', // soft red for Keluar: 7.2:1 on surfaceRaised, >= 4.5:1 under the hover tint
+  menuShadowColor: 'rgba(0,0,0,0.5)',
 
   // Page background (AppBackground), from docs/design/glass-reference.html: navy base with soft light.
   pageTop: '#0f2447',
@@ -86,6 +91,7 @@ export const effects = {
   glassShadow: `0 10px 36px ${colors.glassShadow}, inset 0 1px 0 ${colors.glassShine}`,
   glassInShadow: `inset 0 1px 0 ${colors.glassInShine}`,
   activeShadow: `0 6px 18px ${colors.activeShadow}`,
+  menuShadow: `0 12px 32px ${colors.menuShadowColor}`,
 } as const;
 
 export const opacity = {
@@ -121,7 +127,7 @@ export const size = {
   field: 42,
   button: 40,
   buttonMinWidth: 116,
-  formWidth: 420, // login form column
+  formWidth: 420, // form column of the centred cards (403 page); the Login card itself is 400 max
   contentMax: 1280,
 } as const;
 

@@ -42,3 +42,9 @@
   color: var(--color-accent);
   padding: 0 var(--space-md);
 }
+
+/* The zone dropdown above the tabs. */
+.dashboard-zone-filter {
+  width: min(100%, 460px);
+  margin-bottom: var(--space-md);
+}
