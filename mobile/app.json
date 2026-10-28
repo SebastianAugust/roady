@@ -1,0 +1,48 @@
+{
+  "expo": {
+    "name": "mobile",
+    "slug": "mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#0A1A33",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-font",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Roady! memakai lokasi Anda untuk menampilkan zona rawan kecelakaan di sekitar Anda."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Roady! memakai foto dari galeri Anda untuk dilampirkan pada laporan kejadian.",
+          "cameraPermission": "Roady! memakai kamera untuk memotret kejadian yang Anda laporkan.",
+          "microphonePermission": false
+        }
+      ],
+      "expo-secure-store",
+      "expo-notifications"
+    ],
+    "backgroundColor": "#0A1A33",
+    "splash": {
+      "backgroundColor": "#0A1A33"
+    }
+  }
+}
