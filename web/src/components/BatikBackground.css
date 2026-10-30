@@ -1,9 +1,9 @@
-/* Two clusters in vw of the 1440 Figma frame width (Home and Login, Admin and Dishub are identical):
-   bottom-right  468px wide (32.5vw), 98px off the right edge and 103px off the bottom, the image mirrored left-right
-                 (public/batik-soft-flip.png, so no transform is needed).
-   top-left      the mirror of bottom-right: same width and offsets (to the left and top edges), using the unflipped
-                 public/batik-soft.png.
-   Straight, no rotate/skew/transform. 8% white (--opacity-batik, 6-10%), under the content, never catches the pointer. */
+/* Measured on the 1440x1024 Figma frames (Home and Login, Admin and Dishub are identical), in vw of the 1440 width:
+   top-left      600px wide (41.7vw), 21px off the left edge and 19px off the top, public/batik-soft.png turned 90deg
+                 clockwise.
+   bottom-right  468px wide (32.5vw), the image mirrored left-right (public/batik-soft-flip.png, so no transform is
+                 needed), 98px off the right edge and 103px off the bottom.
+   No skew. 8% white (--opacity-batik, 6-10%), under the content, never catches the pointer. */
 .batik {
   position: absolute;
   inset: 0;
@@ -20,10 +20,12 @@
 }
 
 .batik-top-left {
-  width: 32.5vw;
-  left: -6.8vw;
-  top: -7.2vw;
+  width: 41.7vw;
+  left: -1.5vw;
+  top: -1.3vw;
   background-image: url('/batik-soft.png');
+  /* Turned 90deg clockwise around its centre (owner's request); the box is almost square, so the corner stays put. */
+  transform: rotate(90deg);
 }
 
 .batik-bottom-right {
