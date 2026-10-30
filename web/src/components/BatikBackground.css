@@ -3,7 +3,7 @@
                  public/batik-soft.png start behind the wordmark.
    bottom-right  468px wide (32.5vw), the image mirrored left-right (public/batik-soft-flip.png, so no transform is
                  needed), 98px off the right edge and 103px off the bottom.
-   Straight, no rotate/skew/transform. 8% white (--opacity-batik, 6-10%), under the content, never catches the pointer. */
+   Top-left is rotated 90deg clockwise; bottom-right is straight (no skew). 8% white (--opacity-batik, 6-10%), under the content, never catches the pointer. */
 .batik {
   position: absolute;
   inset: 0;
@@ -24,6 +24,8 @@
   left: -1.5vw;
   top: -1.3vw;
   background-image: url('/batik-soft.png');
+  /* Turned 90deg clockwise around its centre (owner's request); the box is almost square, so the corner stays put. */
+  transform: rotate(90deg);
 }
 
 .batik-bottom-right {
