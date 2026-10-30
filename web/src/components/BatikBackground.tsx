@@ -2,7 +2,7 @@ import './BatikBackground.css';
 
 /**
  * The batik motifs behind every web page (Figma Home and Login of docs/design/admin and docs/design/dishub): two
- * clusters pinned to the top-left (rotated 90deg clockwise) and bottom-right corners, never skewed. Sizes and offsets are
+ * clusters pinned to the top-left and bottom-right corners, mirror images of each other, never rotated or skewed. Sizes and offsets are
  * in vw (BatikBackground.css), so the placement is the same on every page. Purely decorative; render it inside
  * AppBackground, which supplies the fixed layer under the content.
  */
