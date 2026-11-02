@@ -70,13 +70,13 @@ export function ReportCard({ report, onPress, showPhoto = false, showLocation = 
 }
 
 const styles = StyleSheet.create({
-  card: { paddingHorizontal: 15, paddingVertical: 7 },
+  card: { paddingHorizontal: 14, paddingVertical: 12 },
   pressed: { opacity: 0.8 },
   dateRight: { alignItems: 'flex-end' },
   photo: { height: 96, borderRadius: 4, marginTop: 4, marginHorizontal: -3, backgroundColor: colors.surface },
   titleRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' },
   title: { fontFamily: fontFamily.bold, fontSize: 15, lineHeight: 21, color: colors.textPrimary },
-  date: { fontFamily: fontFamily.semibold, fontSize: 11, color: colors.textMuted },
+  date: { fontFamily: fontFamily.semibold, fontSize: 12, color: colors.textSecondary },
   row: { flexDirection: 'row', marginTop: 2 },
   statusRow: { alignItems: 'center', marginTop: 6 },
   label: { width: 69, fontFamily: fontFamily.semibold, fontSize: 13, lineHeight: 18, color: colors.textPrimary },

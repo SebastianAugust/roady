@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Animated, Easing, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { api, ApiError } from '../api';
 import { AppBackground } from '../components/AppBackground';
@@ -9,6 +9,7 @@ import { PhotoField } from '../components/PhotoField';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { LocationState, useCurrentLocation } from '../hooks/useCurrentLocation';
+import { useReduceMotion } from '../hooks/useReduceMotion';
 import { CUACA_OPTIONS, KATEGORI_OPTIONS } from '../lib/reportOptions';
 import { reverseGeocodeToText } from '../lib/reverseGeocode';
 import { colors, fontFamily, radius } from '../theme/tokens';
@@ -39,6 +40,16 @@ export function LaporScreen({ onBack, onDone }: { onBack: () => void; onDone: ()
   const [errors, setErrors] = useState<FieldErrors>({});
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
+  const reduceMotion = useReduceMotion();
+  const [shakeX] = useState(() => new Animated.Value(0));
+
+  // A failed check shakes the form sideways (-6, 6, -4, 3, 0 px in 400 ms), skipped with reduce motion.
+  const shake = () => {
+    if (reduceMotion) return;
+    shakeX.setValue(0);
+    const step = (toValue: number) => Animated.timing(shakeX, { toValue, duration: 80, easing: Easing.linear, useNativeDriver: true });
+    Animated.sequence([step(-6), step(6), step(-4), step(3), step(0)]).start();
+  };
 
   if (sent) return <LaporTerkirimScreen onDone={onDone} />;
 
@@ -49,7 +60,11 @@ export function LaporScreen({ onBack, onDone }: { onBack: () => void; onDone: ()
     if (!deskripsi.trim()) next.deskripsi = 'Deskripsi wajib diisi.';
     if (location.status !== 'ready') next.lokasi = 'Lokasi belum tersedia.';
     setErrors(next);
-    if (Object.keys(next).length || !kategori || !cuaca || location.status !== 'ready') return;
+    if (Object.keys(next).length) {
+      shake();
+      return;
+    }
+    if (!kategori || !cuaca || location.status !== 'ready') return;
 
     setLoading(true);
     try {
@@ -84,6 +99,7 @@ export function LaporScreen({ onBack, onDone }: { onBack: () => void; onDone: ()
             <ScreenHeader title="Laporkan Kejadian" onBack={onBack} />
           </View>
           <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+            <Animated.View style={[styles.form, { transform: [{ translateX: shakeX }] }]}>
             <Glass radius={10} style={styles.card}>
               <Text style={styles.label}>
                 Lokasi Anda: <Text style={styles.value}>{locationText(location)}</Text>
@@ -123,6 +139,7 @@ export function LaporScreen({ onBack, onDone }: { onBack: () => void; onDone: ()
               <PhotoField uri={fotoUri} onChange={setFotoUri} />
               <Text style={styles.note}>**Harap tidak mengirim foto yang berisi wajah korban!</Text>
             </View>
+            </Animated.View>
           </ScrollView>
 
           <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 12) + 16 }]}>
@@ -146,7 +163,8 @@ export function LaporScreen({ onBack, onDone }: { onBack: () => void; onDone: ()
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   headerPad: { paddingHorizontal: 20 },
-  content: { paddingHorizontal: 24, paddingTop: 14, paddingBottom: 16, gap: 12 },
+  content: { paddingHorizontal: 24, paddingTop: 14, paddingBottom: 16 },
+  form: { gap: 12 },
   card: { padding: 14, gap: 8 },
   section: { gap: 6, paddingLeft: 2 },
   label: { fontFamily: fontFamily.semibold, fontSize: 16, lineHeight: 22, color: colors.textPrimary },

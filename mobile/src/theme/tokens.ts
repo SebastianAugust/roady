@@ -34,10 +34,16 @@ export const colors = {
   glassSheet: 'rgba(18,41,77,0.72)', // bottom sheet of the pre-login screens
   legendFill: 'rgba(10,26,51,0.72)', // map legend glass
   // Glass (components/Glass.tsx), the counterpart of .glass / .glass-in on the web: a white tint over a blur, a thin white edge.
-  glassFill: 'rgba(255,255,255,0.10)',
   glassEdge: 'rgba(255,255,255,0.20)',
+  // The default Glass fill since the prototype pass (docs/design/prototype-mobile.html .glass): a soft diagonal white gradient.
+  glassFrom: 'rgba(255,255,255,0.13)',
+  glassTo: 'rgba(255,255,255,0.05)',
   glassInFill: 'rgba(255,255,255,0.06)', // a glass card inside a glass panel: no blur
   glassInEdge: 'rgba(255,255,255,0.14)',
+  // Loading skeleton: the block and the highlight that slides over it (prototype .sk).
+  skeleton: 'rgba(255,255,255,0.06)',
+  skeletonShine: 'rgba(255,255,255,0.18)',
+  skeletonClear: 'rgba(255,255,255,0)',
 } as const;
 
 /** Brand gradient, diagonal: navy900 -> navy700 -> navy500. Used with expo-linear-gradient. */

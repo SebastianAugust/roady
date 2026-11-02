@@ -61,7 +61,7 @@ export function ZoneSheet({ zonaId, onClose }: Props) {
       accessibilityViewIsModal={open}
       style={[styles.sheetPosition, { transform: [{ translateY }] }]}
     >
-      <Glass fill={colors.glass} radius={24} style={[styles.sheet, { paddingBottom: Math.max(insets.bottom, 12) + 8 }]}>
+      <Glass fill={colors.glass} radius={26} style={[styles.sheet, { paddingBottom: Math.max(insets.bottom, 12) + 8 }]}>
       <View {...pan.panHandlers} style={styles.handleArea}>
         <View style={styles.handle} />
       </View>

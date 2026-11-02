@@ -1,10 +1,9 @@
 import { StyleSheet, Text, View } from 'react-native';
-import { SvgXml } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AppBackground } from '../components/AppBackground';
+import { DrawnCheck } from '../components/DrawnCheck';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { ScreenHeader } from '../components/ScreenHeader';
-import { sendCheck } from '../components/laporArtSvg';
 import { APP_NAME } from '../constants';
 import { colors, fontFamily } from '../theme/tokens';
 
@@ -16,7 +15,7 @@ export function LaporTerkirimScreen({ onDone }: { onDone: () => void }) {
       <View style={[styles.screen, { paddingTop: insets.top + 12, paddingBottom: Math.max(insets.bottom, 12) + 24 }]}>
         <ScreenHeader title="Laporkan Kejadian" />
         <View style={styles.body}>
-          <SvgXml xml={sendCheck} width={70} height={70} />
+          <DrawnCheck size={70} />
           <View style={styles.card} accessibilityLiveRegion="polite">
             <Text style={styles.message}>
               Laporan sobat {APP_NAME.replace('!', '')} sudah terkirim, terima kasih sudah ikut berkontribusi!

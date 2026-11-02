@@ -23,7 +23,7 @@ export interface MenuItem {
 /** Glass card with icon rows and hairline dividers (Profil, Bantuan and Pengaturan in Figma). */
 export function GlassMenu({ items }: { items: MenuItem[] }) {
   return (
-    <Glass radius={10}>
+    <Glass radius={20}>
       {items.map((item, i) => {
         const content = (
           <>
@@ -63,7 +63,7 @@ const ROW_PAD_X = 18;
 
 const styles = StyleSheet.create({
   row: { minHeight: 60, flexDirection: 'row', alignItems: 'center', paddingHorizontal: ROW_PAD_X, paddingVertical: 8 },
-  divider: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.border },
+  divider: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.glassInEdge },
   pressed: { opacity: 0.7 },
   iconBox: { width: 33, alignItems: 'center', justifyContent: 'center' },
   texts: { flex: 1, marginLeft: 12, gap: 2 },

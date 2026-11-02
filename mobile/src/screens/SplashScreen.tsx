@@ -7,7 +7,7 @@ import { colors, fontFamily } from '../theme/tokens';
 const WORDMARK = APP_NAME.replace('!', '');
 
 /**
- * Start screen (Figma "mulai app", 1032:7012): navy brand gradient, batik at 7%, white wordmark and a light tagline.
+ * Start screen (Figma "mulai app", 1032:7012): navy brand gradient, batik (theme/batikLayout.ts), white wordmark and a light tagline.
  * `bare` leaves out the text: it is used until the fonts are loaded, so the wordmark never shows in a fallback font.
  */
 export function SplashScreen({ bare = false }: { bare?: boolean }) {

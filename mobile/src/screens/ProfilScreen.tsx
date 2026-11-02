@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
   email: { fontFamily: fontFamily.semibold, fontSize: 15, lineHeight: 21, color: colors.textPrimary },
   kode: { fontFamily: fontFamily.semibold, fontSize: 13, lineHeight: 18, color: colors.textSecondary },
   retry: { minHeight: 44, justifyContent: 'center', paddingHorizontal: 16 },
-  editButton: { alignSelf: 'center', width: 100, height: 28, borderRadius: 8, marginTop: 6, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border },
+  editButton: { alignSelf: 'center', minWidth: 100, height: 32, paddingHorizontal: 14, borderRadius: 10, marginTop: 6, alignItems: 'center', justifyContent: 'center', backgroundColor: 'transparent', borderWidth: 1, borderColor: colors.glassEdge },
   editDisabled: { opacity: 0.5 },
   editText: { fontFamily: fontFamily.semibold, fontSize: 12, color: colors.textPrimary },
   menu: { marginTop: 24, gap: 13 },

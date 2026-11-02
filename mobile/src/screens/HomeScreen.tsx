@@ -8,6 +8,7 @@ import { iconResize } from '../components/homeArtSvg';
 import { circleArrowRight } from '../components/petaArtSvg';
 import { ReportCard } from '../components/ReportCard';
 import { ReportPanel } from '../components/ReportPanel';
+import { Skeleton } from '../components/Skeleton';
 import { ZoneAreas } from '../components/ZoneAreas';
 import { BANDUNG_RAYA } from '../config';
 import { darkMapStyle } from '../lib/mapStyle';
@@ -79,7 +80,13 @@ export function HomeScreen({ onOpenMap, onOpenHistory, onOpenReport, onReport, o
         </View>
 
         <ReportPanel style={styles.panel}>
-          {state === 'loading' ? <ActivityIndicator color={colors.textPrimary} style={styles.panelStatus} /> : null}
+          {state === 'loading' ? (
+            <View style={styles.loading}>
+              <Skeleton height={96} />
+              <Skeleton height={96} />
+              <ActivityIndicator color={colors.textPrimary} style={styles.loadingSpinner} accessibilityLabel="Memuat riwayat laporan" />
+            </View>
+          ) : null}
           {state === 'error' ? (
             <View style={styles.panelStatus}>
               <Text style={styles.emptyText}>Riwayat gagal dimuat. Periksa koneksi lalu coba lagi.</Text>
@@ -130,6 +137,8 @@ const styles = StyleSheet.create({
   arrow: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
   panel: { marginTop: 4 },
   panelStatus: { paddingVertical: 20, gap: 12, alignItems: 'center' },
+  loading: { gap: 10 },
+  loadingSpinner: { position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 },
   emptyText: { fontFamily: fontFamily.semibold, fontSize: 14, lineHeight: 20, color: colors.textPrimary, textAlign: 'center' },
   retry: { minHeight: 44, paddingHorizontal: 20, borderRadius: 13, backgroundColor: colors.buttonPrimary, justifyContent: 'center' },
   retryText: { fontFamily: fontFamily.extrabold, fontSize: 14, color: colors.onButtonPrimary },

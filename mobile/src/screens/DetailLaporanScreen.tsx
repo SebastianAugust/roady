@@ -22,7 +22,7 @@ export function DetailLaporanScreen({ report, onBack }: { report: Laporan; onBac
       <View style={[styles.screen, { paddingTop: insets.top + 12 }]}>
         <ScreenHeader title={`Laporan #${report.id_report}`} onBack={onBack} />
         <ScrollView contentContainerStyle={[styles.content, { paddingBottom: Math.max(insets.bottom, 12) + 24 }]} showsVerticalScrollIndicator={false}>
-          <Glass radius={10} style={styles.card}>
+          <Glass radius={20} style={styles.card}>
             <View style={styles.field}>
               <Text style={styles.label}>Status</Text>
               <StatusPill status={report.status} />
@@ -38,7 +38,7 @@ export function DetailLaporanScreen({ report, onBack }: { report: Laporan; onBac
           {report.status === 'rejected' && report.alasan_penolakan ? (
             <View style={styles.section}>
               <Text style={styles.sectionLabel}>Alasan Penolakan</Text>
-              <Glass radius={10} style={styles.card}>
+              <Glass radius={20} style={styles.card}>
                 <Text style={styles.value}>{report.alasan_penolakan}</Text>
               </Glass>
             </View>
@@ -46,7 +46,7 @@ export function DetailLaporanScreen({ report, onBack }: { report: Laporan; onBac
 
           <View style={styles.section}>
             <Text style={styles.sectionLabel}>Deskripsi Kejadian</Text>
-            <Glass radius={10} style={styles.card}>
+            <Glass radius={20} style={styles.card}>
               <Text style={styles.value}>{report.deskripsi}</Text>
             </Glass>
           </View>
@@ -54,7 +54,7 @@ export function DetailLaporanScreen({ report, onBack }: { report: Laporan; onBac
           {report.foto_url ? (
             <View style={styles.section}>
               <Text style={styles.sectionLabel}>Foto</Text>
-              <Glass radius={10} style={styles.card}>
+              <Glass radius={20} style={styles.card}>
                 {photoFailed ? (
                   <Text style={styles.value}>Foto tidak dapat dimuat.</Text>
                 ) : (
