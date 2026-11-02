@@ -20,10 +20,15 @@
   color: var(--color-on-button-primary);
 }
 
+/* Cancel and other secondary actions: an outline (prototype-web-cards.html [data-close]). */
 .btn-secondary {
-  background: var(--color-surface);
-  border-color: var(--color-border);
+  background: transparent;
+  border-color: var(--color-card-edge);
   color: var(--color-text-primary);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  border-color: var(--color-white);
 }
 
 .btn-ghost {
@@ -32,7 +37,6 @@
   min-width: 0;
 }
 
-.btn-secondary:hover:not(:disabled),
 .btn-ghost:hover:not(:disabled) {
   background: var(--color-surface-raised);
 }
@@ -50,14 +54,23 @@
   cursor: progress;
 }
 
-/* White on statusDanger is 6.5:1. */
-.btn-danger {
-  background: var(--color-status-danger);
-  color: var(--color-white);
+/* Reject and delete (TOLAK, HAPUS): a soft-red outline (prototype-web-cards.html .btn.no); the text keeps 4.5:1 on a card. */
+.btn-danger,
+.btn-danger-outline {
+  background: transparent;
+  border: 1.5px solid var(--color-danger-soft-edge);
+  color: var(--color-danger-soft);
 }
 
-.btn-danger:disabled {
-  background: var(--color-disabled);
+.btn-danger:hover:not(:disabled),
+.btn-danger-outline:hover:not(:disabled) {
+  border-color: var(--color-danger-soft);
+}
+
+.btn-danger:disabled,
+.btn-danger-outline:disabled,
+.btn-secondary:disabled {
+  opacity: 0.5;
 }
 
 /* Compact buttons for table rows (Figma SETUJUI / TOLAK). */
@@ -66,13 +79,6 @@
   min-width: 0;
   padding: 0 var(--space-md);
   font-size: var(--text-caption);
-}
-
-/* statusDanger on white is 6.5:1. */
-.btn-danger-outline {
-  background: var(--color-button-primary);
-  border-color: var(--color-status-danger);
-  color: var(--color-status-danger);
 }
 
 /* An inline icon never shrinks or wraps away from its label. */

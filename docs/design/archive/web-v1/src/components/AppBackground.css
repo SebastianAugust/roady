@@ -1,0 +1,9 @@
+/* Fixed behind everything, so the glass panels blur the same light and batik wherever the page is scrolled. */
+.app-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  background: var(--gradient-page);
+}

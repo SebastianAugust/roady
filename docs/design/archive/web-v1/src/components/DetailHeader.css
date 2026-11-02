@@ -1,0 +1,85 @@
+.detail-header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+
+.detail-header-card {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  padding: var(--space-lg);
+  border-radius: var(--radius-field);
+}
+
+.detail-title {
+  font-size: var(--text-h1);
+}
+
+.detail-subtitle {
+  margin-top: var(--space-xs);
+  color: var(--color-text-secondary);
+  font-size: var(--text-h2);
+}
+
+.detail-aside {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: var(--text-h2);
+}
+
+/* The two-column body under the header: map on the left, cards on the right. */
+.detail-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: var(--space-xl);
+  padding-left: calc(50px + var(--space-lg));
+}
+
+.detail-map {
+  height: 380px;
+}
+
+.detail-coords {
+  margin-top: var(--space-sm);
+  font-size: var(--text-small);
+  color: var(--color-text-secondary);
+}
+
+.detail-cards {
+  display: grid;
+  gap: var(--space-md);
+  align-content: start;
+}
+
+.detail-card {
+  padding: var(--space-lg);
+  border-radius: var(--radius-field);
+}
+
+.detail-card-title {
+  font-size: var(--text-h2);
+  margin-bottom: var(--space-sm);
+}
+
+.detail-actions {
+  display: flex;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+.detail-actions .btn {
+  flex: 1;
+}
+
+@media (max-width: 900px) {
+  .detail-body {
+    grid-template-columns: 1fr;
+    padding-left: 0;
+  }
+}

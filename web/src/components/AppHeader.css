@@ -1,0 +1,39 @@
+/* Above the sticky nav (z-index 1000), so the account popup opens over it. The header itself scrolls away. */
+.app-header {
+  position: relative;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding-top: 26px;
+}
+
+.app-wordmark {
+  font-family: var(--font-display);
+  font-size: var(--text-wordmark);
+  line-height: 1;
+  color: var(--color-text-primary);
+  text-decoration: none;
+}
+
+/* The account chip of the prototype: dark translucent fill, white hairline, 14px blur, radius 20. */
+.app-header .account-chip.glass {
+  background: var(--color-chip-fill);
+  border: 1px solid var(--color-card-edge);
+  border-radius: var(--radius-glass-card);
+  box-shadow: none;
+  -webkit-backdrop-filter: var(--effect-bar-filter);
+  backdrop-filter: var(--effect-bar-filter);
+}
+
+.app-header .account-chip.glass:hover,
+.app-header .account-chip.glass[aria-expanded='true'] {
+  border-color: var(--color-white);
+}
+
+@media (max-width: 700px) {
+  .app-wordmark {
+    font-size: calc(var(--text-wordmark) * 0.8);
+  }
+}

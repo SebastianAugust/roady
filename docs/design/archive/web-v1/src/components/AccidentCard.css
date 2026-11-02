@@ -1,0 +1,67 @@
+/* Figma archive cards (Arsip & Input, Kelola Data Kecelakaan): 346x180 in three columns ~19px apart; map on top,
+   date and victims bottom-left, DETAIL bottom-right. */
+.accident-grid {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--space-md);
+}
+
+.accident-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: var(--space-sm);
+  border-radius: var(--radius-field);
+}
+
+.accident-card-map {
+  height: 120px;
+}
+
+.accident-card-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: var(--space-sm);
+}
+
+.accident-card-text {
+  min-width: 0;
+}
+
+
+.accident-card-meta {
+  font-size: var(--text-caption);
+  color: var(--color-text-secondary);
+}
+
+/* The card is one big link: the DETAIL button's ::after covers it, so a click anywhere opens the detail and the
+   keyboard has a single stop with a visible focus ring around the card. */
+.accident-card {
+  position: relative;
+}
+
+.accident-card-link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.accident-card:hover,
+.accident-card:focus-within {
+  border-color: var(--color-accent);
+}
+
+.accident-card-link:focus-visible {
+  outline: none;
+}
+
+.accident-card:has(.accident-card-link:focus-visible) {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}

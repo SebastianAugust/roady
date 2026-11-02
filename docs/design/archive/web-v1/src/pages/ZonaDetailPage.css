@@ -1,0 +1,55 @@
+/* Detail Zona (no Figma frame): the summary card as label + value pairs in two columns, the score large like the
+   victim count of the accident detail; the sections below line up with the body of the other detail pages. */
+.zona-summary {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-md) var(--space-lg);
+}
+
+.zona-summary dt {
+  font-size: var(--text-small);
+  color: var(--color-text-secondary);
+}
+
+.zona-summary dd {
+  margin: 0;
+  font-weight: var(--weight-bold);
+}
+
+.zona-summary-wide {
+  grid-column: 1 / -1;
+}
+
+.zona-score {
+  font-family: var(--font-display);
+  font-size: var(--text-display);
+  font-weight: var(--weight-regular);
+  line-height: 1;
+}
+
+.zona-sections {
+  display: grid;
+  gap: var(--space-xl);
+  margin-top: var(--space-xl);
+  padding-left: calc(50px + var(--space-lg));
+}
+
+.zona-section {
+  padding: var(--space-lg);
+  border-radius: calc(var(--radius-card) + var(--space-sm));
+}
+
+@media (max-width: 900px) {
+  .zona-sections {
+    padding-left: 0;
+  }
+  .zona-summary {
+    grid-template-columns: 1fr;
+  }
+}
+
+.zona-heading {
+  font-size: var(--text-h2);
+  margin-bottom: var(--space-md);
+}

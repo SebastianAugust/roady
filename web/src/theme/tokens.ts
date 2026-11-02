@@ -57,7 +57,23 @@ export const colors = {
   glassShine: 'rgba(255,255,255,0.28)', // 1px highlight along the top edge
   glassShadow: 'rgba(2,8,20,0.45)',
   glassFallback: '#16315C',
-  glassScrim: 'rgba(10,26,51,0.3)', // darkens the glass of the top bar and the phone menu bar, which sit under the brightest page light (text >= 4.5:1)
+  // App shell after login (docs/design/prototype-web-cards.html): every block of a page is its own glass card on a
+  // transparent page, under a header and a sticky pill nav. Login keeps the glass above.
+  cardFrom: 'rgba(255,255,255,0.15)',
+  cardTo: 'rgba(255,255,255,0.06)',
+  // A thin navy layer under the white gradient: where a card sits over the batik, its text stays at 4.5:1 or more
+  // (measured from rendered pixels: without it the lightest spots gave 4.2 to 4.5). The edge, blur and white gradient are the prototype's.
+  cardUnder: 'rgba(10,26,51,0.2)',
+  cardEdge: 'rgba(255,255,255,0.28)',
+  cardEdgeHover: 'rgba(255,255,255,0.5)', // grid cards under the pointer
+  navBar: 'rgba(10,26,51,0.55)', // the pill nav bar
+  chipFill: 'rgba(10,26,51,0.45)', // the account chip in the header
+  navMuted: '#D7DEEA', // inactive nav pills (>= 5.6:1 on the nav bar)
+  rowRule: 'rgba(255,255,255,0.22)', // rule above every table row
+  // Reject/delete buttons: outline in soft red. The text is a little lighter than the prototype's #FFB4AC so it keeps
+  // 4.5:1 on the lightest corner of a card (about 4.8:1; #FFB4AC is about 4.1:1 there).
+  dangerSoft: '#FFCBC5',
+  dangerSoftEdge: 'rgba(255,180,172,0.7)',
   glassInFrom: 'rgba(255,255,255,0.12)',
   glassInTo: 'rgba(255,255,255,0.04)',
   glassInEdge: 'rgba(255,255,255,0.16)',
@@ -93,6 +109,8 @@ export const gradients = {
   ].join(', '),
   glass: `linear-gradient(135deg, ${colors.glassFrom} 0%, ${colors.glassTo} 100%)`,
   glassIn: `linear-gradient(135deg, ${colors.glassInFrom}, ${colors.glassInTo})`,
+  /** Glass card of the app shell (KPI, tables, grid cards, forms). */
+  card: `linear-gradient(150deg, ${colors.cardFrom}, ${colors.cardTo}), linear-gradient(${colors.cardUnder}, ${colors.cardUnder})`,
 } as const;
 
 /** Whole CSS values that are not a single color or length. */
@@ -105,6 +123,8 @@ export const effects = {
   // Hover lift of cards and buttons.
   cardHoverShadow: `0 10px 24px ${colors.glassShadow}`,
   buttonHoverShadow: `0 4px 12px ${colors.activeShadow}`,
+  cardFilter: 'blur(16px)', // app-shell cards
+  barFilter: 'blur(14px)', // pill nav and account chip
 } as const;
 
 /** Motion (src/motion.css), written as --ease, --dur-fast, --dur-base and --dur-enter. */
@@ -116,7 +136,9 @@ export const motion = {
 } as const;
 
 export const opacity = {
-  batik: 0.08, // batik clusters at the screen edges (6-10%)
+  batik: 0.08, // batik clusters at the screen edges (6-10%), Login
+  batikShell: 0.3, // batik corner clusters behind the app shell
+  batikShellSide: 0.2, // the extra right-middle cluster of the app shell
 } as const;
 
 // px
@@ -138,11 +160,13 @@ export const radius = {
   nav: 26, // navbar bar
   tile: 28, // stat tiles
   sheet: 40, // the rounded top edge of the login panel
-  panel: 64, // main content panel
+  panel: 64, // the old page panel; the app shell no longer draws one
+  glassCard: 20, // every glass card of the app shell
+  navBar: 22, // the pill nav bar
+  navPill: 15, // one pill of the nav
 } as const;
 
 export const size = {
-  sidebar: 240, // the side menu
   touchMin: 44,
   avatar: 44,
   field: 42,
@@ -165,6 +189,13 @@ export const fontSize = {
   body: 15,
   small: 13,
   caption: 12,
+  // App shell (prototype-web-cards.html)
+  wordmark: 40,
+  navPill: 17,
+  pageTitle: 26,
+  pageSubtitle: 14,
+  kpi: 46,
+  kpiLabel: 14,
 } as const;
 
 /** Fluid sizes (clamp with the maxima above); they replace the fixed --text-* of the same name in cssVars.ts. */

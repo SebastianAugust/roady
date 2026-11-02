@@ -1,0 +1,117 @@
+/* prototype-web-cards.html .nav: a glass bar that sticks 10px under the top while the page scrolls. Sticky works
+   because the shell clips with overflow: clip (AppLayout.css), which does not make a scroll container. */
+.nav-pills {
+  position: sticky;
+  top: 10px;
+  z-index: 1000;
+  margin-top: 14px;
+  padding: 8px 10px;
+  border-radius: var(--radius-nav-bar);
+  border: 1px solid var(--color-card-edge);
+  background: var(--color-nav-bar);
+  -webkit-backdrop-filter: var(--effect-bar-filter);
+  backdrop-filter: var(--effect-bar-filter);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.nav-pills::-webkit-scrollbar {
+  display: none;
+}
+
+.nav-pills ul {
+  display: flex;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nav-pills li {
+  flex: 1 0 auto;
+}
+
+.nav-pill {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  min-height: 46px;
+  padding: 0 20px;
+  border-radius: var(--radius-nav-pill);
+  color: var(--color-nav-muted);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-nav-pill);
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+/* The icon is only for the phone bar; wide screens show the label, as in the prototype. */
+.nav-pill svg {
+  display: none;
+  flex: none;
+}
+
+.nav-pill:hover {
+  background: var(--color-switch-off);
+  color: var(--color-text-primary);
+}
+
+.nav-pill.active {
+  background: var(--color-button-primary);
+  color: var(--color-on-button-primary);
+  box-shadow: var(--effect-active-shadow);
+}
+
+/* The focus ring is drawn inside, so the scrolling bar does not cut it. */
+.nav-pill:focus-visible {
+  outline: 2px solid var(--color-white);
+  outline-offset: -3px;
+}
+
+.nav-pill.active:focus-visible {
+  outline-color: var(--color-on-button-primary);
+}
+
+/* Navy on yellow, the same pair as the "Menunggu" status pill (13.6:1). */
+.nav-pill-badge {
+  min-width: 22px;
+  padding: 0 var(--space-xs);
+  border-radius: 999px;
+  background: var(--color-status-warning);
+  color: var(--color-on-button-primary);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-extrabold);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Under 760px: icons only (the links keep their aria-label), the bar scrolls sideways when they do not fit. */
+@media (max-width: 759.98px) {
+  .nav-pill {
+    min-width: var(--size-touch-min);
+    padding-inline: var(--space-sm);
+  }
+
+  .nav-pill svg {
+    display: block;
+  }
+
+  .nav-pill-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .nav-pill-badge {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    min-width: 18px;
+    line-height: 18px;
+  }
+}

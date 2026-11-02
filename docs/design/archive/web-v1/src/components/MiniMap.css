@@ -1,0 +1,19 @@
+/* The frame (border, radius, loading and error states) is MapFrame; the height comes from the caller's class. */
+
+/* Zone label over the map: a small glass chip. Top left, so Google's logo (bottom left) stays visible. */
+.mini-map-zone {
+  position: absolute;
+  left: var(--space-sm);
+  top: var(--space-sm);
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  margin: 0;
+  padding: 2px var(--space-sm);
+  border-radius: var(--radius-field);
+  background: var(--color-glass);
+  border: 1px solid var(--color-border);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-semibold);
+}

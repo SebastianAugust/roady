@@ -5,9 +5,10 @@ import { usePageTitle } from '../hooks/usePageTitle';
 import { prefersReducedMotion } from '../lib/motion';
 import { navItemsFor, pageTitleFor, ROUTES } from '../routes';
 import { AppBackground } from './AppBackground';
+import { AppHeader } from './AppHeader';
+import { NavPills } from './NavPills';
 import { PageSkeleton } from './PageSkeleton';
-import { Sidebar } from './Sidebar';
-import { TopBar } from './TopBar';
+import { ShellBatik } from './ShellBatik';
 import { CommandPalette, type CommandItem } from './ui';
 import './AppLayout.css';
 
@@ -15,8 +16,10 @@ import './AppLayout.css';
 const PAGE_SKELETON_MS = 600;
 
 /**
- * The shell after login: side menu on the left, then a sticky top bar and the large glass panel with the page. Ctrl/Cmd+K opens the command palette with the pages of this role and "Keluar".
- * A page change first shows a skeleton for 600ms, then the page fades and rises in (motion.css).
+ * The shell after login (docs/design/prototype-web-cards.html): wordmark and account chip, the sticky pill nav, then the
+ * page on a transparent area where each block is its own glass card. Ctrl/Cmd+K opens the command palette with the
+ * pages of this role and "Keluar". A page change first shows a skeleton for 600ms, then the page fades and rises in
+ * (motion.css).
  */
 export function AppLayout() {
   const { pathname } = useLocation();
@@ -36,11 +39,12 @@ export function AppLayout() {
 
   return (
     <div className="app-shell">
-      <AppBackground />
-      <Sidebar onOpenPalette={() => setPaletteOpen(true)} />
-      <div className="app-col">
-        <TopBar />
-        <main className="app-main glass">
+      <AppBackground batik={false} />
+      <ShellBatik />
+      <div className="app-frame">
+        <AppHeader />
+        <NavPills />
+        <main className="app-main">
           <Page />
         </main>
       </div>

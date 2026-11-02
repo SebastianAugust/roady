@@ -137,7 +137,9 @@
   padding: var(--space-sm) var(--space-md);
   border: 1px solid var(--color-nav-item-edge);
   border-radius: var(--radius-field);
-  background: var(--color-nav-item);
+  /* The list sits straight on the page (over the batik), and a repeated row gets no blur: a dark base keeps the score at 4.5:1. */
+  background-color: var(--color-nav-bar);
+  background-image: linear-gradient(var(--color-nav-item), var(--color-nav-item));
   color: var(--color-text-primary);
   text-align: left;
   cursor: pointer;

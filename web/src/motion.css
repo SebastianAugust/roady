@@ -11,7 +11,9 @@
      .rise-rows    <tbody>: rows rise 70ms apart (the first 8; later ones show at once).
      .shake        a short horizontal shake, 400ms (invalid form).
      .shimmer      a highlight sliding over a skeleton block, 1.2s loop.
-   Only `backwards` fill is used, so no transform is left on an element once its animation ends. */
+   Only `backwards` fill is used, so no transform is left on an element once its animation ends.
+   App shell (prototype-web-cards.html), added on top of the above: nav pills press to .98, grid and menu cards lift 3px,
+   table rows ease their hover tint and left line, the batik drifts with the scroll (ShellBatik.css). */
 
 /* Static look of a skeleton block (the shimmer only adds movement on top). */
 .skeleton {
@@ -217,6 +219,15 @@
     animation: rise-in 350ms var(--ease) backwards;
   }
 
+  /* A form that is itself a child of the page area (QuickInputForm on Arsip & Input) also carries the page's rise-in
+     above, with the same specificity as .shake, so the rise-in would win and the shake never played. Listing both keeps
+     the page entry running (not replayed when the class goes away) and lets the shake play. */
+  .app-main > .shake {
+    animation:
+      rise-in 350ms var(--ease) backwards,
+      shake 400ms ease-in-out;
+  }
+
   .menu-cards > .menu-card {
     animation: rise-in 220ms ease-out backwards;
   }
@@ -282,8 +293,7 @@
   }
 
   /* Interactive elements: a soft change instead of a jump. */
-  .sidebar-item,
-  .sidebar-hint,
+  .nav-pill,
   .switch,
   .switch::after,
   .chip,
@@ -302,6 +312,10 @@
       transform var(--dur-fast) var(--ease);
   }
 
+  .nav-pill:active {
+    transform: scale(0.98);
+  }
+
   .btn:hover:not(:disabled, [aria-busy='true']) {
     filter: brightness(0.92);
     transform: translateY(-1px);
@@ -317,7 +331,9 @@
   /* Cards that open something rise 2px and their shadow strengthens in 180ms. */
   .menu-card,
   .stat-tile-button,
-  .hover-lift {
+  .hover-lift,
+  .accident-card,
+  .report-card {
     transition:
       border-color 180ms ease,
       box-shadow 180ms ease,
@@ -329,6 +345,26 @@
   .hover-lift:hover {
     transform: translateY(-2px);
     box-shadow: var(--effect-card-hover-shadow), var(--effect-glass-in-shadow);
+  }
+
+  /* Menu cards of Beranda and the grid cards of the archive lift 3px, as in the prototype (same 180ms and easing). */
+  .menu-card:hover,
+  .accident-card:hover,
+  .report-card:hover {
+    transform: translateY(-3px);
+  }
+
+  .accident-card:hover,
+  .report-card:hover {
+    border-color: var(--color-card-edge-hover);
+    box-shadow: var(--effect-card-hover-shadow);
+  }
+
+  /* Table rows: the hover tint and the 3px left line ease in (index.css). */
+  .app-main tbody tr {
+    transition:
+      background-color 180ms ease,
+      box-shadow 180ms ease;
   }
 
   .menu-card:active,

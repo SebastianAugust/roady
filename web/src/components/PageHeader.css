@@ -1,18 +1,25 @@
+/* prototype-web-cards.html .ph: title 26px extra bold, a dimmed 14px line under it. */
 .page-header {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: var(--space-md);
-  margin-bottom: var(--space-lg);
+  margin-bottom: 20px;
 }
 
 .page-title {
-  font-size: var(--text-h1);
+  font-family: var(--font-body);
+  font-size: var(--text-page-title);
+  font-weight: var(--weight-extrabold);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
 }
 
 .page-subtitle {
-  margin-top: var(--space-xs);
+  margin-top: 2px;
+  max-width: 70ch;
+  font-size: var(--text-page-subtitle);
   color: var(--color-text-secondary);
 }
 

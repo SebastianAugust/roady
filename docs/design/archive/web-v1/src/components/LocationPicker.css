@@ -1,0 +1,13 @@
+.location-picker {
+  display: grid;
+  gap: var(--space-xs);
+}
+
+.location-map {
+  height: 296px;
+}
+
+.location-hint {
+  font-size: var(--text-caption);
+  color: var(--color-text-secondary);
+}

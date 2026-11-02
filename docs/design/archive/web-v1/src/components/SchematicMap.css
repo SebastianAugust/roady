@@ -1,0 +1,64 @@
+.schematic {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--color-bg);
+  user-select: none;
+}
+
+.schematic-pick .schematic-bg {
+  cursor: crosshair;
+}
+
+.schematic-grid line {
+  stroke: var(--color-grid-line);
+  stroke-width: 1;
+}
+
+.schematic-road {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.schematic-road-minor {
+  stroke: var(--color-surface-raised);
+  stroke-width: 3;
+}
+
+.schematic-road-major {
+  stroke: var(--color-navy500);
+  stroke-width: 6;
+}
+
+.schematic-place {
+  fill: var(--color-text-muted);
+  font-size: 17px;
+  font-family: var(--font-body);
+  paint-order: stroke;
+  stroke: var(--color-bg);
+  stroke-width: 4px;
+  transform: translate(10px, -10px);
+}
+
+.schematic-zone {
+  cursor: pointer;
+  outline: none;
+}
+
+/* With reduced motion the hover fill changes at once. */
+@media (prefers-reduced-motion: no-preference) {
+  .schematic-zone .schematic-area {
+    transition: fill-opacity var(--dur-base) ease;
+  }
+}
+
+.schematic-zone.is-hovered .schematic-area {
+  fill-opacity: 0.45;
+}
+
+/* Keyboard focus: a white ring around the zone (the SVG outline would be a box). */
+.schematic-zone:focus-visible .schematic-area {
+  stroke: var(--color-white);
+  stroke-width: 4;
+}

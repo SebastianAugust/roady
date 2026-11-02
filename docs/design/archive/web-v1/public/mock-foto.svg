@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="420" viewBox="0 0 640 420">
+  <!-- Mock photo placeholder (colors are the navy700 / navy500 / textSecondary tokens). Replaced by real uploads later. -->
+  <rect width="640" height="420" fill="#12294D"/>
+  <path d="M0 330 L170 200 L280 290 L400 170 L640 360 L640 420 L0 420 Z" fill="#2A4A7F"/>
+  <circle cx="500" cy="110" r="42" fill="#2A4A7F"/>
+  <text x="320" y="395" fill="#C5CEDB" font-family="sans-serif" font-size="22" text-anchor="middle">Foto contoh (mock)</text>
+</svg>

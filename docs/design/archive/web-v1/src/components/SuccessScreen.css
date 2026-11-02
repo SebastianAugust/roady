@@ -1,0 +1,33 @@
+/* Figma: icon ~150px, message 36px semibold centered, then a 1092x58 button about 150px lower. */
+.success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: calc(var(--space-xl) * 3) 0 calc(var(--space-xl) * 2);
+  text-align: center;
+}
+
+.success-icon {
+  color: var(--color-text-primary);
+  line-height: 0;
+}
+
+.success-message {
+  margin-top: var(--space-xl);
+  max-width: 520px;
+  font-family: var(--font-body);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-h1);
+  outline: none;
+}
+
+.success-detail {
+  margin-top: var(--space-sm);
+  color: var(--color-text-secondary);
+}
+
+.success-done {
+  width: min(100%, 1092px);
+  min-height: calc(var(--size-button) + var(--space-md));
+  margin-top: calc(var(--space-xl) * 3);
+}

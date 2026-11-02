@@ -1,0 +1,56 @@
+/* Placement as on Login (BatikBackground.css: 32.5vw, the top-left turned 90deg, the bottom-right mirrored image), plus
+   the prototype's right-middle cluster. The layer covers the whole shell, which clips it (overflow: clip). */
+.shell-batik {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.shell-batik-cluster {
+  position: absolute;
+  aspect-ratio: 936 / 948;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  opacity: var(--opacity-batik-shell);
+  will-change: translate;
+}
+
+/* Parallax: the top cluster follows the scroll at 0.14, the bottom one moves against it at 0.1 (--sy is scrollY). */
+.shell-batik-top-left {
+  width: 32.5vw;
+  left: -6.8vw;
+  top: -7.2vw;
+  background-image: url('/batik-soft.png');
+  transform: rotate(90deg);
+  translate: 0 calc(var(--sy, 0) * 0.14px);
+}
+
+.shell-batik-right-middle {
+  width: 26vw;
+  right: -6vw;
+  top: 26%;
+  background-image: url('/batik-soft-flip.png');
+  opacity: var(--opacity-batik-shell-side);
+}
+
+.shell-batik-bottom-right {
+  width: 32.5vw;
+  right: -6.8vw;
+  bottom: -7.2vw;
+  background-image: url('/batik-soft-flip.png');
+  translate: 0 calc(var(--sy, 0) * -0.1px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shell-batik-cluster {
+    translate: none;
+    will-change: auto;
+  }
+}
+
+@media (forced-colors: active) {
+  .shell-batik {
+    display: none;
+  }
+}

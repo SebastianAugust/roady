@@ -6,13 +6,13 @@
   margin-bottom: var(--space-xl);
 }
 
+/* KPI look of prototype-web-cards.html .kpi: dimmed 14px label over a 46px extra-bold number. */
 .stat-tile {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 151px;
-  padding: var(--space-md);
+  padding: var(--space-md) 12px;
   border-radius: var(--radius-tile);
 }
 
@@ -21,16 +21,16 @@
   text-align: center;
   align-items: center;
   gap: var(--space-sm);
-  font-family: var(--font-display);
-  font-size: var(--text-h2);
+  font-size: var(--text-kpi-label);
+  font-weight: var(--weight-bold);
   color: var(--color-text-secondary);
 }
 
 .stat-value {
   display: block;
-  font-family: var(--font-display);
-  font-size: calc(var(--text-display) * 1.4);
-  line-height: 1;
+  font-size: var(--text-kpi);
+  font-weight: var(--weight-extrabold);
+  line-height: 1.1;
   font-variant-numeric: tabular-nums;
 }
 

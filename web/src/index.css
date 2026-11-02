@@ -96,12 +96,39 @@ textarea {
 }
 
 /* Links on glass are near-white, so they keep an underline to stay recognisable. */
-.glass a:not(.btn, .sidebar-item, .sidebar-brand, .menu-card, .account-item) {
+.glass a:not(.btn, .menu-card, .account-item) {
   text-decoration: underline;
 }
 
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .glass {
+    background: var(--color-glass-fallback);
+  }
+}
+
+/* ---- App shell cards (docs/design/prototype-web-cards.html) ----
+   After login the page area is transparent and every block (KPI, table, grid card, form, panel) is its own glass card:
+   white hairline at 28%, a white gradient from 15% to 6%, a 16px blur, radius 20. Scoped to .app-main so Login keeps
+   the glass above. :where() keeps the specificity at two classes, so a component's own hover or pressed border still
+   wins; dialogs stay solid and the round back button keeps its shape. */
+.app-main {
+  /* The text colours of the old glass panel, so text sitting straight on the page keeps 4.5:1 under the light. */
+  --color-text-secondary: var(--color-text-secondary-on-glass);
+  --color-accent: var(--color-accent-on-glass);
+  --color-error: var(--color-error-on-glass);
+}
+
+.app-main :is(.glass, .glass-in):where(:not(.dialog, .back-button)) {
+  background: var(--gradient-card);
+  border: 1px solid var(--color-card-edge);
+  border-radius: var(--radius-glass-card);
+  box-shadow: none;
+  -webkit-backdrop-filter: var(--effect-card-filter);
+  backdrop-filter: var(--effect-card-filter);
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .app-main :is(.glass, .glass-in):where(:not(.dialog, .back-button)) {
     background: var(--color-glass-fallback);
   }
 }
@@ -139,4 +166,10 @@ tr.is-clickable {
 tr.is-clickable:hover,
 tr.is-clickable:focus-within {
   background: var(--color-nav-item);
+}
+
+/* Table rows of the app (prototype-web-cards.html): a light tint and a 3px white line on the left under the pointer. */
+.app-main tbody tr:hover {
+  background: var(--color-nav-item);
+  box-shadow: inset 3px 0 0 var(--color-white);
 }

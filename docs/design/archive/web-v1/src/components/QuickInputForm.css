@@ -1,0 +1,44 @@
+.quick-form {
+  display: grid;
+  gap: var(--space-md);
+  padding: var(--space-lg);
+  border-radius: var(--radius-card);
+  margin-bottom: var(--space-lg);
+}
+
+.quick-form-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
+.quick-form-title {
+  font-size: var(--text-h2);
+}
+
+.quick-form-draft {
+  min-height: 1.4em;
+  color: var(--color-text-secondary);
+  font-size: var(--text-caption);
+}
+
+.quick-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-md);
+}
+
+.quick-full {
+  grid-column: 1 / -1;
+}
+
+.quick-form-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.arsip-heading {
+  margin-bottom: var(--space-sm);
+  font-size: var(--text-h2);
+}

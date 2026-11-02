@@ -1,7 +1,7 @@
 /* Figma: a raised panel (radius ~50) with centered headers at 24px and ~90px rows split by full-width rules. */
+/* prototype-web-cards.html .tw: own glass card (index.css), scrolling sideways inside it. */
 .zone-table-card {
-  padding: var(--space-lg) calc(var(--space-page) + var(--space-md)) var(--space-md);
-  border-radius: calc(var(--radius-sheet) + var(--space-sm));
+  padding: 6px 22px 10px;
   overflow-x: auto;
   margin-bottom: var(--space-xl);
 }
@@ -12,29 +12,26 @@
   font-size: var(--text-body);
 }
 
+/* Headers 15px bold and dimmed; rows roomy (18px), white text, a thin rule above each row. */
 .zone-table thead th {
-  padding: var(--space-sm) var(--space-md);
-  font-family: var(--font-display);
-  font-weight: var(--weight-regular);
-  font-size: var(--text-h2);
-  color: var(--color-text-primary);
+  padding: 16px 10px;
+  font-weight: var(--weight-bold);
+  font-size: 15px;
+  letter-spacing: 0.02em;
+  color: var(--color-text-secondary);
   text-align: center;
 }
 
 .zone-table tbody tr {
-  border-bottom: 1px solid var(--color-row-divider);
-}
-
-.zone-table tbody tr:last-child {
-  border-bottom: none;
+  border-top: 1px solid var(--color-row-rule);
 }
 
 .zone-table tbody th,
 .zone-table td {
-  padding: var(--space-lg) var(--space-md);
+  padding: 18px 10px;
   text-align: center;
   font-variant-numeric: tabular-nums;
-  color: var(--color-text-secondary);
+  color: var(--color-text-primary);
 }
 
 .zone-table tbody th {

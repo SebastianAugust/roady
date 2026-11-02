@@ -1,0 +1,106 @@
+.mapview {
+  position: relative;
+  height: clamp(420px, 66dvh, 640px);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+}
+
+.mapview-frame {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-card);
+}
+
+/* Overlays sit above the map but never in the bottom corners: Google's logo and terms must stay visible. */
+.mapview-legend {
+  position: absolute;
+  top: var(--space-md);
+  right: var(--space-md);
+  z-index: 2;
+  max-width: 240px;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-field);
+  background: var(--color-glass);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--color-border);
+  font-size: var(--text-small);
+}
+
+.mapview-legend-title {
+  margin: 0 0 var(--space-xs);
+  font-weight: var(--weight-extrabold);
+}
+
+.mapview-legend ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: var(--space-xs);
+}
+
+.mapview-legend li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.mapview-legend li > span:last-child {
+  display: grid;
+}
+
+.mapview-legend-name {
+  font-weight: var(--weight-semibold);
+}
+
+.mapview-legend-range,
+.mapview-legend-note {
+  color: var(--color-text-secondary);
+  font-size: var(--text-caption);
+}
+
+.mapview-legend-note {
+  margin: var(--space-sm) 0 0;
+}
+
+.mapview-swatch {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border-style: solid;
+}
+
+/* The hovered zone, top left. */
+.mapview-tooltip {
+  position: absolute;
+  top: var(--space-md);
+  left: var(--space-md);
+  z-index: 2;
+  max-width: calc(100% - 270px);
+  margin: 0;
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-field);
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-menu-border);
+  box-shadow: var(--effect-menu-shadow);
+  font-size: var(--text-small);
+  pointer-events: none;
+}
+
+@media (max-width: 640px) {
+  .mapview-legend {
+    max-width: 170px;
+  }
+
+  .mapview-legend-range,
+  .mapview-legend-note {
+    display: none;
+  }
+
+  .mapview-tooltip {
+    top: auto;
+    bottom: var(--space-xl);
+    max-width: calc(100% - var(--space-md) * 2);
+  }
+}

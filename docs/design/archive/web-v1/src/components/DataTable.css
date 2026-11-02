@@ -1,0 +1,97 @@
+/* Figma 1036:4305: a raised panel with Foto, Lokasi, Kejadian, Tanggal, Aksi and a rule under every row. */
+.data-table-card {
+  padding: var(--space-md) var(--space-lg);
+  border-radius: calc(var(--radius-sheet) + var(--space-sm));
+  overflow-x: auto;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table thead th {
+  padding: var(--space-sm) var(--space-md);
+  font-family: var(--font-display);
+  font-weight: var(--weight-regular);
+  font-size: var(--text-h2);
+  text-align: left;
+}
+
+.data-table tbody tr {
+  border-bottom: 1px solid var(--color-row-divider);
+}
+
+.data-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.data-table td,
+.data-table tbody th {
+  padding: var(--space-sm) var(--space-md);
+  text-align: left;
+  vertical-align: middle;
+  color: var(--color-text-secondary);
+}
+
+.data-table tbody th {
+  font-weight: var(--weight-regular);
+  color: var(--color-text-primary);
+}
+
+.data-table tbody th a {
+  color: var(--color-text-primary);
+}
+
+.data-id {
+  display: block;
+  font-size: var(--text-caption);
+  color: var(--color-text-primary);
+}
+
+.verif-thumb {
+  display: block;
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: var(--radius-field);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+}
+
+.verif-actions {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.data-table td.data-wrap {
+  max-width: 360px;
+}
+
+.data-who {
+  display: block;
+  color: var(--color-text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.data-who-name {
+  display: block;
+  font-size: var(--text-caption);
+  color: var(--color-text-secondary);
+}
+
+/* Ubah / Hapus beside each other in a row. */
+.row-actions {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.data-who-name {
+  white-space: nowrap;
+}
+
+/* A row that opens something (tabindex 0, Enter or click): keyboard focus is visible on the whole row. */
+tr.is-clickable:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: -2px;
+}

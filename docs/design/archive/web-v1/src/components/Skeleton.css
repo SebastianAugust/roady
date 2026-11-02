@@ -1,0 +1,5 @@
+/* The static look of .skeleton and the sliding highlight (.shimmer) live in motion.css; here only the shape. */
+.skeleton {
+  border-radius: var(--radius-field);
+  max-width: 100%;
+}

@@ -1,0 +1,16 @@
+.table-skeleton {
+  padding: var(--space-md) var(--space-lg);
+  border-radius: calc(var(--radius-sheet) + var(--space-sm));
+}
+
+.table-skeleton-row {
+  display: grid;
+  gap: var(--space-md);
+  align-items: center;
+  padding: var(--space-md);
+  border-bottom: 1px solid var(--color-row-divider);
+}
+
+.table-skeleton-row:last-of-type {
+  border-bottom: none;
+}

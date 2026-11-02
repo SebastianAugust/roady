@@ -5,6 +5,7 @@
   margin-bottom: var(--space-md);
 }
 
+/* prototype-web-cards.html .kpi: dimmed 14px label, 46px extra-bold number. */
 .kpi-card {
   padding: var(--space-md) var(--space-lg);
   border-radius: var(--radius-card);
@@ -14,12 +15,13 @@
 
 .kpi-label {
   color: var(--color-text-secondary);
-  font-size: var(--text-small);
+  font-size: var(--text-kpi-label);
+  font-weight: var(--weight-bold);
 }
 
 .kpi-value {
-  font-family: var(--font-display);
-  font-size: calc(var(--text-display) * 1.5);
+  font-size: var(--text-kpi);
+  font-weight: var(--weight-extrabold);
   line-height: 1.1;
 }
 

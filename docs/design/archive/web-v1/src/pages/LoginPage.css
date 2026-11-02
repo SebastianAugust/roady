@@ -1,0 +1,70 @@
+/* Figma 1036:1392 (Login), as one glass card (max 380px) centred on the screen: wordmark (link to /login), title and
+   subtitle, then the form. Field and button are both 44px high. The card and its parts rise in on load (motion.css). */
+.login {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: var(--space-xl) var(--space-md);
+}
+
+.login-card {
+  width: 100%;
+  max-width: 380px;
+  padding: 28px;
+  border-radius: var(--radius-tile);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.login-brand {
+  align-self: center;
+  color: var(--color-text-primary);
+  font-family: var(--font-display);
+  font-size: var(--text-brand);
+  line-height: 1.2;
+  text-decoration: none;
+}
+
+.login-head {
+  text-align: center;
+}
+
+.login-title {
+  font-size: var(--text-h2);
+}
+
+.login-subtitle {
+  margin-top: 2px;
+  color: var(--color-text-secondary);
+  font-size: var(--text-small);
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.login-form .field-label {
+  font-size: var(--text-small);
+}
+
+.login-form .field-input {
+  min-height: var(--size-touch-min);
+  font-size: var(--text-small);
+}
+
+/* Room for one line of message, so the button does not jump when an error appears. */
+.login-error {
+  min-height: 2.6em;
+  text-align: center;
+  font-size: var(--text-caption);
+}
+
+.login-submit {
+  width: 100%;
+  min-height: var(--size-touch-min);
+}

@@ -1,0 +1,75 @@
+.palette-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 1400;
+  background: var(--color-overlay);
+}
+
+.palette {
+  position: fixed;
+  z-index: 1401;
+  top: 14vh;
+  left: 50%;
+  translate: -50% 0;
+  width: min(92vw, 560px);
+  overflow: hidden;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--color-menu-border);
+  background: var(--color-surface);
+  box-shadow: var(--effect-menu-shadow);
+  color: var(--color-text-primary);
+}
+
+.palette-input {
+  width: 100%;
+  height: 52px;
+  padding: 0 var(--space-md);
+  border: 0;
+  border-bottom: 1px solid var(--color-border);
+  background: none;
+  font-size: var(--text-body);
+}
+
+.palette-input::placeholder {
+  color: var(--color-placeholder);
+}
+
+/* The box itself is the visual frame; an outline on the bare input would be cut by the box's overflow. */
+.palette-input:focus-visible {
+  outline: none;
+}
+
+.palette-list {
+  max-height: 300px;
+  margin: 0;
+  padding: var(--space-xs);
+  list-style: none;
+  overflow: auto;
+}
+
+.palette-item {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-field);
+  cursor: pointer;
+}
+
+.palette-item[aria-selected='true'] {
+  background: var(--color-selection);
+}
+
+.palette-item-label {
+  align-self: center;
+  color: var(--color-text-secondary);
+  font-size: var(--text-caption);
+}
+
+.palette-empty {
+  margin: 0;
+  padding: var(--space-lg) var(--space-md);
+  color: var(--color-text-secondary);
+  text-align: center;
+  font-size: var(--text-small);
+}

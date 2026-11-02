@@ -1,0 +1,17 @@
+/* Figma form variant: the round back button at the top-left of the panel, the two form columns beside it. */
+.input-page {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-lg);
+}
+
+.input-page-body {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 900px) {
+  .input-page {
+    flex-direction: column;
+  }
+}

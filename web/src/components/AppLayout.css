@@ -1,71 +1,27 @@
-/* Side menu | content column. The column holds the sticky top bar and the large glass panel (radius 64 in
-   glass-reference.html) with the page. */
+/* prototype-web-cards.html .app: the shell grows with its page and clips the batik that hangs past the edges.
+   overflow: clip (not hidden) does not create a scroll container, so the pill nav can stay sticky. */
 .app-shell {
-  display: grid;
-  grid-template-columns: calc(var(--size-sidebar) + var(--space-sm)) minmax(0, 1fr); /* the menu is 240px, plus its 10px margin */
+  position: relative;
   min-height: 100vh;
   min-height: 100dvh;
+  overflow: clip;
 }
 
-.app-col {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  padding: 0 var(--space-md) var(--space-md);
+/* Header, nav and page above the batik, with the prototype's 24px gutters (16px on phones). */
+.app-frame {
+  position: relative;
+  z-index: 1;
+  padding-inline: max(24px, env(safe-area-inset-left, 0px)) max(24px, env(safe-area-inset-right, 0px));
 }
 
+/* The page area is transparent: every block inside is its own glass card (index.css, "App shell cards"). */
 .app-main {
-  width: 100%;
-  max-width: var(--size-content-max);
-  margin: var(--space-md) auto 0;
-  padding: var(--space-lg) var(--space-xl) var(--space-xl);
-  border-radius: var(--radius-panel);
+  margin: 22px 0 48px;
+  min-height: 520px;
 }
 
-/* Beranda: a panel that takes the rest of the screen under the top bar, so the page never scrolls. */
-.app-shell-fit {
-  height: 100vh;
-  height: 100dvh;
-  min-height: 0;
-  grid-template-rows: minmax(0, 1fr);
-  overflow: hidden;
-}
-
-.app-shell-fit .app-col {
-  min-height: 0;
-}
-
-.app-shell-fit .app-main {
-  flex: 1;
-  min-height: 0;
-  margin-bottom: 0;
-  display: flex;
-  overflow: hidden;
-}
-
-/* Under 760px the menu is a bar above the page (Sidebar.css), so there is one column. */
 @media (max-width: 759.98px) {
-  .app-shell {
-    grid-template-columns: minmax(0, 1fr);
-  }
-  .app-col {
-    padding-inline: var(--space-sm);
-  }
-  .app-main {
-    padding: var(--space-md);
-    border-radius: var(--radius-card);
-  }
-}
-
-@media (max-width: 900px) {
-  /* The stacked cards need more room than the screen, so Beranda scrolls from here down. */
-  .app-shell-fit {
-    height: auto;
-    min-height: 100dvh;
-    grid-template-rows: none;
-    overflow: visible;
-  }
-  .app-shell-fit .app-main {
-    overflow: visible;
+  .app-frame {
+    padding-inline: max(16px, env(safe-area-inset-left, 0px)) max(16px, env(safe-area-inset-right, 0px));
   }
 }
