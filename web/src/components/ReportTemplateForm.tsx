@@ -1,9 +1,9 @@
 import { useMemo, useState, type FormEvent } from 'react';
-import { ApiError } from '../api';
+import { api, ApiError } from '../api';
 import { useAuth } from '../auth/useAuth';
 import { isInBandungRaya } from '../config';
 import { errorMessage } from '../hooks/useApi';
-import { reverseGeocode } from '../lib/reverseGeocode';
+import { distanceMeters } from '../lib/geo';
 import { buildAccidentRequest, serverErrorsToForm } from '../lib/reportRequest';
 import { emptyValues, LOCATION_KEYS, TEMPLATES, validateReport, type JenisLaporan, type ReportValues, type TemplateField } from '../lib/reportTemplates';
 import type { CreateAccidentRequest } from '../types';
@@ -102,10 +102,15 @@ export function ReportTemplateForm({ onSubmit }: Props) {
   function pickPoint(lat: number, lng: number) {
     set(LOCATION_KEYS.latitude, String(lat));
     set(LOCATION_KEYS.longitude, String(lng));
-    // Fill the address from the point when it is still empty (needs the Google key; without it the officer types it).
-    void reverseGeocode(lat, lng).then((address) => {
-      if (address) setValues((v) => (text(v[LOCATION_KEYS.alamat]).trim() ? v : { ...v, [LOCATION_KEYS.alamat]: address }));
-    });
+    // No geocoding: when the address is still empty and the point lies inside a known zone, take that zone's place name.
+    // Outside every zone the officer types the address.
+    void api
+      .getDishubZones()
+      .then((zones) => {
+        const zone = zones.find((z) => z.lokasi_teks && distanceMeters(lat, lng, z.center_latitude, z.center_longitude) <= z.radius_zona);
+        if (zone?.lokasi_teks) setValues((v) => (text(v[LOCATION_KEYS.alamat]).trim() ? v : { ...v, [LOCATION_KEYS.alamat]: zone.lokasi_teks ?? '' }));
+      })
+      .catch(() => undefined); // The lookup is a convenience; a failure leaves the field for the officer.
   }
 
   function renderField(f: TemplateField) {

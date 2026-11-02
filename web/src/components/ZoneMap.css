@@ -1,24 +1,14 @@
 .peta-card {
-  position: relative;
   height: clamp(440px, 72dvh, 680px);
   border-radius: var(--radius-card);
-  overflow: hidden;
-  border: 1px solid var(--color-border);
-  background: var(--color-surface);
 }
 
-.peta-map {
-  position: absolute;
-  inset: 0;
-  background: var(--color-surface);
-}
-
-/* Glass legend. Above Leaflet's panes (z-index 400) but below its controls (1000). */
+/* Overlays sit above the map canvas but never in the bottom corners: Google's logo and terms must stay visible. */
 .peta-legend {
   position: absolute;
   top: var(--space-md);
   right: var(--space-md);
-  z-index: 500;
+  z-index: 2;
   max-width: 260px;
   padding: var(--space-sm) var(--space-md);
   border-radius: var(--radius-field);
@@ -73,11 +63,25 @@
   border-style: solid;
 }
 
-/* Short notes over the map: the active filter (top left, under the zoom buttons) and a failed basemap (bottom). */
-.peta-filter,
-.peta-notice {
+/* Top left: the active filter notes, then the info panel of the picked zone. */
+.peta-left {
   position: absolute;
-  z-index: 500;
+  top: var(--space-md);
+  left: var(--space-md);
+  z-index: 2;
+  display: grid;
+  gap: var(--space-sm);
+  justify-items: start;
+  width: min(320px, calc(100% - var(--space-md) * 2));
+  max-height: calc(100% - var(--space-md) * 2);
+  pointer-events: none;
+}
+
+.peta-left > * {
+  pointer-events: auto;
+}
+
+.peta-chip {
   margin: 0;
   padding: var(--space-xs) var(--space-md);
   border-radius: var(--radius-field);
@@ -87,85 +91,74 @@
   font-size: var(--text-small);
 }
 
-.peta-filter {
-  left: 60px;
-  top: var(--space-md);
+.peta-info {
+  position: relative;
+  width: 100%;
+  display: grid;
+  gap: var(--space-xs);
+  padding: var(--space-md);
+  border-radius: var(--radius-field);
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-menu-border);
+  box-shadow: var(--effect-menu-shadow);
+  overflow: auto;
+  font-size: var(--text-small);
 }
 
-.peta-notice {
-  left: var(--space-md);
-  right: var(--space-md);
-  bottom: var(--space-xl);
+.peta-info p {
+  margin: 0;
+}
+
+.peta-info-close {
+  position: absolute;
+  top: var(--space-xs);
+  right: var(--space-xs);
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: var(--radius-field);
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.peta-info-close:hover {
+  color: var(--color-text-primary);
+  background: var(--color-menu-item-hover);
 }
 
 .peta-status {
   position: absolute;
   left: 50%;
-  bottom: var(--space-lg);
-  transform: translateX(-50%);
-  z-index: 500;
-  min-width: 320px;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  min-width: 280px;
   border-radius: var(--radius-field);
   background: var(--color-surface-raised);
   border: 1px solid var(--color-border);
 }
 
-/* Leaflet chrome in the dark theme. */
-.peta-map .leaflet-popup-content-wrapper,
-.peta-map .leaflet-popup-tip {
-  background: var(--color-surface-raised);
-  color: var(--color-text-primary);
-  border: 1px solid var(--color-border);
-  box-shadow: none;
-}
-
-.peta-map .leaflet-popup-close-button {
-  color: var(--color-text-secondary);
-}
-
-.peta-map .leaflet-control-zoom a {
-  background: var(--color-surface-raised);
-  color: var(--color-text-primary);
-  border-color: var(--color-border);
-}
-
-.peta-map .leaflet-control-attribution {
-  background: var(--color-glass);
-  color: var(--color-text-secondary);
-}
-
-.peta-map .leaflet-control-attribution a {
-  color: var(--color-accent);
-}
-
-.zone-popup {
-  display: grid;
-  gap: var(--space-xs);
-  font-family: var(--font-body);
-  font-size: var(--text-small);
-}
-
-.zone-popup p {
-  margin: 0;
-}
-
 .zone-popup-title {
   font-weight: var(--weight-extrabold);
   font-size: var(--text-body);
+  padding-right: 32px;
 }
 
-.zone-popup dl {
+.peta-info dl {
   display: grid;
   grid-template-columns: auto auto;
   gap: 2px var(--space-md);
   margin: 0;
 }
 
-.zone-popup dt {
+.peta-info dt {
   color: var(--color-text-secondary);
 }
 
-.zone-popup dd {
+.peta-info dd {
   margin: 0;
   text-align: right;
   font-weight: var(--weight-semibold);
@@ -177,14 +170,21 @@
 
 .zone-popup-link {
   font-weight: var(--weight-semibold);
-}
-
-/* Leaflet colours every link in its container #0078A8, which is unreadable on the dark popup; use the accent instead. */
-.peta-map .leaflet-popup-content a.zone-popup-link {
   color: var(--color-accent);
   text-decoration: underline;
 }
 
-.zone-popup > .risk-badge {
+.peta-info > .risk-badge {
   justify-self: start;
+}
+
+@media (max-width: 640px) {
+  .peta-legend {
+    max-width: 170px;
+  }
+
+  .peta-legend-range,
+  .peta-legend-note {
+    display: none;
+  }
 }

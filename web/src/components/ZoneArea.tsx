@@ -1,7 +1,5 @@
-import { Circle, CircleMarker } from 'react-leaflet';
-import type { ReactNode } from 'react';
-import { ZONE_MAP } from '../config';
-import { RISK_COLOR } from '../lib/risk';
+import { Circle, Marker } from '@vis.gl/react-google-maps';
+import { RISK_COLOR, RISK_LABEL, RISK_ORDER } from '../lib/risk';
 import { colors } from '../theme/tokens';
 import type { Zona } from '../types';
 
@@ -16,53 +14,61 @@ export const AREA_DIM_OUTLINE_OPACITY = 0.45;
 
 export type ZoneEmphasis = 'selected' | 'dim';
 
-const metersPerPixel = (latitude: number, zoom: number) => (156543.03392 * Math.cos((latitude * Math.PI) / 180)) / 2 ** zoom;
-
-type Shape = Pick<Zona, 'center_latitude' | 'center_longitude' | 'radius_zona' | 'kategori_risiko'>;
+type Shape = Pick<Zona, 'zona_id' | 'center_latitude' | 'center_longitude' | 'radius_zona' | 'kategori_risiko'>;
 
 interface Props {
   zone: Shape;
-  /** Current map zoom. When given, a zone smaller than ZONE_MAP.minPixelRadius on screen is drawn at that size instead. */
-  zoom?: number;
   /** Highlights (selected) or dims the zone while another one is picked. */
   emphasis?: ZoneEmphasis;
+  /** Draws the zone's centre marker (white edge, risk colour). The detail maps have their own pin and leave it off. */
+  marker?: boolean;
+  /** Makes the circle and the marker clickable. */
+  onSelect?: (zoneId: number) => void;
 }
-
-/** True when the real circle would be too small to see at this zoom. */
-const tooSmall = ({ zone, zoom }: Props) => zoom !== undefined && zone.radius_zona / metersPerPixel(zone.center_latitude, zoom) < ZONE_MAP.minPixelRadius;
 
 /**
- * The thin dark edge under an area (draw all casings first, then all areas, so no casing covers a neighbour's outline).
- * It keeps the yellow outline readable on the light basemap.
+ * A zone as an AREA: a circle of its own radius_zona around its centre, plus (on the zone map) a marker at the centre so
+ * a zone stays visible and clickable when zoomed far out. Higher risk and the picked zone are drawn on top.
  */
-export function ZoneAreaCasing(props: Props) {
-  const { zone, emphasis } = props;
-  const weight = (emphasis === 'selected' ? AREA_SELECTED_OUTLINE_PX : AREA_OUTLINE_PX) + 2;
-  const style = { color: colors.mapAreaCasing, weight, fill: false, interactive: false, opacity: emphasis === 'dim' ? AREA_DIM_OUTLINE_OPACITY : 1 };
-  return tooSmall(props) ? (
-    <CircleMarker center={[zone.center_latitude, zone.center_longitude]} radius={ZONE_MAP.minPixelRadius} pathOptions={style} />
-  ) : (
-    <Circle center={[zone.center_latitude, zone.center_longitude]} radius={zone.radius_zona} pathOptions={style} />
-  );
-}
-
-/** The zone area itself: no pin, no dot. Children (Popup, Tooltip) attach to the shape. */
-export function ZoneArea({ children, ...props }: Props & { children?: ReactNode }) {
-  const { zone, emphasis } = props;
+export function ZoneArea({ zone, emphasis, marker = false, onSelect }: Props) {
   const color = RISK_COLOR[zone.kategori_risiko];
-  const style =
-    emphasis === 'selected'
-      ? { color, weight: AREA_SELECTED_OUTLINE_PX, fillColor: color, fillOpacity: AREA_SELECTED_FILL_OPACITY }
-      : emphasis === 'dim'
-        ? { color, weight: AREA_OUTLINE_PX, opacity: AREA_DIM_OUTLINE_OPACITY, fillColor: color, fillOpacity: AREA_DIM_FILL_OPACITY }
-        : { color, weight: AREA_OUTLINE_PX, fillColor: color, fillOpacity: AREA_FILL_OPACITY };
-  return tooSmall(props) ? (
-    <CircleMarker center={[zone.center_latitude, zone.center_longitude]} radius={ZONE_MAP.minPixelRadius} pathOptions={style}>
-      {children}
-    </CircleMarker>
-  ) : (
-    <Circle center={[zone.center_latitude, zone.center_longitude]} radius={zone.radius_zona} pathOptions={style}>
-      {children}
-    </Circle>
+  const position = { lat: zone.center_latitude, lng: zone.center_longitude };
+  const selected = emphasis === 'selected';
+  const dim = emphasis === 'dim';
+  const zIndex = (selected ? 100 : 0) + (RISK_ORDER.length - RISK_ORDER.indexOf(zone.kategori_risiko));
+  const select = onSelect ? () => onSelect(zone.zona_id) : undefined;
+  return (
+    <>
+      <Circle
+        center={position}
+        radius={zone.radius_zona}
+        strokeColor={color}
+        strokeWeight={selected ? AREA_SELECTED_OUTLINE_PX : AREA_OUTLINE_PX}
+        strokeOpacity={dim ? AREA_DIM_OUTLINE_OPACITY : 1}
+        fillColor={color}
+        fillOpacity={selected ? AREA_SELECTED_FILL_OPACITY : dim ? AREA_DIM_FILL_OPACITY : AREA_FILL_OPACITY}
+        clickable={onSelect !== undefined}
+        zIndex={zIndex}
+        onClick={select}
+      />
+      {marker ? (
+        <Marker
+          position={position}
+          title={`Zona ${zone.zona_id} · ${RISK_LABEL[zone.kategori_risiko]}`}
+          clickable={onSelect !== undefined}
+          opacity={dim ? 0.55 : 1}
+          zIndex={zIndex + 10}
+          icon={{
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: selected ? 11 : 8,
+            fillColor: color,
+            fillOpacity: 1,
+            strokeColor: colors.white,
+            strokeWeight: 2,
+          }}
+          onClick={select}
+        />
+      ) : null}
+    </>
   );
 }

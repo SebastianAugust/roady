@@ -1,11 +1,10 @@
-import { CircleMarker, MapContainer, TileLayer } from 'react-leaflet';
-import { MAP_TILES } from '../config';
 import { RISK_LABEL } from '../lib/risk';
-import { colors } from '../theme/tokens';
 import type { Zona } from '../types';
-import { MapResizer } from './MapResizer';
+import { BaseMap } from './BaseMap';
+import { MapFrame } from './MapFrame';
+import { PlacePin } from './PlacePin';
 import { RiskDot } from './RiskDot';
-import { ZoneArea, ZoneAreaCasing } from './ZoneArea';
+import { ZoneArea } from './ZoneArea';
 import './MiniMap.css';
 
 interface Props {
@@ -22,49 +21,24 @@ interface Props {
 }
 
 /**
- * The map with one pin from the Figma detail and card frames. The pin is a place, not a risk category, so it is dark
- * with a white edge (readable on the light basemap). When the zone is known its circle is drawn around it, so the
- * detail shows where the zone starts and ends.
+ * The map with one pin from the Figma detail and card frames (Google Maps, dark style). The pin is a place, not a risk
+ * category. When the zone is known its circle is drawn around it, so the detail shows where the zone starts and ends.
+ * Every map that is shown is a billed Google map load, so `still` previews in long lists are worth a thought.
  */
 export function MiniMap({ latitude, longitude, zoom = 15, still = false, className, zone, pin = true }: Props) {
+  const position = { lat: latitude, lng: longitude };
   return (
-    <div className={`mini-map${className ? ` ${className}` : ''}`} aria-hidden={still || undefined}>
-      <MapContainer
-        center={[latitude, longitude]}
-        zoom={zoom}
-        className="mini-map-canvas"
-        dragging={!still}
-        scrollWheelZoom={false}
-        doubleClickZoom={!still}
-        touchZoom={!still}
-        boxZoom={!still}
-        keyboard={!still}
-        zoomControl={!still}
-        attributionControl={!still}
-      >
-        <TileLayer url={MAP_TILES.url} attribution={MAP_TILES.attribution} subdomains={MAP_TILES.subdomains} maxZoom={MAP_TILES.maxZoom} />
-        <MapResizer />
-        {zone ? (
-          <>
-            <ZoneAreaCasing zone={zone} />
-            <ZoneArea zone={zone} />
-          </>
-        ) : null}
-        {pin ? (
-          <CircleMarker
-            center={[latitude, longitude]}
-            radius={still ? 7 : 9}
-            // markerPane sits above the zone area whatever order they were added in (the zone arrives after its request).
-            pathOptions={{ color: colors.white, weight: 2, fillColor: colors.mapPin, fillOpacity: 1, pane: 'markerPane' }}
-          />
-        ) : null}
-      </MapContainer>
+    <MapFrame className={`mini-map${className ? ` ${className}` : ''}`} compact={still} label="Peta lokasi">
+      <BaseMap key={`${latitude},${longitude}`} center={position} zoom={zoom} still={still}>
+        {zone ? <ZoneArea zone={zone} /> : null}
+        {pin ? <PlacePin position={position} size={still ? 7 : 9} /> : null}
+      </BaseMap>
       {zone ? (
         <p className="mini-map-zone">
           <RiskDot kategori={zone.kategori_risiko} />
           Zona {zone.zona_id} · {RISK_LABEL[zone.kategori_risiko]} · radius {zone.radius_zona} m
         </p>
       ) : null}
-    </div>
+    </MapFrame>
   );
 }

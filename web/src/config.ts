@@ -13,31 +13,25 @@ export const isInBandungRaya = (lat: number, lng: number) =>
 /** Query radius that covers all of Bandung Raya from its center (API-003 radius is a proposal in docs/03). */
 export const ZONES_FETCH_RADIUS_M = 40000;
 
-// Light raster tiles (docs/05 #18, #35). Default: Stadia "Alidade Smooth", which works without a key on localhost; a
-// deployed site needs its domain registered on a (free) Stadia account, or a key in VITE_MAP_TILE_URL
-// (…png?api_key=…). CARTO (Positron and Dark Matter alike) cannot be used: since 28-10-2026 every CARTO tile is an image
-// that reads "API KEY REQUIRED" (checked with curl: light_all, dark_all and voyager all answer HTTP 200 with that picture).
-const STADIA_LIGHT = 'https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png';
-const STADIA_ATTRIBUTION =
-  '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+/**
+ * Google Maps JavaScript API key. Empty = the maps show "Peta belum dikonfigurasi" instead of crashing.
+ * Restrict the key to this site (HTTP referrer) and to the Maps JavaScript API; keep it in .env, never in the repo.
+ */
+export const GOOGLE_MAPS_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY ?? '';
 
-export const MAP_TILES = {
-  url: import.meta.env.VITE_MAP_TILE_URL || STADIA_LIGHT,
-  attribution: import.meta.env.VITE_MAP_TILE_ATTRIBUTION || STADIA_ATTRIBUTION,
-  // Only used when the URL has {s}.
-  subdomains: 'abc',
-  maxZoom: 19,
-} as const;
-
-/** Zone map limits: the view cannot leave Bandung Raya (the box of BANDUNG_RAYA plus a margin) or zoom out past the region. */
-const MARGIN_DEG = 0.05;
-export const ZONE_MAP = {
-  bounds: [
-    [BANDUNG_RAYA.minLat - MARGIN_DEG, BANDUNG_RAYA.minLng - MARGIN_DEG],
-    [BANDUNG_RAYA.maxLat + MARGIN_DEG, BANDUNG_RAYA.maxLng + MARGIN_DEG],
-  ] as [[number, number], [number, number]],
+// Wide enough that the whole viewport at the start zoom (about 0.85 degrees across on a 1280 px map) fits inside the bounds;
+// a narrower box makes Google pin the map centre to the middle of the box and ignore where we point the camera.
+const MARGIN_DEG = 0.25;
+/** Start view of the zone map and the limits it cannot leave: Bandung Raya (the box above plus a margin), no further out than the region. */
+export const MAP_VIEW = {
+  center: { lat: BANDUNG_RAYA.center.latitude, lng: BANDUNG_RAYA.center.longitude },
+  zoom: 11,
   minZoom: 10,
-  maxZoom: 17,
-  /** A zone whose real radius is smaller than this many pixels (far zoom) is drawn at this size so it stays visible and clickable. */
-  minPixelRadius: 9,
+  maxZoom: 18,
+  bounds: {
+    south: BANDUNG_RAYA.minLat - MARGIN_DEG,
+    north: BANDUNG_RAYA.maxLat + MARGIN_DEG,
+    west: BANDUNG_RAYA.minLng - MARGIN_DEG,
+    east: BANDUNG_RAYA.maxLng + MARGIN_DEG,
+  },
 } as const;

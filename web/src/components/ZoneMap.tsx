@@ -1,19 +1,17 @@
-import { useEffect, useMemo, useState } from 'react';
-import { MapContainer, Popup, TileLayer, Tooltip, useMap, useMapEvents } from 'react-leaflet';
-import { latLng, latLngBounds } from 'leaflet';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useMap } from '@vis.gl/react-google-maps';
 import { Link } from 'react-router-dom';
-import { BANDUNG_RAYA, MAP_TILES, ZONE_MAP } from '../config';
+import { MAP_VIEW } from '../config';
 import { formatCoords, formatDateTime } from '../lib/format';
 import { RISK_COLOR, RISK_LABEL, RISK_ORDER } from '../lib/risk';
 import { zonaDetail } from '../routes';
 import type { ZonaTeratas } from '../types';
-import { AREA_FILL_OPACITY, AREA_OUTLINE_PX, ZoneArea, ZoneAreaCasing } from './ZoneArea';
-import { LoadState } from './LoadState';
-import { MapResizer } from './MapResizer';
+import { BaseMap } from './BaseMap';
+import { EmptyState } from './EmptyState';
+import { MapFrame } from './MapFrame';
 import { RiskBadge } from './RiskBadge';
+import { AREA_FILL_OPACITY, AREA_OUTLINE_PX, ZoneArea, type ZoneEmphasis } from './ZoneArea';
 import './ZoneMap.css';
-
-const CENTER: [number, number] = [BANDUNG_RAYA.center.latitude, BANDUNG_RAYA.center.longitude];
 
 /** Legend rows: category, and what the percentile limits of docs/01 step 5 mean. */
 const LEGEND: Record<(typeof RISK_ORDER)[number], string> = {
@@ -22,114 +20,69 @@ const LEGEND: Record<(typeof RISK_ORDER)[number], string> = {
   hijau: 'skor kurang dari 50',
 };
 
-/** Fits the view to every zone (with its radius) whenever the set of zones changes. */
-function FitToZones({ zones }: { zones: ZonaTeratas[] }) {
-  const map = useMap();
-  const key = zones.map((z) => z.zona_id).join(',');
-  useEffect(() => {
-    if (!zones.length) return;
-    const bounds = latLngBounds(zones.map((z) => latLng(z.center_latitude, z.center_longitude).toBounds(z.radius_zona * 2)).flatMap((b) => [b.getSouthWest(), b.getNorthEast()]));
-    map.fitBounds(bounds, { padding: [48, 48], maxZoom: 15 });
-    // The key stands for the zone list: refit when zones appear, disappear or are filtered, not on every render.
-  }, [map, key]); // eslint-disable-line react-hooks/exhaustive-deps
-  return null;
-}
+/** Zoom that shows one zone with its surroundings (a 300 m circle fills about a third of the map). */
+const FOCUS_ZOOM = 15;
 
-/** Reports the zoom level, so zones too small to see are drawn at a minimum size (ZoneArea). */
-function ZoomTracker({ onZoom }: { onZoom: (zoom: number) => void }) {
-  const map = useMapEvents({ zoomend: () => onZoom(map.getZoom()) });
-  useEffect(() => onZoom(map.getZoom()), [map, onZoom]);
+/** Moves to the zone picked in the dropdown, and back to the start view when the pick is cleared. */
+function ZoneCamera({ zone }: { zone: ZonaTeratas | undefined }) {
+  const map = useMap();
+  const moved = useRef(false);
+  useEffect(() => {
+    if (!map) return;
+    if (zone) {
+      // One atomic move: panning and zooming separately lets the bounds restriction undo the pan at the old zoom.
+      map.moveCamera({ center: { lat: zone.center_latitude, lng: zone.center_longitude }, zoom: FOCUS_ZOOM });
+      moved.current = true;
+    } else if (moved.current) {
+      map.moveCamera({ center: MAP_VIEW.center, zoom: MAP_VIEW.zoom });
+      moved.current = false;
+    }
+  }, [map, zone]);
   return null;
 }
 
 interface Props {
   zones: ZonaTeratas[];
-  /** The zone picked above the table: it is highlighted, the view fits to it and the other zones are dimmed. */
+  /** The zone picked above the table: it is highlighted, the view moves to it and the other zones are dimmed. */
   selectedId?: number;
   /** Text for a filtered view, e.g. "Zona Merah", shown on the map so a missing zone is not a mystery. */
   filterLabel?: string;
 }
 
 /**
- * Peta Zona Risiko, the "Peta" tab of Statistik Zona (Dishub only; no web frame in Figma). Every zone is an AREA: a
- * circle of its own radius_zona around its centre, filled 30% and outlined 2 px in its risk colour, so where a zone
- * starts and ends is visible and overlapping zones still read through their outlines. There are no pins and no clusters.
- * A click opens a compact popup with a link to the Detail Zona page. The map pans and zooms, fits all zones at first
- * and stays inside Bandung Raya. At a far zoom a zone whose real radius is under a few pixels is drawn a little larger.
+ * Peta Zona Risiko, the "Peta" tab of Statistik Zona (Dishub only; no web frame in Figma), on Google Maps in the dark
+ * Roady style, starting on Bandung Raya at zoom 11. Every zone is an AREA (a circle of its own radius_zona, filled 30%,
+ * outlined 2 px in its risk colour) with a marker at its centre, so it stays visible and clickable when zoomed far out.
+ * A click on a marker or area opens the info panel (name, score, number of incidents, link to Detail Zona); a click on
+ * the map or on the close button closes it. The map pans and zooms and stays inside Bandung Raya.
  */
 export function ZoneMap({ zones, selectedId, filterLabel }: Props) {
-  const [zoom, setZoom] = useState<number>();
-  // Casings first, then the areas, with the highest risk on top; the picked zone goes last so it is drawn over its neighbours.
+  // A click remembers which dropdown pick it was made under; once the dropdown changes the pick wins again.
+  const [clicked, setClicked] = useState<{ id: number | null; forSelected: number | undefined }>();
+  const openId = clicked && clicked.forSelected === selectedId ? clicked.id : selectedId;
+  const panelZone = openId == null ? undefined : zones.find((z) => z.zona_id === openId);
+  const selected = selectedId === undefined ? undefined : zones.find((z) => z.zona_id === selectedId);
+  const highlightId = openId ?? selectedId;
+
+  // Highest risk last (on top), the highlighted zone after all of them.
   const ordered = useMemo(
     () =>
       [...zones].sort(
-        (a, b) => Number(a.zona_id === selectedId) - Number(b.zona_id === selectedId) || RISK_ORDER.indexOf(b.kategori_risiko) - RISK_ORDER.indexOf(a.kategori_risiko),
+        (a, b) => Number(a.zona_id === highlightId) - Number(b.zona_id === highlightId) || RISK_ORDER.indexOf(b.kategori_risiko) - RISK_ORDER.indexOf(a.kategori_risiko),
       ),
-    [zones, selectedId],
+    [zones, highlightId],
   );
-  const selected = selectedId === undefined ? undefined : zones.find((z) => z.zona_id === selectedId);
-  const emphasisOf = (z: ZonaTeratas) => (selected ? (z.zona_id === selected.zona_id ? ('selected' as const) : ('dim' as const)) : undefined);
-  // A basemap that fails to load (blocked, a tile account that refuses the domain) is announced instead of leaving a silent grey map.
-  const [tiles, setTiles] = useState({ loaded: 0, failed: 0 });
+  const emphasisOf = (z: ZonaTeratas): ZoneEmphasis | undefined =>
+    z.zona_id === highlightId ? 'selected' : selected ? 'dim' : undefined;
 
   return (
-    <section className="peta-card" aria-label="Peta zona risiko. Daftar zona yang sama tersedia di tab Tabel.">
-      <MapContainer
-        center={CENTER}
-        zoom={12}
-        minZoom={ZONE_MAP.minZoom}
-        maxZoom={ZONE_MAP.maxZoom}
-        maxBounds={ZONE_MAP.bounds}
-        maxBoundsViscosity={1}
-        className="peta-map"
-        scrollWheelZoom
-      >
-        <TileLayer
-          url={MAP_TILES.url}
-          attribution={MAP_TILES.attribution}
-          subdomains={MAP_TILES.subdomains}
-          maxZoom={ZONE_MAP.maxZoom}
-          eventHandlers={{
-            tileload: () => setTiles((t) => ({ ...t, loaded: t.loaded + 1 })),
-            tileerror: () => setTiles((t) => ({ ...t, failed: t.failed + 1 })),
-          }}
-        />
-        <MapResizer />
-        <ZoomTracker onZoom={setZoom} />
-        <FitToZones zones={selected ? [selected] : zones} />
+    <MapFrame className="peta-card" label="Peta zona risiko. Daftar zona yang sama tersedia di tab Tabel.">
+      <BaseMap restrict onClick={() => setClicked({ id: null, forSelected: selectedId })}>
+        <ZoneCamera zone={selected} />
         {ordered.map((z) => (
-          <ZoneAreaCasing key={`casing-${z.zona_id}`} zone={z} zoom={zoom} emphasis={emphasisOf(z)} />
+          <ZoneArea key={z.zona_id} zone={z} emphasis={emphasisOf(z)} marker onSelect={(id) => setClicked({ id, forSelected: selectedId })} />
         ))}
-        {ordered.map((z) => (
-          <ZoneArea key={z.zona_id} zone={z} zoom={zoom} emphasis={emphasisOf(z)}>
-            <Tooltip sticky>
-              Zona {z.zona_id} · {RISK_LABEL[z.kategori_risiko]}
-            </Tooltip>
-            <Popup>
-              <div className="zone-popup">
-                <p className="zone-popup-title">Zona {z.zona_id}</p>
-                <p className="zone-popup-place">{z.lokasi_teks ?? formatCoords(z.center_latitude, z.center_longitude)}</p>
-                <RiskBadge kategori={z.kategori_risiko} />
-                <dl>
-                  <dt>Skor risiko</dt>
-                  <dd>{Math.round(z.skor_risiko)}%</dd>
-                  <dt>Jumlah kejadian</dt>
-                  <dd>{z.jumlah_kejadian}</dd>
-                  <dt>Bergantung cuaca</dt>
-                  <dd>{z.weather_dependent ? 'Ya' : 'Tidak'}</dd>
-                  <dt>Radius zona</dt>
-                  <dd>{z.radius_zona} m</dd>
-                  <dt>Diperbarui</dt>
-                  <dd>{formatDateTime(z.last_updated)}</dd>
-                </dl>
-                <Link to={zonaDetail(z.zona_id)} className="zone-popup-link">
-                  Lihat detail zona
-                </Link>
-              </div>
-            </Popup>
-          </ZoneArea>
-        ))}
-      </MapContainer>
+      </BaseMap>
 
       <div className="peta-legend" role="group" aria-label="Legenda">
         <p className="peta-legend-title">Skor risiko (persentil)</p>
@@ -144,22 +97,56 @@ export function ZoneMap({ zones, selectedId, filterLabel }: Props) {
             </li>
           ))}
         </ul>
-        <p className="peta-legend-note">Area = radius zona. Pada zoom jauh, zona kecil digambar sedikit lebih besar agar tetap terlihat.</p>
+        <p className="peta-legend-note">Titik = pusat zona. Lingkaran = radius zona.</p>
       </div>
 
-      {filterLabel ? <p className="peta-filter">Menampilkan: {filterLabel}</p> : null}
-      {selected ? <p className="peta-filter">Zona {selected.zona_id} disorot; zona lain diredupkan</p> : null}
-      {tiles.failed > 0 && tiles.loaded === 0 ? (
-        <p className="peta-notice" role="status">
-          Peta dasar tidak dapat dimuat. Area zona tetap ditampilkan; periksa koneksi atau pengaturan penyedia peta (docs/05 #35).
-        </p>
-      ) : null}
+      <div className="peta-left">
+        {filterLabel ? <p className="peta-chip">Menampilkan: {filterLabel}</p> : null}
+        {selected ? <p className="peta-chip">Zona {selected.zona_id} disorot; zona lain diredupkan</p> : null}
+        {panelZone ? <ZoneInfo zone={panelZone} onClose={() => setClicked({ id: null, forSelected: selectedId })} /> : null}
+      </div>
+
       {zones.length === 0 ? (
         <div className="peta-status">
-          <LoadState state="empty" message="Belum ada zona risiko untuk ditampilkan." />
+          <EmptyState title="Belum ada zona" description="Belum ada zona risiko untuk ditampilkan." />
         </div>
       ) : null}
-    </section>
+    </MapFrame>
+  );
+}
+
+/** The info panel of the picked zone: name, score, number of incidents. Escape closes it. */
+function ZoneInfo({ zone: z, onClose }: { zone: ZonaTeratas; onClose: () => void }) {
+  return (
+    <aside
+      className="peta-info"
+      aria-label={`Info Zona ${z.zona_id}`}
+      onKeyDown={(e) => {
+        if (e.key === 'Escape') onClose();
+      }}
+    >
+      <button type="button" className="peta-info-close" aria-label="Tutup info zona" onClick={onClose}>
+        ×
+      </button>
+      <p className="zone-popup-title">Zona {z.zona_id}</p>
+      <p className="zone-popup-place">{z.lokasi_teks ?? formatCoords(z.center_latitude, z.center_longitude)}</p>
+      <RiskBadge kategori={z.kategori_risiko} />
+      <dl>
+        <dt>Skor risiko</dt>
+        <dd>{Math.round(z.skor_risiko)}%</dd>
+        <dt>Jumlah kejadian</dt>
+        <dd>{z.jumlah_kejadian}</dd>
+        <dt>Bergantung cuaca</dt>
+        <dd>{z.weather_dependent ? 'Ya' : 'Tidak'}</dd>
+        <dt>Radius zona</dt>
+        <dd>{z.radius_zona} m</dd>
+        <dt>Diperbarui</dt>
+        <dd>{formatDateTime(z.last_updated)}</dd>
+      </dl>
+      <Link to={zonaDetail(z.zona_id)} className="zone-popup-link">
+        Lihat detail zona
+      </Link>
+    </aside>
   );
 }
 

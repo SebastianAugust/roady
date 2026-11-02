@@ -1,0 +1,25 @@
+.map-frame {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-field);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+}
+
+.map-frame-fill {
+  position: absolute;
+  inset: 0;
+}
+
+.map-frame-message {
+  display: grid;
+  place-items: center;
+  overflow: auto;
+}
+
+.map-frame-compact {
+  padding: var(--space-sm);
+  color: var(--color-text-secondary);
+  font-size: var(--text-caption);
+  text-align: center;
+}
