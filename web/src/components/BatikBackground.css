@@ -3,10 +3,11 @@
                  turned 90deg clockwise.
    bottom-right  468px wide (32.5vw), the image mirrored left-right (public/batik-soft-flip.png, so no transform is
                  needed), 98px off the right edge and 103px off the bottom.
-   No skew. 8% white (--opacity-batik, 6-10%), under the content, never catches the pointer. */
+   No skew. 8% white (--opacity-batik, 6-10%), fixed to the viewport and under the content, never catches the pointer. */
 .batik {
-  position: absolute;
+  position: fixed;
   inset: 0;
+  z-index: 0;
   overflow: hidden;
   pointer-events: none;
 }

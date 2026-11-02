@@ -1,9 +1,11 @@
 /* Placement as on Login (BatikBackground.css: 32.5vw, the top-left turned 90deg, the bottom-right mirrored image), plus
-   the prototype's right-middle cluster. The layer covers the whole shell, which clips it (overflow: clip). */
+   the prototype's right-middle cluster. The layer is fixed to the viewport, which clips what hangs past the edges, and
+   sits at z-index 0: above the page gradient (AppBackground, -1) and below the shell content (.app-frame, 1). */
 .shell-batik {
-  position: absolute;
+  position: fixed;
   inset: 0;
   z-index: 0;
+  overflow: hidden;
   pointer-events: none;
 }
 
@@ -13,17 +15,14 @@
   background-repeat: no-repeat;
   background-size: 100% 100%;
   opacity: var(--opacity-batik-shell);
-  will-change: translate;
 }
 
-/* Parallax: the top cluster follows the scroll at 0.14, the bottom one moves against it at 0.1 (--sy is scrollY). */
 .shell-batik-top-left {
   width: 32.5vw;
   left: -6.8vw;
   top: -7.2vw;
   background-image: url('/batik-soft.png');
   transform: rotate(90deg);
-  translate: 0 calc(var(--sy, 0) * 0.14px);
 }
 
 .shell-batik-right-middle {
@@ -39,14 +38,6 @@
   right: -6.8vw;
   bottom: -7.2vw;
   background-image: url('/batik-soft-flip.png');
-  translate: 0 calc(var(--sy, 0) * -0.1px);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .shell-batik-cluster {
-    translate: none;
-    will-change: auto;
-  }
 }
 
 @media (forced-colors: active) {

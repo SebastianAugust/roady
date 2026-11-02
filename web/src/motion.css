@@ -13,7 +13,7 @@
      .shimmer      a highlight sliding over a skeleton block, 1.2s loop.
    Only `backwards` fill is used, so no transform is left on an element once its animation ends.
    App shell (prototype-web-cards.html), added on top of the above: nav pills press to .98, grid and menu cards lift 3px,
-   table rows ease their hover tint and left line, the batik drifts with the scroll (ShellBatik.css). */
+   table rows ease their hover tint and left line. */
 
 /* Static look of a skeleton block (the shimmer only adds movement on top). */
 .skeleton {
