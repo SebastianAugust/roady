@@ -2,11 +2,14 @@ import { useCallback, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../api';
 import { Button } from '../components/Button';
+import { EmptyState } from '../components/EmptyState';
 import { LoadState } from '../components/LoadState';
 import { PageHeader } from '../components/PageHeader';
 import { StatusPill } from '../components/StatusPill';
 import { StatTile } from '../components/StatTile';
+import { StatTilesSkeleton } from '../components/StatTilesSkeleton';
 import { Tabs } from '../components/Tabs';
+import { TableSkeleton } from '../components/TableSkeleton';
 import { VerifyDialog } from '../components/VerifyDialog';
 import { APP_NAME } from '../constants';
 import { useApi } from '../hooks/useApi';
@@ -18,10 +21,10 @@ import '../components/DataTable.css';
 
 type View = 'pending_review' | 'approved' | 'rejected';
 
-const EMPTY: Record<View, string> = {
-  pending_review: 'Antrean kosong. Semua laporan berfoto sudah ditinjau.',
-  approved: 'Belum ada laporan yang disetujui.',
-  rejected: 'Belum ada laporan yang ditolak.',
+const EMPTY: Record<View, { title: string; text: string }> = {
+  pending_review: { title: 'Antrean kosong', text: 'Semua laporan berfoto sudah ditinjau.' },
+  approved: { title: 'Belum ada laporan disetujui', text: 'Laporan yang Anda setujui akan muncul di sini.' },
+  rejected: { title: 'Belum ada laporan ditolak', text: 'Laporan yang Anda tolak akan muncul di sini.' },
 };
 
 /**
@@ -61,7 +64,12 @@ export function VerifikasiPage() {
   return (
     <>
       <PageHeader title="Verifikasi Laporan" subtitle={`Kelola dan tentukan status dari setiap laporan yang masuk dari sobat ${APP_NAME}`} />
-      {state.status === 'loading' ? <LoadState state="loading" message="Memuat antrean…" /> : null}
+      {state.status === 'loading' ? (
+        <>
+          <StatTilesSkeleton count={3} label="Memuat antrean…" />
+          <TableSkeleton columns={5} label="Memuat laporan…" />
+        </>
+      ) : null}
       {state.status === 'error' ? <LoadState state="error" message={state.message} onRetry={retry} /> : null}
       {state.status === 'ready' ? (
         <>
@@ -105,7 +113,7 @@ export function VerifikasiPage() {
                       )}
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="rise-rows">
                     {rows.map((r) => (
                       <tr key={r.id_report} {...rowTo(verifikasiDetail(r.id_report))}>
                         <td>
@@ -146,7 +154,7 @@ export function VerifikasiPage() {
                   </tbody>
                 </table>
               ) : (
-                <LoadState state="empty" message={EMPTY[view]} />
+                <EmptyState title={EMPTY[view].title} description={EMPTY[view].text} />
               )}
             </div>
           </Tabs>

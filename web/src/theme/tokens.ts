@@ -69,6 +69,12 @@ export const colors = {
   navItem: 'rgba(255,255,255,0.07)', // inactive navbar pill
   navItemEdge: 'rgba(255,255,255,0.14)',
   activeShadow: 'rgba(0,0,0,0.35)', // under the white active pill
+  // Form fields: placeholder (>= 4.5:1 on the field fill, which is bg) and the 3px ring around a focused input.
+  placeholder: '#9AA6B8',
+  focusRing: 'rgba(157,183,232,0.3)',
+  // Loading skeleton: the base block and the moving highlight.
+  skeleton: 'rgba(255,255,255,0.08)',
+  skeletonShine: 'rgba(255,255,255,0.18)',
 } as const;
 
 export const gradients = {
@@ -92,6 +98,17 @@ export const effects = {
   glassInShadow: `inset 0 1px 0 ${colors.glassInShine}`,
   activeShadow: `0 6px 18px ${colors.activeShadow}`,
   menuShadow: `0 12px 32px ${colors.menuShadowColor}`,
+  // Hover lift of cards and buttons.
+  cardHoverShadow: `0 10px 24px ${colors.glassShadow}`,
+  buttonHoverShadow: `0 4px 12px ${colors.activeShadow}`,
+} as const;
+
+/** Motion (src/motion.css), written as --ease-out, --dur-fast, --dur-base and --dur-enter. */
+export const motion = {
+  easeOut: 'cubic-bezier(.2,.8,.2,1)',
+  durFast: '120ms',
+  durBase: '200ms',
+  durEnter: '500ms',
 } as const;
 
 export const opacity = {

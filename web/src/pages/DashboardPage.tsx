@@ -1,12 +1,15 @@
 import { useCallback, useMemo, useState } from 'react';
 import { api } from '../api';
 import { Button } from '../components/Button';
+import { EmptyState } from '../components/EmptyState';
 import { LoadState } from '../components/LoadState';
 import { PageHeader } from '../components/PageHeader';
 import { ScoreHistory } from '../components/ScoreHistory';
 import { SelectField } from '../components/SelectField';
 import { StatTile } from '../components/StatTile';
+import { StatTilesSkeleton } from '../components/StatTilesSkeleton';
 import { Tabs } from '../components/Tabs';
+import { TableSkeleton } from '../components/TableSkeleton';
 import { ZoneMap } from '../components/ZoneMap';
 import { ZoneTable } from '../components/ZoneTable';
 import { useApi } from '../hooks/useApi';
@@ -38,7 +41,12 @@ export function DashboardPage() {
   return (
     <>
       <PageHeader title="Statistik Zona" subtitle="Pemetaan tingkat risiko dan sebaran zona rawan lalu lintas" />
-      {stats.status === 'loading' || zones.status === 'loading' ? <LoadState state="loading" message="Memuat statistik…" /> : null}
+      {stats.status === 'loading' || zones.status === 'loading' ? (
+        <>
+          <StatTilesSkeleton label="Memuat statistik…" />
+          <TableSkeleton columns={4} label="Memuat daftar zona…" />
+        </>
+      ) : null}
       {stats.status === 'error' ? <LoadState state="error" message={stats.message} onRetry={retryStats} /> : null}
       {zones.status === 'error' ? <LoadState state="error" message={zones.message} onRetry={retryZones} /> : null}
       {stats.status === 'ready' && zones.status === 'ready' ? <Dashboard stats={stats.data} zones={zones.data} /> : null}
@@ -145,7 +153,13 @@ function ZoneTableView({ stats, zones, shown, kategori, selectedId, onClear }: T
             </Button>
           ) : null}
         </div>
-        {shown.length ? <ZoneTable zones={shown} /> : <LoadState state="empty" message="Tidak ada zona yang cocok dengan filter ini." />}
+        {shown.length ? <ZoneTable zones={shown} /> : (
+          <EmptyState
+            title="Tidak ada zona yang cocok"
+            description="Coba kategori lain atau hapus filter untuk melihat semua zona."
+            action={{ label: 'Hapus filter', onClick: onClear }}
+          />
+        )}
       </section>
 
       <section aria-labelledby="riwayat-skor" className="dashboard-history glass-in">

@@ -68,7 +68,7 @@ export function ZoneTable({ zones }: { zones: ZonaTeratas[] }) {
             ))}
           </tr>
         </thead>
-        <tbody>
+        <tbody className="rise-rows">
           {sorted.map((z) => (
             <tr key={z.zona_id} {...rowTo(zonaDetail(z.zona_id))}>
               <th scope="row">

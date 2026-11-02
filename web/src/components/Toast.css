@@ -1,7 +1,7 @@
 .toasts {
   position: fixed;
   right: var(--space-lg);
-  bottom: var(--space-lg);
+  top: var(--space-lg);
   z-index: 2000;
   display: grid;
   gap: var(--space-sm);

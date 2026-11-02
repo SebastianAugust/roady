@@ -1,5 +1,5 @@
-import { useState, type FormEvent } from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
+import { useState, type AnimationEvent, type FormEvent } from 'react';
+import { Link, Navigate, useLocation } from 'react-router-dom';
 import { api, ApiError } from '../api';
 import { useAuth } from '../auth/useAuth';
 import { RoleNotAllowedError } from '../auth/jwt';
@@ -8,87 +8,122 @@ import { Button } from '../components/Button';
 import { EyeIcon, EyeOffIcon } from '../components/icons';
 import { TextField } from '../components/TextField';
 import { APP_NAME } from '../constants';
-import { canOpen } from '../routes';
+import { usePageTitle } from '../hooks/usePageTitle';
+import { canOpen, ROUTES } from '../routes';
 import './LoginPage.css';
 
+const PASSWORD_MIN_LENGTH = 6;
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const MSG_EMAIL = 'Format email belum benar. Contoh: nama@instansi.go.id';
+const MSG_PASSWORD = `Password minimal ${PASSWORD_MIN_LENGTH} karakter.`;
+const MSG_WRONG = 'Email atau password salah. Coba lagi.';
+
+const ERROR_ID = 'login-error';
+
 /**
- * Login (docs/design/admin/Login.png, docs/design/dishub/Login.png; the same screen for both) as a compact glass card
- * centred on the screen, the wordmark top-left. Dishub and Admin sign in here; pengemudi accounts are turned away.
- * Afterwards it returns to the page that asked for a login only when the new role may open it (e.g. not to an Admin
- * URL after signing in as Dishub); otherwise to Beranda.
+ * Login (docs/design/admin/Login.png, docs/design/dishub/Login.png; the same screen for both) as one glass card
+ * centred on the screen: wordmark (a link to /login), title, form. Dishub and Admin sign in here; pengemudi accounts
+ * are turned away. The form is checked in the browser first (email shape, password length); one alert above the button
+ * says what is wrong and the form shakes. Afterwards it returns to the page that asked for a login only when the new
+ * role may open it (e.g. not to an Admin URL after signing in as Dishub); otherwise to Beranda.
  */
 export function LoginPage() {
+  usePageTitle('Masuk');
   const { role, signIn } = useAuth();
   const from = (useLocation().state as { from?: string } | null)?.from ?? '/';
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState<string>();
+  const [error, setError] = useState<{ message: string; field?: 'email' | 'password' }>();
+  const [shaking, setShaking] = useState(false);
   const [busy, setBusy] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   if (role) return <Navigate to={canOpen(role, from) ? from : '/'} replace />;
 
+  const fail = (message: string, field?: 'email' | 'password') => {
+    setError({ message, field });
+    setShaking(true);
+  };
+
   async function submit(e: FormEvent) {
     e.preventDefault();
-    if (!email.trim() || !password) {
-      setError('Isi email dan kata sandi.');
-      return;
-    }
-    setBusy(true);
+    if (busy) return;
     setError(undefined);
+    if (!EMAIL_PATTERN.test(email.trim())) return fail(MSG_EMAIL, 'email');
+    if (password.length < PASSWORD_MIN_LENGTH) return fail(MSG_PASSWORD, 'password');
+
+    setBusy(true);
     try {
       const { token } = await api.login({ email, password });
       // The new role re-renders this page, and the <Navigate> above takes it on.
       signIn(token);
     } catch (err) {
-      if (err instanceof RoleNotAllowedError) setError(err.message);
-      else if (err instanceof ApiError) setError(err.status === 401 ? err.message : 'Gagal masuk. Coba lagi.');
-      else setError('Tidak dapat terhubung ke server. Periksa koneksi lalu coba lagi.');
+      if (err instanceof RoleNotAllowedError) fail(err.message);
+      else if (err instanceof ApiError) fail(err.status === 401 ? MSG_WRONG : 'Gagal masuk. Coba lagi.');
+      else fail('Tidak dapat terhubung ke server. Periksa koneksi lalu coba lagi.');
+    } finally {
       setBusy(false);
     }
   }
 
+  // The class is dropped when the shake itself ends (not when a child's rise animation bubbles up), so the next error shakes again.
+  const onAnimationEnd = (e: AnimationEvent) => {
+    if (e.target === e.currentTarget) setShaking(false);
+  };
+
   return (
     <div className="login">
       <AppBackground />
-      <header className="login-brand">{APP_NAME}</header>
-      <main className="login-card glass">
-        <h1 className="login-title">Login</h1>
-        <form className="login-form" onSubmit={submit} noValidate>
-          <TextField
-            label="Email"
-            type="email"
-            autoComplete="username"
-            placeholder="nama@dishub.go.id"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <TextField
-            label="Password"
-            type={showPassword ? 'text' : 'password'}
-            autoComplete="current-password"
-            endAdornment={
-              <button
-                type="button"
-                className="field-adornment-button"
-                aria-label={showPassword ? 'Sembunyikan password' : 'Tampilkan password'}
-                aria-pressed={showPassword}
-                onClick={() => setShowPassword((s) => !s)}
-              >
-                {showPassword ? <EyeOffIcon /> : <EyeIcon />}
-              </button>
-            }
-            placeholder="••••••"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <p className="login-error error-text" role="alert">
-            {error}
-          </p>
-          <Button type="submit" busy={busy} className="login-submit">
-            {busy ? 'MEMPROSES…' : 'LOGIN'}
-          </Button>
-        </form>
+      <main className="login-card glass rise stagger">
+        <Link to={ROUTES.login} className="login-brand">
+          {APP_NAME}
+        </Link>
+        <div className="login-head">
+          <h1 className="login-title">Masuk ke {APP_NAME}</h1>
+          <p className="login-subtitle">Panel Dishub dan Admin</p>
+        </div>
+        <div>
+          <form className={`login-form${shaking ? ' shake' : ''}`} onSubmit={submit} onAnimationEnd={onAnimationEnd} noValidate>
+            <TextField
+              label="Email"
+              type="email"
+              autoComplete="username"
+              placeholder="nama@instansi.go.id"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              aria-invalid={error?.field === 'email' || undefined}
+              aria-describedby={error?.field === 'email' ? ERROR_ID : undefined}
+            />
+            <TextField
+              label="Password"
+              type={showPassword ? 'text' : 'password'}
+              autoComplete="current-password"
+              endAdornment={
+                <button
+                  type="button"
+                  className="field-adornment-button"
+                  aria-label={showPassword ? 'Sembunyikan password' : 'Tampilkan password'}
+                  aria-pressed={showPassword}
+                  onClick={() => setShowPassword((s) => !s)}
+                >
+                  {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+                </button>
+              }
+              placeholder={`Minimal ${PASSWORD_MIN_LENGTH} karakter`}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              aria-invalid={error?.field === 'password' || undefined}
+              aria-describedby={error?.field === 'password' ? ERROR_ID : undefined}
+            />
+            <p id={ERROR_ID} className="login-error error-text" role="alert">
+              {error?.message}
+            </p>
+            <Button type="submit" busy={busy} className="login-submit">
+              {busy ? 'Memeriksa' : 'MASUK'}
+            </Button>
+          </form>
+        </div>
       </main>
     </div>
   );

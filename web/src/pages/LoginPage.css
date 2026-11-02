@@ -1,45 +1,51 @@
-/* Figma 1036:1392 (Login), reduced to a compact card: wordmark top-left, one glass card (max 400px) centred on the
-   screen holding the title and the form. The vertical padding is the same top and bottom, so the card is centred on the
-   screen and never runs under the wordmark; at 768px height it fits without scrolling. */
+/* Figma 1036:1392 (Login), as one glass card (max 380px) centred on the screen: wordmark (link to /login), title and
+   subtitle, then the form. Field and button are both 44px high. The card and its parts rise in on load (motion.css). */
 .login {
   position: relative;
   min-height: 100vh;
   min-height: 100dvh;
   display: grid;
   place-items: center;
-  padding: 72px var(--space-md);
-}
-
-.login-brand {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  width: min(100% - var(--space-page) * 2, var(--size-content-max));
-  margin: 0 auto;
-  padding: var(--space-lg) 0 0;
-  font-family: var(--font-display);
-  font-size: var(--text-brand);
-  line-height: 1.2;
+  padding: var(--space-xl) var(--space-md);
 }
 
 .login-card {
   width: 100%;
-  max-width: 400px;
-  padding: 30px;
+  max-width: 380px;
+  padding: 28px;
   border-radius: var(--radius-tile);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.login-brand {
+  align-self: center;
+  color: var(--color-text-primary);
+  font-family: var(--font-display);
+  font-size: var(--text-brand);
+  line-height: 1.2;
+  text-decoration: none;
+}
+
+.login-head {
+  text-align: center;
 }
 
 .login-title {
-  text-align: center;
   font-size: var(--text-h2);
-  margin-bottom: var(--space-md);
+}
+
+.login-subtitle {
+  margin-top: 2px;
+  color: var(--color-text-secondary);
+  font-size: var(--text-small);
 }
 
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
+  gap: var(--space-md);
 }
 
 .login-form .field-label {
@@ -47,23 +53,18 @@
 }
 
 .login-form .field-input {
-  min-height: 44px;
+  min-height: var(--size-touch-min);
   font-size: var(--text-small);
 }
 
+/* Room for one line of message, so the button does not jump when an error appears. */
 .login-error {
-  min-height: 1.5em;
+  min-height: 2.6em;
   text-align: center;
   font-size: var(--text-caption);
 }
 
 .login-submit {
-  align-self: center;
-  min-width: calc(var(--size-button-min-width) + var(--space-lg));
-}
-
-@media (max-width: 640px) {
-  .login-brand {
-    width: calc(100% - var(--space-md) * 2);
-  }
+  width: 100%;
+  min-height: var(--size-touch-min);
 }

@@ -1,14 +1,38 @@
-/* Simple motion, CSS only. Everything lives inside prefers-reduced-motion: no-preference, so with reduced motion
-   requested nothing here animates or transitions.
-   rise-in  pages and cards: fade in while moving up 8px, 220ms ease-out.
-   pop-in   dropdown, dialog, toast: scale .96 to 1 plus fade, 160ms.
-   Beranda cards rise one after another (40ms apart). Only `backwards` fill is used, so no transform is left on an
-   element once its animation ends. */
+/* Simple motion, CSS only. Everything that moves lives inside prefers-reduced-motion: no-preference, so with reduced
+   motion requested nothing here animates or transitions; the end state is simply shown at once.
+   Values: --ease-out, --dur-fast, --dur-base, --dur-enter (src/theme/tokens.ts).
+   rise-in   pages: fade in while moving up 8px, 220ms.
+   pop-in    dropdown, dialog: scale .96 to 1 plus fade, --dur-base, from the trigger (transform-origin).
+   Utilities
+     .rise         fade + move up 14px, --dur-enter.
+     .stagger      children rise one after another, 60ms apart (up to 6).
+     .rise-rows    <tbody>: rows rise 70ms apart (the first 8; later ones show at once).
+     .shake        a short horizontal shake, 400ms (invalid form).
+     .shimmer      a highlight sliding over a skeleton block, 1.2s loop.
+   Only `backwards` fill is used, so no transform is left on an element once its animation ends. */
+
+/* Static look of a skeleton block (the shimmer only adds movement on top). */
+.skeleton {
+  display: block;
+  background: var(--color-skeleton);
+}
+
 @media (prefers-reduced-motion: no-preference) {
   @keyframes rise-in {
     from {
       opacity: 0;
       transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
     }
     to {
       opacity: 1;
@@ -36,9 +60,124 @@
     }
   }
 
-  /* Pages: whatever the route renders inside the main panel (Beranda animates its own parts below), and the Login card. */
+  @keyframes fade-out {
+    to {
+      opacity: 0;
+    }
+  }
+
+  @keyframes toast-in {
+    from {
+      opacity: 0;
+      transform: translateY(-16px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes shake {
+    0%,
+    100% {
+      transform: none;
+    }
+    20% {
+      transform: translateX(-8px);
+    }
+    40% {
+      transform: translateX(7px);
+    }
+    60% {
+      transform: translateX(-5px);
+    }
+    80% {
+      transform: translateX(3px);
+    }
+  }
+
+  @keyframes shimmer {
+    from {
+      background-position: 200% 0;
+    }
+    to {
+      background-position: -200% 0;
+    }
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* ---- Utilities ---- */
+  .rise {
+    animation: rise var(--dur-enter) var(--ease-out) backwards;
+  }
+
+  .stagger > * {
+    animation: rise var(--dur-enter) var(--ease-out) backwards;
+    animation-delay: 60ms;
+  }
+  .stagger > :nth-child(2) {
+    animation-delay: 120ms;
+  }
+  .stagger > :nth-child(3) {
+    animation-delay: 180ms;
+  }
+  .stagger > :nth-child(4) {
+    animation-delay: 240ms;
+  }
+  .stagger > :nth-child(5) {
+    animation-delay: 300ms;
+  }
+  .stagger > :nth-child(n + 6) {
+    animation-delay: 360ms;
+  }
+
+  .rise-rows > tr {
+    animation: rise var(--dur-enter) var(--ease-out) backwards;
+  }
+  .rise-rows > tr:nth-child(2) {
+    animation-delay: 70ms;
+  }
+  .rise-rows > tr:nth-child(3) {
+    animation-delay: 140ms;
+  }
+  .rise-rows > tr:nth-child(4) {
+    animation-delay: 210ms;
+  }
+  .rise-rows > tr:nth-child(5) {
+    animation-delay: 280ms;
+  }
+  .rise-rows > tr:nth-child(6) {
+    animation-delay: 350ms;
+  }
+  .rise-rows > tr:nth-child(7) {
+    animation-delay: 420ms;
+  }
+  .rise-rows > tr:nth-child(8) {
+    animation-delay: 490ms;
+  }
+  .rise-rows > tr:nth-child(n + 9) {
+    animation: none;
+  }
+
+  .shake {
+    animation: shake 400ms ease-in-out;
+  }
+
+  .shimmer {
+    background-image: linear-gradient(90deg, transparent 0%, var(--color-skeleton-shine) 50%, transparent 100%);
+    background-size: 200% 100%;
+    background-repeat: no-repeat;
+    animation: shimmer 1.2s linear infinite;
+  }
+
+  /* ---- Parts of the app ---- */
+  /* Pages: whatever the route renders inside the main panel (Beranda animates its own parts below). */
   .app-main > :not(.home),
-  .login-card,
   .home-wave,
   .home-head {
     animation: rise-in 220ms ease-out backwards;
@@ -65,53 +204,75 @@
 
   .account-popup {
     transform-origin: top right;
-    animation: pop-in 160ms ease-out backwards;
+    animation: pop-in var(--dur-base) var(--ease-out) backwards;
   }
 
+  /* The dialog's transform-origin is set from the button that opened it (Dialog.tsx). */
   .dialog[open] {
-    animation: pop-in 160ms ease-out backwards;
+    animation: pop-in var(--dur-base) var(--ease-out) backwards;
   }
 
   .dialog[open]::backdrop {
-    animation: fade-in 160ms ease-out backwards;
+    animation: fade-in var(--dur-base) var(--ease-out) backwards;
   }
 
   .toast {
-    animation: pop-in 160ms ease-out backwards;
+    animation: toast-in 300ms var(--ease-out) backwards;
+  }
+
+  .toast-leaving {
+    animation: fade-out var(--dur-base) var(--ease-out) forwards;
+  }
+
+  .btn-spinner {
+    animation: spin 0.7s linear infinite;
   }
 
   /* Interactive elements: a soft change instead of a jump. */
   .btn,
   .navbar-tab,
-  .menu-card,
   .account-chip,
   .account-item,
   .quick-reason,
   .field-input {
     transition:
-      background-color 140ms ease,
-      border-color 140ms ease,
-      color 140ms ease,
-      box-shadow 140ms ease,
-      filter 140ms ease,
-      transform 140ms ease;
+      background-color var(--dur-base) ease,
+      border-color var(--dur-base) ease,
+      color var(--dur-base) ease,
+      box-shadow var(--dur-base) ease,
+      filter var(--dur-base) ease,
+      transform var(--dur-fast) var(--ease-out);
   }
 
   .btn:hover:not(:disabled, [aria-busy='true']) {
     filter: brightness(0.92);
     transform: translateY(-1px);
+    box-shadow: var(--effect-button-hover-shadow);
   }
 
   .btn:active:not(:disabled, [aria-busy='true']) {
     filter: brightness(0.85);
     transform: translateY(0) scale(0.98);
+    box-shadow: none;
   }
 
-  .menu-card:hover {
+  /* Cards that open something rise 2px and their shadow strengthens in 180ms. */
+  .menu-card,
+  .stat-tile-button {
+    transition:
+      border-color 180ms ease,
+      box-shadow 180ms ease,
+      transform 180ms var(--ease-out);
+  }
+
+  .menu-card:hover,
+  .stat-tile-button:hover {
     transform: translateY(-2px);
+    box-shadow: var(--effect-card-hover-shadow), var(--effect-glass-in-shadow);
   }
 
-  .menu-card:active {
+  .menu-card:active,
+  .stat-tile-button:active {
     transform: translateY(0) scale(0.99);
   }
 }

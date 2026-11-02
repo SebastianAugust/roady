@@ -115,3 +115,13 @@ export function EyeOffIcon() {
     </svg>
   );
 }
+
+/** An empty tray, for EmptyState (decorative). */
+export function InboxIcon({ size = 40 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
+      <path d="M3 13.5 5.8 5.9A1.5 1.5 0 0 1 7.2 5h9.6a1.5 1.5 0 0 1 1.4.9L21 13.5" />
+      <path d="M3 13.5V18a1.5 1.5 0 0 0 1.5 1.5h15A1.5 1.5 0 0 0 21 18v-4.5h-5.2a3.8 3.8 0 0 1-7.6 0H3Z" />
+    </svg>
+  );
+}

@@ -53,3 +53,21 @@ export function canOpen(role: Role, path: string) {
   if (path.startsWith('/admin/')) return role === 'admin';
   return role === 'dishub' && [ROUTES.statistik, ROUTES.arsip, ROUTES.laporan, ROUTES.ekspor].some((p) => path === p || path.startsWith(`${p}/`));
 }
+
+/** Tab titles (shown as "<title> · Roady!"), most specific path first. "Zona" is Statistik Zona, "Review" is Verifikasi Laporan. */
+const PAGE_TITLES: ReadonlyArray<readonly [prefix: string, title: string]> = [
+  [ROUTES.arsipInput, 'Input Data'],
+  [ROUTES.arsip, 'Arsip & Input'],
+  [ROUTES.statistik, 'Zona'],
+  [ROUTES.laporan, 'Detail Laporan'],
+  [ROUTES.ekspor, 'Ekspor Data'],
+  [ROUTES.verifikasi, 'Review'],
+  [ROUTES.kecelakaan, 'Kelola Data Kecelakaan'],
+  [ROUTES.akun, 'Akun'],
+  [ROUTES.login, 'Masuk'],
+];
+
+export function pageTitleFor(pathname: string) {
+  const hit = PAGE_TITLES.find(([prefix]) => pathname === prefix || pathname.startsWith(`${prefix}/`));
+  return hit ? hit[1] : 'Beranda';
+}

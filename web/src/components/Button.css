@@ -79,3 +79,26 @@
 .btn svg {
   flex: none;
 }
+
+/* Busy spinner: a ring in the text colour with one quarter missing. It only turns when motion is allowed (motion.css);
+   with reduced motion the label ("Memeriksa", "Memproses") carries the meaning. */
+.btn-spinner {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+}
+
+/* A busy primary button keeps its look (the generic disabled grey is for buttons that cannot be pressed yet). */
+.btn-primary[aria-busy='true']:disabled {
+  background: var(--color-button-primary);
+  color: var(--color-on-button-primary);
+  opacity: 0.85;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}

@@ -7,6 +7,7 @@ interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
    * danger: destructive (Tolak, Hapus). danger-outline: white with red text, the TOLAK of the Verifikasi table rows.
    */
   variant?: 'primary' | 'secondary' | 'ghost' | 'danger' | 'danger-outline';
+  /** Disables the button (no double submit) and shows a small spinner before the label. */
   busy?: boolean;
 }
 
@@ -19,6 +20,7 @@ export function Button({ variant = 'primary', busy = false, className, disabled,
       aria-busy={busy || undefined}
       {...rest}
     >
+      {busy ? <span className="btn-spinner" aria-hidden="true" /> : null}
       {children}
     </button>
   );

@@ -1,4 +1,5 @@
 import type { KategoriRisiko } from '../types';
+import { KpiNumber } from './KpiNumber';
 import { RiskDot } from './RiskDot';
 import './StatTile.css';
 
@@ -12,7 +13,7 @@ interface Props {
   selected?: boolean;
 }
 
-/** Figma Statistik Zona summary card: label on top, one big number. */
+/** Figma Statistik Zona summary card: label on top, one big number (a number counts up when it appears). */
 export function StatTile({ label, value, kategori, onSelect, selected }: Props) {
   const content = (
     <>
@@ -20,7 +21,7 @@ export function StatTile({ label, value, kategori, onSelect, selected }: Props) 
         {kategori ? <RiskDot kategori={kategori} /> : null}
         {label}
       </span>
-      <span className="stat-value">{value}</span>
+      <span className="stat-value">{typeof value === 'number' ? <KpiNumber value={value} /> : value}</span>
     </>
   );
   if (onSelect) {

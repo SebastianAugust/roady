@@ -1,5 +1,6 @@
-import { Outlet, useMatch } from 'react-router-dom';
-import { ROUTES } from '../routes';
+import { Outlet, useLocation, useMatch } from 'react-router-dom';
+import { usePageTitle } from '../hooks/usePageTitle';
+import { pageTitleFor, ROUTES } from '../routes';
 import { AppBackground } from './AppBackground';
 import { Header, Navbar } from './Navbar';
 import './AppLayout.css';
@@ -9,6 +10,7 @@ import './AppLayout.css';
  * exactly (no scrolling); the profile page has no navbar, only the header and its card.
  */
 export function AppLayout() {
+  usePageTitle(pageTitleFor(useLocation().pathname));
   const isHome = useMatch(ROUTES.beranda) !== null;
   const isProfile = useMatch(ROUTES.akun) !== null;
   return (

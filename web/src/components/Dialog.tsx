@@ -11,7 +11,7 @@ interface Props {
   actions?: ReactNode;
 }
 
-/** Modal on the native <dialog>: focus is trapped, Escape closes, focus returns to the opener. */
+/** Modal on the native <dialog>: focus is trapped, Escape or a click outside closes, focus returns to the opener. It pops in from the opener. */
 export function Dialog({ open, title, onClose, children, actions }: Props) {
   const ref = useRef<HTMLDialogElement>(null);
   const titleId = useId();
@@ -19,7 +19,16 @@ export function Dialog({ open, title, onClose, children, actions }: Props) {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    if (open && !el.open) el.showModal();
+    if (open && !el.open) {
+      // Grow from the button that opened it: showModal() moves focus, so note the opener first.
+      const opener = document.activeElement;
+      el.showModal();
+      if (opener instanceof HTMLElement && opener !== document.body) {
+        const from = opener.getBoundingClientRect();
+        const box = el.getBoundingClientRect();
+        el.style.transformOrigin = `${from.left + from.width / 2 - box.left}px ${from.top + from.height / 2 - box.top}px`;
+      }
+    }
     if (!open && el.open) el.close();
   }, [open]);
 
