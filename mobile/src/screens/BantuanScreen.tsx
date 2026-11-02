@@ -6,7 +6,7 @@ import { iconInstagram, iconWhatsapp } from '../components/profileArtSvg';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { CONTACT } from '../config';
 import { APP_NAME } from '../constants';
-import { colors, fontFamily } from '../theme/tokens';
+import { colors, fontFamily, screenLayout } from '../theme/tokens';
 
 async function openContact(url: string | undefined) {
   if (!url) {
@@ -25,7 +25,7 @@ export function BantuanScreen({ onBack }: { onBack: () => void }) {
   const insets = useSafeAreaInsets();
   return (
     <AppBackground>
-      <View style={[styles.screen, { paddingTop: insets.top + 4 }]}>
+      <View style={[styles.screen, { paddingTop: insets.top + screenLayout.top }]}>
         <Text style={styles.brand}>{APP_NAME}</Text>
         <View style={styles.header}>
           <ScreenHeader title="Bantuan" onBack={onBack} />
@@ -58,7 +58,7 @@ export function BantuanScreen({ onBack }: { onBack: () => void }) {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, paddingHorizontal: 22 },
+  screen: { flex: 1, paddingHorizontal: screenLayout.side },
   brand: { fontFamily: fontFamily.display, fontSize: 36, lineHeight: 40, color: colors.textPrimary, marginLeft: 6 },
   header: { marginTop: 10, marginBottom: 24, marginLeft: -2 },
 });

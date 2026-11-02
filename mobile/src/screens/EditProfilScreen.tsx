@@ -5,7 +5,7 @@ import { EditProfilForm } from '../components/EditProfilForm';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { useAuth } from '../auth/AuthContext';
 import { APP_NAME } from '../constants';
-import { colors, fontFamily } from '../theme/tokens';
+import { colors, fontFamily, screenLayout } from '../theme/tokens';
 
 /** Edit name, email and password (Figma 1032:4293). */
 export function EditProfilScreen({ onBack }: { onBack: () => void }) {
@@ -13,7 +13,7 @@ export function EditProfilScreen({ onBack }: { onBack: () => void }) {
   const { user, userState, reloadUser } = useAuth();
   return (
     <AppBackground>
-      <View style={[styles.screen, { paddingTop: insets.top + 4 }]}>
+      <View style={[styles.screen, { paddingTop: insets.top + screenLayout.top }]}>
         <Text style={styles.brand}>{APP_NAME}</Text>
         <View style={styles.header}>
           <ScreenHeader title="Edit Profil" onBack={onBack} />
@@ -36,7 +36,7 @@ export function EditProfilScreen({ onBack }: { onBack: () => void }) {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, paddingHorizontal: 22 },
+  screen: { flex: 1, paddingHorizontal: screenLayout.side },
   brand: { fontFamily: fontFamily.display, fontSize: 36, lineHeight: 40, color: colors.textPrimary, marginLeft: 6 },
   header: { marginTop: 10, marginLeft: -2 },
   status: { marginTop: 40, gap: 12, alignItems: 'center' },

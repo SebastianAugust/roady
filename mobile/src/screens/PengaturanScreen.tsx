@@ -7,7 +7,7 @@ import { ScreenHeader } from '../components/ScreenHeader';
 import { Toggle } from '../components/Toggle';
 import { APP_NAME } from '../constants';
 import { useNotificationPrefs } from '../hooks/useNotificationPrefs';
-import { colors, fontFamily } from '../theme/tokens';
+import { colors, fontFamily, screenLayout } from '../theme/tokens';
 
 /** Notification settings (Figma 1032:3758). The choices are saved on the device; sending notifications comes with the backend. */
 export function PengaturanScreen({ onBack }: { onBack: () => void }) {
@@ -15,7 +15,7 @@ export function PengaturanScreen({ onBack }: { onBack: () => void }) {
   const { prefs, loaded, setPref } = useNotificationPrefs();
   return (
     <AppBackground>
-      <View style={[styles.screen, { paddingTop: insets.top + 4 }]}>
+      <View style={[styles.screen, { paddingTop: insets.top + screenLayout.top }]}>
         <Text style={styles.brand}>{APP_NAME}</Text>
         <View style={styles.header}>
           <ScreenHeader title="Pengaturan" onBack={onBack} />
@@ -46,7 +46,7 @@ export function PengaturanScreen({ onBack }: { onBack: () => void }) {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, paddingHorizontal: 22 },
+  screen: { flex: 1, paddingHorizontal: screenLayout.side },
   brand: { fontFamily: fontFamily.display, fontSize: 36, lineHeight: 40, color: colors.textPrimary, marginLeft: 6 },
   header: { marginTop: 10, marginBottom: 24, marginLeft: -2 },
 });

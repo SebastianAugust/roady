@@ -9,7 +9,7 @@ import { ScreenHeader } from '../components/ScreenHeader';
 import { useMyReports } from '../hooks/useMyReports';
 import { KATEGORI_OPTIONS } from '../lib/reportOptions';
 import { STATUS_LABEL } from '../lib/reportStatus';
-import { colors, fontFamily } from '../theme/tokens';
+import { colors, fontFamily, screenLayout } from '../theme/tokens';
 import type { Kategori, Laporan } from '../types';
 
 // d.progress filter: one entry per wording shown on the status pills (auto/manual rejections share "Ditolak").
@@ -33,7 +33,7 @@ export function RiwayatScreen({ onBack, onOpenReport }: Props) {
 
   return (
     <AppBackground>
-      <View style={[styles.screen, { paddingTop: insets.top + 12 }]}>
+      <View style={[styles.screen, { paddingTop: insets.top + screenLayout.top }]}>
         <ScreenHeader title="Riwayat Laporan" onBack={onBack} />
         <View style={styles.filters}>
           <Dropdown placeholder="Progress" options={PROGRESS_OPTIONS} value={progress} onChange={setProgress} onClear={() => setProgress(undefined)} />
@@ -69,10 +69,10 @@ export function RiwayatScreen({ onBack, onOpenReport }: Props) {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, paddingHorizontal: 20 },
+  screen: { flex: 1, paddingHorizontal: screenLayout.side },
   // Figma puts the filters under the title, aligned with its left edge (x=70 of 412).
   filters: { flexDirection: 'row', gap: 4, paddingLeft: 50, marginTop: 6, marginBottom: 14, zIndex: 10, elevation: 10 },
-  list: { flex: 1, paddingHorizontal: 5 },
+  list: { flex: 1 },
   status: { paddingVertical: 20, gap: 12, alignItems: 'center' },
   statusText: { fontFamily: fontFamily.semibold, fontSize: 14, lineHeight: 20, color: colors.textPrimary, textAlign: 'center' },
   retry: { minHeight: 44, paddingHorizontal: 20, borderRadius: 13, backgroundColor: colors.buttonPrimary, justifyContent: 'center' },

@@ -14,7 +14,7 @@ import { useZones } from '../hooks/useZones';
 import { useDebugLocation } from '../lib/debugLocation';
 import { darkMapStyle } from '../lib/mapStyle';
 import { metersPerDp, zoneAtPoint } from '../lib/zoneArea';
-import { colors, fontFamily } from '../theme/tokens';
+import { colors, fontFamily, screenLayout } from '../theme/tokens';
 
 const BANDUNG_REGION: Region = { ...BANDUNG_RAYA.center, latitudeDelta: 0.28, longitudeDelta: 0.28 };
 
@@ -61,7 +61,7 @@ export function PetaScreen({ onBack }: Props) {
 
   return (
     <AppBackground>
-      <View style={[styles.screen, { paddingTop: insets.top + 12, paddingBottom: Math.max(insets.bottom, 12) + 13 }]}>
+      <View style={[styles.screen, { paddingTop: insets.top + screenLayout.top, paddingBottom: Math.max(insets.bottom, 12) + 13 }]}>
         <ScreenHeader title="Peta" onBack={onBack} />
 
         <Text style={styles.locationRow}>
@@ -117,7 +117,7 @@ export function PetaScreen({ onBack }: Props) {
 
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, paddingHorizontal: 20 },
+  screen: { flex: 1, paddingHorizontal: screenLayout.side },
   locationRow: { textAlign: 'left', marginTop: 4, marginBottom: 13, paddingLeft: 8 },
   locationLabel: { fontFamily: fontFamily.semibold, fontSize: 16, color: colors.textSecondary },
   locationValue: { fontFamily: fontFamily.extrabold, fontSize: 16, color: colors.textPrimary },

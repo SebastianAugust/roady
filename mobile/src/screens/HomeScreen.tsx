@@ -16,7 +16,7 @@ import { APP_NAME } from '../constants';
 import { useMyReports } from '../hooks/useMyReports';
 import { useZones } from '../hooks/useZones';
 import { metersPerDp } from '../lib/zoneArea';
-import { colors, fontFamily } from '../theme/tokens';
+import { colors, fontFamily, screenLayout } from '../theme/tokens';
 import type { Laporan } from '../types';
 
 // City-level view like the Figma frame (Cimahi to Bojongsoang); the full map with the zone areas is the Peta screen.
@@ -42,7 +42,7 @@ export function HomeScreen({ onOpenMap, onOpenHistory, onOpenReport, onReport, o
   return (
     <AppBackground>
       <ScrollView
-        contentContainerStyle={[styles.content, { paddingTop: insets.top + 4, paddingBottom: 140 + insets.bottom }]}
+        contentContainerStyle={[styles.content, { paddingTop: insets.top + screenLayout.top, paddingBottom: 140 + insets.bottom }]}
         showsVerticalScrollIndicator={false}
       >
         <Text accessibilityRole="header" style={styles.brand}>
@@ -115,7 +115,7 @@ export function HomeScreen({ onOpenMap, onOpenHistory, onOpenReport, onReport, o
 }
 
 const styles = StyleSheet.create({
-  content: { paddingHorizontal: 25 },
+  content: { paddingHorizontal: screenLayout.side },
   brand: { fontFamily: fontFamily.display, fontSize: 36, lineHeight: 40, color: colors.textPrimary, marginLeft: 3 },
   greeting: { fontFamily: fontFamily.semibold, fontSize: 16, lineHeight: 22, color: colors.textPrimary, marginTop: 14, marginLeft: 3 },
   mapCard: { height: MINI_MAP_HEIGHT, marginTop: 18, borderRadius: 24, overflow: 'hidden', backgroundColor: colors.surface },

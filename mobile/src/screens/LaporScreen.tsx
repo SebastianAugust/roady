@@ -4,15 +4,16 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { api, ApiError } from '../api';
 import { AppBackground } from '../components/AppBackground';
 import { Glass } from '../components/Glass';
-import { Dropdown } from '../components/Dropdown';
-import { PhotoField } from '../components/PhotoField';
+import { LineIcon } from '../components/LineIcon';
+import { PhotoField, PickedPhoto } from '../components/PhotoField';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { ScreenHeader } from '../components/ScreenHeader';
+import { SegmentedControl } from '../components/SegmentedControl';
 import { LocationState, useCurrentLocation } from '../hooks/useCurrentLocation';
 import { useReduceMotion } from '../hooks/useReduceMotion';
 import { CUACA_OPTIONS, KATEGORI_OPTIONS } from '../lib/reportOptions';
 import { reverseGeocodeToText } from '../lib/reverseGeocode';
-import { colors, fontFamily, radius } from '../theme/tokens';
+import { colors, fontFamily, radius, screenLayout } from '../theme/tokens';
 import type { Cuaca, FieldErrors, Kategori } from '../types';
 import { LaporTerkirimScreen } from './LaporTerkirimScreen';
 
@@ -36,7 +37,7 @@ export function LaporScreen({ onBack, onDone }: { onBack: () => void; onDone: ()
   const [kategori, setKategori] = useState<Kategori>();
   const [cuaca, setCuaca] = useState<Cuaca>();
   const [deskripsi, setDeskripsi] = useState('');
-  const [fotoUri, setFotoUri] = useState<string>();
+  const [foto, setFoto] = useState<PickedPhoto>();
   const [errors, setErrors] = useState<FieldErrors>({});
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
@@ -52,6 +53,16 @@ export function LaporScreen({ onBack, onDone }: { onBack: () => void; onDone: ()
   };
 
   if (sent) return <LaporTerkirimScreen onDone={onDone} />;
+
+  // Choosing an option clears its error at once (the prototype does the same).
+  const chooseKategori = (v: Kategori) => {
+    setKategori(v);
+    setErrors(({ kategori: _cleared, ...rest }) => rest);
+  };
+  const chooseCuaca = (v: Cuaca) => {
+    setCuaca(v);
+    setErrors(({ cuaca: _cleared, ...rest }) => rest);
+  };
 
   const submit = async () => {
     const next: FieldErrors = {};
@@ -78,7 +89,7 @@ export function LaporScreen({ onBack, onDone }: { onBack: () => void; onDone: ()
         deskripsi,
         kondisi_cuaca_saat_kejadian: cuaca,
         tanggal_kejadian: today(),
-        fotoUri,
+        fotoUri: foto?.uri,
       });
       setSent(true);
     } catch (e) {
@@ -89,12 +100,13 @@ export function LaporScreen({ onBack, onDone }: { onBack: () => void; onDone: ()
     }
   };
 
-  const formErrors = [errors.lokasi, errors.kategori, errors.cuaca, errors.form].filter(Boolean);
+  // Kejadian and Cuaca show their message under their own group; the rest is listed above the button.
+  const formErrors = [errors.lokasi, errors.form].filter(Boolean);
 
   return (
     <AppBackground>
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-        <View style={[styles.flex, { paddingTop: insets.top + 12 }]}>
+        <View style={[styles.flex, { paddingTop: insets.top + screenLayout.top }]}>
           <View style={styles.headerPad}>
             <ScreenHeader title="Laporkan Kejadian" onBack={onBack} />
           </View>
@@ -111,10 +123,8 @@ export function LaporScreen({ onBack, onDone }: { onBack: () => void; onDone: ()
               ) : null}
             </Glass>
 
-            <View style={styles.dropdownRow}>
-              <Dropdown placeholder="Kejadian" options={KATEGORI_OPTIONS} value={kategori} onChange={setKategori} hasError={!!errors.kategori} />
-              <Dropdown placeholder="Cuaca" options={CUACA_OPTIONS} value={cuaca} onChange={setCuaca} hasError={!!errors.cuaca} />
-            </View>
+            <SegmentedControl label="Kejadian" options={KATEGORI_OPTIONS} value={kategori} onChange={chooseKategori} error={errors.kategori} />
+            <SegmentedControl label="Cuaca" options={CUACA_OPTIONS} value={cuaca} onChange={chooseCuaca} error={errors.cuaca} />
 
             <View style={styles.section}>
               <Text style={styles.sectionLabel}>Deskripsi Kejadian</Text>
@@ -136,8 +146,11 @@ export function LaporScreen({ onBack, onDone }: { onBack: () => void; onDone: ()
               <Text style={styles.sectionLabel}>
                 Foto <Text style={styles.optional}>(opsional)</Text>
               </Text>
-              <PhotoField uri={fotoUri} onChange={setFotoUri} />
-              <Text style={styles.note}>**Harap tidak mengirim foto yang berisi wajah korban!</Text>
+              <PhotoField photo={foto} onChange={setFoto} />
+              <View style={styles.info}>
+                <LineIcon name="info" size={16} color={colors.textSecondary} />
+                <Text style={styles.infoText}>Harap tidak mengirim foto yang berisi wajah korban!</Text>
+              </View>
             </View>
             </Animated.View>
           </ScrollView>
@@ -152,7 +165,7 @@ export function LaporScreen({ onBack, onDone }: { onBack: () => void; onDone: ()
                 ))}
               </View>
             ) : null}
-            <PrimaryButton label="Kirim laporan" onPress={submit} loading={loading} fullWidth />
+            <PrimaryButton label="Kirim laporan" onPress={submit} loading={loading} fullWidth tall />
           </View>
         </View>
       </KeyboardAvoidingView>
@@ -162,16 +175,15 @@ export function LaporScreen({ onBack, onDone }: { onBack: () => void; onDone: ()
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  headerPad: { paddingHorizontal: 20 },
-  content: { paddingHorizontal: 24, paddingTop: 14, paddingBottom: 16 },
-  form: { gap: 12 },
+  headerPad: { paddingHorizontal: screenLayout.side },
+  content: { paddingHorizontal: screenLayout.side, paddingTop: 14, paddingBottom: 16 },
+  form: { gap: 14 },
   card: { padding: 14, gap: 8 },
-  section: { gap: 6, paddingLeft: 2 },
+  section: { gap: 6 },
   label: { fontFamily: fontFamily.semibold, fontSize: 16, lineHeight: 22, color: colors.textPrimary },
   value: { fontFamily: fontFamily.extrabold },
-  sectionLabel: { fontFamily: fontFamily.semibold, fontSize: 16, lineHeight: 22, color: colors.textPrimary },
-  optional: { fontFamily: fontFamily.semibold, fontSize: 13 },
-  dropdownRow: { flexDirection: 'row', gap: 4, paddingLeft: 2, zIndex: 10, elevation: 10 },
+  sectionLabel: { fontFamily: fontFamily.bold, fontSize: 15, lineHeight: 20, color: colors.textPrimary },
+  optional: { fontFamily: fontFamily.regular, fontSize: 13, color: colors.textSecondary },
   textarea: {
     minHeight: 78,
     borderRadius: 10,
@@ -184,10 +196,11 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
   },
   inputError: { borderWidth: 2, borderColor: colors.error },
-  note: { fontFamily: fontFamily.semibold, fontSize: 12, lineHeight: 16, color: colors.textSecondary },
+  info: { flexDirection: 'row', alignItems: 'flex-start', gap: 8, paddingHorizontal: 12, paddingVertical: 10, borderRadius: 12, backgroundColor: colors.glassInFill },
+  infoText: { flex: 1, fontFamily: fontFamily.regular, fontSize: 12, lineHeight: 17, color: colors.textSecondary },
   inlineAction: { minHeight: 44, justifyContent: 'center', alignSelf: 'flex-start' },
   inlineActionText: { fontFamily: fontFamily.extrabold, fontSize: 14, color: colors.textPrimary, textDecorationLine: 'underline' },
-  footer: { paddingHorizontal: 33, paddingTop: 8, gap: 8 },
+  footer: { paddingHorizontal: screenLayout.side, paddingTop: 8, gap: 8 },
   errorBox: { borderRadius: radius.field, backgroundColor: colors.glass, padding: 10, gap: 2 },
   error: { fontFamily: fontFamily.semibold, fontSize: 13, lineHeight: 18, color: colors.error },
 });

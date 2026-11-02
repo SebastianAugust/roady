@@ -9,7 +9,7 @@ import { StatusPill } from '../components/StatusPill';
 import { placeText } from '../lib/address';
 import { CUACA_LABEL, KATEGORI_LABEL } from '../lib/reportOptions';
 import { formatDate } from '../lib/reportStatus';
-import { colors, fontFamily } from '../theme/tokens';
+import { colors, fontFamily, screenLayout } from '../theme/tokens';
 import type { Laporan } from '../types';
 
 /** One of the driver's own reports. There is no Figma frame for it yet (docs/04), so it reuses the glass card and tokens of the Lapor form. */
@@ -19,7 +19,7 @@ export function DetailLaporanScreen({ report, onBack }: { report: Laporan; onBac
 
   return (
     <AppBackground>
-      <View style={[styles.screen, { paddingTop: insets.top + 12 }]}>
+      <View style={[styles.screen, { paddingTop: insets.top + screenLayout.top }]}>
         <ScreenHeader title={`Laporan #${report.id_report}`} onBack={onBack} />
         <ScrollView contentContainerStyle={[styles.content, { paddingBottom: Math.max(insets.bottom, 12) + 24 }]} showsVerticalScrollIndicator={false}>
           <Glass radius={20} style={styles.card}>
@@ -75,8 +75,8 @@ export function DetailLaporanScreen({ report, onBack }: { report: Laporan; onBac
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, paddingHorizontal: 20 },
-  content: { paddingHorizontal: 4, paddingTop: 22, gap: 14 },
+  screen: { flex: 1, paddingHorizontal: screenLayout.side },
+  content: { paddingTop: 22, gap: 14 },
   card: { padding: 14, gap: 10 },
   field: { gap: 2, alignItems: 'flex-start' },
   label: { fontFamily: fontFamily.semibold, fontSize: 13, lineHeight: 18, color: colors.textSecondary },

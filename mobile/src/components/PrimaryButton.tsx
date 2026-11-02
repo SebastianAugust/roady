@@ -9,9 +9,11 @@ interface Props {
   fullWidth?: boolean;
   /** `secondary` is the quiet button (Kembali on the onboarding pages): surface fill, hairline border, white text. The default is a white button with navy text. */
   variant?: 'solid' | 'secondary';
+  /** 48 high instead of 42 (Kirim laporan). */
+  tall?: boolean;
 }
 
-export function PrimaryButton({ label, onPress, loading = false, fullWidth = false, variant = 'solid' }: Props) {
+export function PrimaryButton({ label, onPress, loading = false, fullWidth = false, variant = 'solid', tall = false }: Props) {
   const secondary = variant === 'secondary';
   return (
     <Pressable
@@ -19,7 +21,7 @@ export function PrimaryButton({ label, onPress, loading = false, fullWidth = fal
       accessibilityLabel={label}
       accessibilityState={{ busy: loading }}
       onPress={loading ? undefined : onPress}
-      style={({ pressed }) => [styles.button, secondary && styles.secondary, fullWidth && styles.full, pressed && styles.pressed]}
+      style={({ pressed }) => [styles.button, secondary && styles.secondary, fullWidth && styles.full, tall && styles.tall, pressed && styles.pressed]}
     >
       {loading ? (
         <ActivityIndicator color={secondary ? colors.textPrimary : colors.onButtonPrimary} />
@@ -43,6 +45,7 @@ const styles = StyleSheet.create({
   },
   secondary: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border },
   full: { alignSelf: 'stretch' },
+  tall: { height: 48 },
   secondaryLabel: { color: colors.textPrimary },
   pressed: { opacity: 0.85 },
   label: {

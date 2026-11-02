@@ -44,7 +44,15 @@ export const colors = {
   skeleton: 'rgba(255,255,255,0.06)',
   skeletonShine: 'rgba(255,255,255,0.18)',
   skeletonClear: 'rgba(255,255,255,0)',
+  dashedEdge: 'rgba(255,255,255,0.45)', // the dashed photo box of Lapor
+  chipFill: 'rgba(255,255,255,0.12)', // small buttons on a glass card (Ganti, Hapus)
 } as const;
+
+/**
+ * Screen frame shared by every signed-in screen: the top padding added to the safe-area inset (insets.top + 18) and
+ * the side margin (24). Use with useSafeAreaInsets, never a fixed top.
+ */
+export const screenLayout = { top: 18, side: 24 } as const;
 
 /** Brand gradient, diagonal: navy900 -> navy700 -> navy500. Used with expo-linear-gradient. */
 export const gradients = {

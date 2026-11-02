@@ -6,7 +6,7 @@ import { GlassMenu } from '../components/GlassMenu';
 import { iconDelete, iconHeadset, iconLogout, iconSettings } from '../components/profileArtSvg';
 import { useAuth } from '../auth/AuthContext';
 import { APP_NAME } from '../constants';
-import { colors, fontFamily } from '../theme/tokens';
+import { colors, fontFamily, screenLayout } from '../theme/tokens';
 
 interface Props {
   onHome: () => void;
@@ -34,7 +34,7 @@ export function ProfilScreen({ onHome, onReport, onOpenBantuan, onOpenPengaturan
   return (
     <AppBackground>
       <ScrollView
-        contentContainerStyle={[styles.content, { paddingTop: insets.top + 4, paddingBottom: 140 + insets.bottom }]}
+        contentContainerStyle={[styles.content, { paddingTop: insets.top + screenLayout.top, paddingBottom: 140 + insets.bottom }]}
         showsVerticalScrollIndicator={false}
       >
         <Text accessibilityRole="header" style={styles.brand}>
@@ -92,7 +92,7 @@ export function ProfilScreen({ onHome, onReport, onOpenBantuan, onOpenPengaturan
 }
 
 const styles = StyleSheet.create({
-  content: { paddingHorizontal: 22 },
+  content: { paddingHorizontal: screenLayout.side },
   brand: { fontFamily: fontFamily.display, fontSize: 36, lineHeight: 40, color: colors.textPrimary, marginLeft: 6 },
   greeting: { fontFamily: fontFamily.semibold, fontSize: 20, lineHeight: 28, color: colors.textPrimary, textAlign: 'center', marginTop: 6 },
   avatar: { width: 89, height: 89, borderRadius: 45, backgroundColor: colors.surfaceRaised, alignSelf: 'center', marginTop: 16 },
