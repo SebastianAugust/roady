@@ -43,7 +43,8 @@
   overflow: hidden;
 }
 
-@media (max-width: 900px) {
+/* Under 760px the menu is a bar above the page (Sidebar.css), so there is one column. */
+@media (max-width: 759.98px) {
   .app-shell {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -54,7 +55,10 @@
     padding: var(--space-md);
     border-radius: var(--radius-card);
   }
-  /* Phones: the stacked cards need more room than the screen, so Beranda scrolls there. */
+}
+
+@media (max-width: 900px) {
+  /* The stacked cards need more room than the screen, so Beranda scrolls from here down. */
   .app-shell-fit {
     height: auto;
     min-height: 100dvh;

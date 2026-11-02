@@ -43,13 +43,19 @@ export function Sidebar({ onOpenPalette }: Props) {
         <ul>
           {items.map((i) => (
             <li key={i.to}>
-              <NavLink to={i.to} end={i.to === ROUTES.beranda} className="sidebar-item">
+              {/* aria-label keeps the name when the label is hidden on phones (icons only); it also carries the waiting count. */}
+              <NavLink
+                to={i.to}
+                end={i.to === ROUTES.beranda}
+                className="sidebar-item"
+                aria-label={i.to === ROUTES.verifikasi && pending ? `${i.label}, ${pending} menunggu` : i.label}
+                title={i.label}
+              >
                 <MenuIcon name={ICON_BY_PATH[i.to] ?? 'beranda'} size={20} />
                 <span className="sidebar-item-label">{i.label}</span>
                 {i.to === ROUTES.verifikasi && pending ? (
-                  <span className="sidebar-badge">
-                    <span aria-hidden="true">{pending}</span>
-                    <span className="visually-hidden">, {pending} menunggu</span>
+                  <span className="sidebar-badge" aria-hidden="true">
+                    {pending}
                   </span>
                 ) : null}
               </NavLink>

@@ -34,6 +34,7 @@
 .sidebar-nav {
   flex: 1;
   min-height: 0;
+  min-width: 0; /* in the phone bar (a row) the menu scrolls instead of widening the page */
   overflow-y: auto;
 }
 
@@ -130,8 +131,9 @@
   font-size: var(--text-caption);
 }
 
-/* Narrow screens: the menu becomes a bar above the page, the items scroll sideways, and the shortcut hint goes away. */
-@media (max-width: 900px) {
+/* Phones and small tablets (under 760px): the menu becomes a bar above the page, icons only (the links keep their aria-label),
+   scrolling sideways when they do not fit; the shortcut hint goes away. */
+@media (max-width: 759.98px) {
   .sidebar {
     position: static;
     height: auto;
@@ -143,6 +145,10 @@
     border-radius: var(--radius-card);
   }
 
+  .sidebar.glass {
+    background: linear-gradient(var(--color-glass-scrim), var(--color-glass-scrim)), var(--gradient-glass);
+  }
+
   .sidebar-role,
   .sidebar-hint {
     display: none;
@@ -150,6 +156,8 @@
 
   .sidebar-nav {
     overflow: auto hidden;
+    padding: 3px; /* room for the focus ring, which the scroll box would cut */
+    scrollbar-width: thin;
   }
 
   .sidebar-nav ul {
@@ -158,6 +166,28 @@
   }
 
   .sidebar-item {
+    justify-content: center;
+    min-width: var(--size-touch-min);
+    padding-inline: var(--space-sm);
     white-space: nowrap;
+  }
+
+  .sidebar-item-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  /* The count sits on the icon's corner instead of taking a column. */
+  .sidebar-badge {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    margin: 0;
+    min-width: 18px;
+    line-height: 18px;
   }
 }

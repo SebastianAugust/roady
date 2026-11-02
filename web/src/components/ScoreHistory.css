@@ -5,6 +5,7 @@
 }
 
 .score-table-toggle {
+  overflow-x: auto; /* the table scrolls inside its box on phones */
   margin-top: var(--space-md);
   color: var(--color-text-secondary);
 }

@@ -23,8 +23,9 @@
   }
 }
 
+/* Reduced motion: a still ring; the message next to it says what is happening. */
 @media (prefers-reduced-motion: reduce) {
   .load-spinner {
-    animation-duration: 2.4s;
+    animation: none;
   }
 }

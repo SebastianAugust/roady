@@ -57,6 +57,7 @@ export const colors = {
   glassShine: 'rgba(255,255,255,0.28)', // 1px highlight along the top edge
   glassShadow: 'rgba(2,8,20,0.45)',
   glassFallback: '#16315C',
+  glassScrim: 'rgba(10,26,51,0.3)', // darkens the glass of the top bar and the phone menu bar, which sit under the brightest page light (text >= 4.5:1)
   glassInFrom: 'rgba(255,255,255,0.12)',
   glassInTo: 'rgba(255,255,255,0.04)',
   glassInEdge: 'rgba(255,255,255,0.16)',

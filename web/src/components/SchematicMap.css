@@ -46,8 +46,11 @@
   outline: none;
 }
 
-.schematic-zone .schematic-area {
-  transition: fill-opacity var(--dur-base) ease;
+/* With reduced motion the hover fill changes at once. */
+@media (prefers-reduced-motion: no-preference) {
+  .schematic-zone .schematic-area {
+    transition: fill-opacity var(--dur-base) ease;
+  }
 }
 
 .schematic-zone.is-hovered .schematic-area {

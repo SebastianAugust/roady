@@ -1,6 +1,7 @@
 import { CategoryScale, Chart, LinearScale, LineController, LineElement, PointElement, Tooltip, type Plugin } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import { formatDate } from '../lib/format';
+import { prefersReducedMotion } from '../lib/motion';
 import { RISK_LABEL } from '../lib/risk';
 import { colors, fontFamily, fontSize } from '../theme/tokens';
 import type { RiwayatSkorPoint } from '../types';
@@ -70,6 +71,7 @@ export function ScoreHistoryChart({ titik, label }: Props) {
           ],
         }}
         options={{
+          animation: prefersReducedMotion() ? false : undefined, // Chart.js ignores the OS setting on its own
           responsive: true,
           maintainAspectRatio: false,
           interaction: { mode: 'index', intersect: false },
