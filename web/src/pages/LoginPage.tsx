@@ -1,4 +1,4 @@
-import { useState, type AnimationEvent, type FormEvent } from 'react';
+import { useState, type AnimationEvent, type FormEvent, type KeyboardEvent } from 'react';
 import { Link, Navigate, useLocation } from 'react-router-dom';
 import { api, ApiError } from '../api';
 import { useAuth } from '../auth/useAuth';
@@ -20,6 +20,7 @@ const MSG_PASSWORD = `Password minimal ${PASSWORD_MIN_LENGTH} karakter.`;
 const MSG_WRONG = 'Email atau password salah. Coba lagi.';
 
 const ERROR_ID = 'login-error';
+const PASSWORD_ID = 'login-password';
 
 /**
  * Login (docs/design/admin/Login.png, docs/design/dishub/Login.png; the same screen for both) as one glass card
@@ -67,6 +68,13 @@ export function LoginPage() {
     }
   }
 
+  // Enter in the email field moves on to the password while that is still empty; with a password it submits as usual.
+  const onEmailKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key !== 'Enter' || e.nativeEvent.isComposing || password) return;
+    e.preventDefault();
+    document.getElementById(PASSWORD_ID)?.focus();
+  };
+
   // The class is dropped when the shake itself ends (not when a child's rise animation bubbles up), so the next error shakes again.
   const onAnimationEnd = (e: AnimationEvent) => {
     if (e.target === e.currentTarget) setShaking(false);
@@ -92,10 +100,12 @@ export function LoginPage() {
               placeholder="nama@instansi.go.id"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              onKeyDown={onEmailKeyDown}
               aria-invalid={error?.field === 'email' || undefined}
               aria-describedby={error?.field === 'email' ? ERROR_ID : undefined}
             />
             <TextField
+              id={PASSWORD_ID}
               label="Password"
               type={showPassword ? 'text' : 'password'}
               autoComplete="current-password"
