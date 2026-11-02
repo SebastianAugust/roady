@@ -23,9 +23,54 @@
   font-size: var(--text-h2);
 }
 
-.ekspor-format {
+.ekspor-group {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  display: grid;
+  gap: var(--space-xs);
+}
+
+.ekspor-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.ekspor-estimate {
   font-size: var(--text-small);
-  color: var(--color-text-secondary);
+  color: var(--color-text-secondary-on-glass);
+}
+
+.ekspor-progress {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--color-switch-off);
+  overflow: hidden;
+}
+
+.ekspor-progress i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--color-accent);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .ekspor-progress i {
+    transition: width var(--dur-base) var(--ease);
+  }
+}
+
+/* White on the success fill is 5.0:1, same pair as the status pills. */
+.ekspor-ready {
+  display: inline-block;
+  padding: 1px var(--space-sm);
+  border-radius: 999px;
+  background: var(--color-status-success);
+  color: var(--color-white);
+  font-size: var(--text-small);
+  font-weight: var(--weight-semibold);
 }
 
 .ekspor-errors {

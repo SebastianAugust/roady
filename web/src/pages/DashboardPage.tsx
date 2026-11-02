@@ -1,17 +1,17 @@
 import { useCallback, useMemo, useState } from 'react';
 import { api } from '../api';
 import { Button } from '../components/Button';
-import { EmptyState } from '../components/EmptyState';
 import { LoadState } from '../components/LoadState';
 import { PageHeader } from '../components/PageHeader';
 import { ScoreHistory } from '../components/ScoreHistory';
 import { SelectField } from '../components/SelectField';
+import { Skeleton } from '../components/Skeleton';
 import { StatTile } from '../components/StatTile';
 import { StatTilesSkeleton } from '../components/StatTilesSkeleton';
 import { Tabs } from '../components/Tabs';
-import { TableSkeleton } from '../components/TableSkeleton';
-import { ZoneMap } from '../components/ZoneMap';
+import { ZoneExplorer } from '../components/ZoneExplorer';
 import { ZoneTable } from '../components/ZoneTable';
+import { EmptyState } from '../components/ui';
 import { useApi } from '../hooks/useApi';
 import { formatCoords } from '../lib/format';
 import { RISK_LABEL } from '../lib/risk';
@@ -25,12 +25,10 @@ const zoneLabel = (z: ZonaTeratas) =>
 const RISK_SHORT: Record<KategoriRisiko, string> = { merah: 'Merah', kuning: 'Kuning', hijau: 'Hijau' };
 
 /**
- * Figma "dishub - dashboard statistik" (docs/design/dishub/dishub - dashboard statistik.png): counters from API-011 and
- * the zone list from GET /api/dishub/zones (usulan). Below the counters, "Tabel | Peta": the zone table (and score
- * history) or the Peta Zona Risiko map, which has no web frame and is not a navbar item (docs/05 #31).
- * The Merah / Kuning / Hijau counters filter the table; Total Zona Risiko clears the filter. Above the tabs a zone
- * dropdown ("Semua zona" or one zone) filters the table to that zone and highlights it on the map; picking a zone
- * clears the category filter and the other way round, so the two never contradict each other.
+ * Statistik Zona (docs/design/prototype-web-v2.html, Dishub), two tabs. "Peta": category chips, the rain switch, the map
+ * (Google Maps, or the schematic map without a key) and the zone list and detail on the side (ZoneExplorer). "Tabel":
+ * the Figma frame "dishub - dashboard statistik" (docs/design/dishub/dishub - dashboard statistik.png): counters from
+ * API-011 that filter the zone table, a zone dropdown, the table, and the score history of one zone.
  */
 export function DashboardPage() {
   const loadStats = useCallback(() => api.getStatistics(), []);
@@ -44,7 +42,7 @@ export function DashboardPage() {
       {stats.status === 'loading' || zones.status === 'loading' ? (
         <>
           <StatTilesSkeleton label="Memuat statistik…" />
-          <TableSkeleton columns={4} label="Memuat daftar zona…" />
+          <Skeleton width="100%" height={420} radius="var(--radius-card)" />
         </>
       ) : null}
       {stats.status === 'error' ? <LoadState state="error" message={stats.message} onRetry={retryStats} /> : null}
@@ -55,8 +53,29 @@ export function DashboardPage() {
 }
 
 function Dashboard({ stats, zones }: { stats: Statistics; zones: ZonaTeratas[] }) {
+  const [view, setView] = useState<'peta' | 'tabel'>('peta');
+  return (
+    <Tabs
+      label="Tampilan zona"
+      tabs={[
+        { value: 'peta', label: 'Peta' },
+        { value: 'tabel', label: 'Tabel' },
+      ]}
+      value={view}
+      onChange={setView}
+    >
+      {view === 'peta' ? <ZoneExplorer zones={zones} stats={stats} /> : <ZoneTableTab stats={stats} zones={zones} />}
+    </Tabs>
+  );
+}
+
+/**
+ * The "Tabel" tab. The Merah / Kuning / Hijau counters filter the table; Total Zona Risiko clears the filter. Above the
+ * table a zone dropdown ("Semua zona" or one zone) filters it to that zone; picking a zone clears the category filter
+ * and the other way round, so the two never contradict each other.
+ */
+function ZoneTableTab({ stats, zones }: { stats: Statistics; zones: ZonaTeratas[] }) {
   const { rekap, total_zona } = stats;
-  const [view, setView] = useState<'tabel' | 'peta'>('tabel');
   const [kategori, setKategori] = useState<KategoriRisiko | ''>('');
   const [zonaFilter, setZonaFilter] = useState('');
   // Clicking the active counter again clears the filter, the same as Total. A category filter drops the zone filter.
@@ -96,21 +115,7 @@ function Dashboard({ stats, zones }: { stats: Statistics; zones: ZonaTeratas[] }
         }}
       />
 
-      <Tabs
-        label="Tampilan zona"
-        tabs={[
-          { value: 'tabel', label: 'Tabel' },
-          { value: 'peta', label: 'Peta' },
-        ]}
-        value={view}
-        onChange={setView}
-      >
-        {view === 'peta' ? (
-          <ZoneMap zones={kategori ? shown : zones} selectedId={selectedId} filterLabel={kategori ? `Zona ${RISK_SHORT[kategori]}` : undefined} />
-        ) : (
-          <ZoneTableView stats={stats} zones={zones} shown={shown} kategori={kategori} selectedId={selectedId} onClear={clearAll} />
-        )}
-      </Tabs>
+      <ZoneTableView stats={stats} zones={zones} shown={shown} kategori={kategori} selectedId={selectedId} onClear={clearAll} />
     </>
   );
 }
@@ -126,7 +131,7 @@ interface TableViewProps {
   onClear: () => void;
 }
 
-/** The "Tabel" tab: the Figma zone table, then the score history of one zone (API-011 riwayat_skor); a picked zone also picks the history. */
+/** The zone table, then the score history of one zone (API-011 riwayat_skor); a picked zone also picks the history. */
 function ZoneTableView({ stats, zones, shown, kategori, selectedId, onClear }: TableViewProps) {
   const { riwayat_skor } = stats;
   const [historyZona, setHistoryZona] = useState(String(zones[0]?.zona_id ?? ''));
@@ -153,7 +158,9 @@ function ZoneTableView({ stats, zones, shown, kategori, selectedId, onClear }: T
             </Button>
           ) : null}
         </div>
-        {shown.length ? <ZoneTable zones={shown} /> : (
+        {shown.length ? (
+          <ZoneTable zones={shown} />
+        ) : (
           <EmptyState
             title="Tidak ada zona yang cocok"
             description="Coba kategori lain atau hapus filter untuk melihat semua zona."

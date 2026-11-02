@@ -286,6 +286,23 @@ export const mockApi: ApiClient = {
     return { laporan: withoutReporter(report), notifikasi_terkirim: true };
   },
 
+  async revertVerification(id) {
+    await wait();
+    authorize(ADMIN);
+    const report = MOCK_REPORTS.find((r) => r.id_report === id);
+    if (!report) throw new ApiError(404, 'Laporan tidak ditemukan.');
+    if (report.status !== 'approved' && report.status !== 'rejected') throw new ApiError(409, 'Laporan ini belum diverifikasi.');
+    // Back to the queue as if nobody had decided it.
+    report.status = 'pending_review';
+    report.waktu_verifikasi = null;
+    report.diverifikasi_oleh = null;
+    report.diverifikasi_oleh_kode = null;
+    report.diverifikasi_oleh_nama = null;
+    report.alasan_verifikasi = null;
+    report.alasan_penolakan = null;
+    return withoutReporter(report);
+  },
+
   async getDishubAccidents(query = {}) {
     await wait();
     authorize(DISHUB);
@@ -342,6 +359,17 @@ export const mockApi: ApiClient = {
     record.dihapus_oleh = admin.id_user; // from the token
     record.waktu_hapus = new Date().toISOString();
     record.alasan_hapus = body.alasan.trim();
+  },
+
+  async restoreAccident(id) {
+    await wait();
+    authorize(ADMIN);
+    const record = MOCK_ACCIDENTS.find((a) => a.id_kejadian === id && a.dihapus_oleh !== null);
+    if (!record) throw new ApiError(404, 'Data kecelakaan yang dihapus tidak ditemukan.');
+    record.dihapus_oleh = null;
+    record.waktu_hapus = null;
+    record.alasan_hapus = null;
+    return publicAccident(record);
   },
 };
 

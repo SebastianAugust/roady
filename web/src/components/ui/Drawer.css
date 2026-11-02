@@ -1,0 +1,71 @@
+.drawer-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 1300;
+  background: var(--color-overlay);
+}
+
+.drawer {
+  position: fixed;
+  z-index: 1301;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(100%, 440px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding: var(--space-lg) max(var(--space-lg), env(safe-area-inset-right, 0px)) var(--space-lg) var(--space-lg);
+  background: var(--color-surface);
+  border-left: 1px solid var(--color-menu-border);
+  box-shadow: var(--effect-menu-shadow);
+  overflow: auto;
+  color: var(--color-text-primary);
+}
+
+.drawer-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
+.drawer-title {
+  font-size: var(--text-h2);
+}
+
+.drawer-close {
+  flex: none;
+  width: var(--size-touch-min);
+  height: var(--size-touch-min);
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  background: none;
+  color: var(--color-text-primary);
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.drawer-close:hover {
+  border-color: var(--color-accent);
+}
+
+.drawer-body {
+  flex: 1;
+  display: grid;
+  gap: var(--space-md);
+  align-content: start;
+}
+
+.drawer-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+}
+
+/* A form inside the drawer body. */
+.drawer-form {
+  display: grid;
+  gap: var(--space-md);
+}

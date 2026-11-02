@@ -57,6 +57,8 @@ export interface ApiClient {
   getAdminReports(query: AdminReportsQuery): Promise<LaporanAdmin[]>;
   /** API-008 PATCH /api/admin/reports/{id}/verify (admin). 404 unknown, 409 already decided, 422 bad keputusan or (for rejected) an alasan under 10 characters. */
   verifyReport(id: number, body: VerifyRequest): Promise<VerifyResponse>;
+  /** PATCH /api/admin/reports/{id}/revert (usulan, admin): takes a decision back (Urungkan), the report returns to pending_review. 404 unknown, 409 not decided. */
+  revertVerification(id: number): Promise<LaporanAdmin>;
   /** GET /api/admin/accidents (usulan, admin): official accidents that are not deleted, filtered and paged. */
   getAccidents(query?: AccidentsQuery): Promise<Page<KecelakaanResmi>>;
   /** GET /api/admin/accidents/deleted (usulan, admin): the soft-deleted rows with who, when and why. */
@@ -67,6 +69,8 @@ export interface ApiClient {
   updateAccident(id: number, body: CreateAccidentRequest): Promise<KecelakaanResmi>;
   /** API-009 DELETE /api/admin/accidents/{id} (admin), a soft delete. Body {alasan} is required (422 under 10 characters). 404 when it does not exist or is already deleted. */
   deleteAccident(id: number, body: DeleteAccidentRequest): Promise<void>;
+  /** POST /api/admin/accidents/{id}/restore (usulan, admin): undoes a soft delete (Urungkan). 404 when it does not exist or is not deleted. */
+  restoreAccident(id: number): Promise<KecelakaanResmi>;
 }
 
 export class ApiError extends Error {

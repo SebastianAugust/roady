@@ -32,3 +32,10 @@
   color: var(--color-text-secondary);
   font-size: var(--text-small);
 }
+
+.laporan-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-sm);
+}

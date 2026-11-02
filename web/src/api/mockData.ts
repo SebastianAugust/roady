@@ -105,7 +105,8 @@ export const MOCK_HISTORY: Record<number, RiwayatSkorPoint[]> = Object.fromEntri
       const skor = Math.max(1, Math.min(99, z.skor_risiko - drift * weeksAgo + (weeksAgo ? wobble : 0)));
       const date = new Date(Date.parse(UPDATED) - weeksAgo * 7 * 86_400_000).toISOString();
       // The other KALKULASI_RISIKO columns: the event count grows towards today's, the rain share is fixed per zone.
-      const rain = z.weather_dependent ? 52 + ((z.zona_id * 7) % 25) : 8 + ((z.zona_id * 5) % 22);
+      // Weather-dependent zones are exactly those with more than 60% of their incidents in rain (docs/01 step 3).
+      const rain = z.weather_dependent ? 62 + ((z.zona_id * 7) % 18) : 8 + ((z.zona_id * 5) % 22);
       const jumlah = Math.max(1, z.jumlah_kejadian - Math.floor(weeksAgo / 2));
       return { last_updated: date, skor_risiko: skor, kategori_risiko: kategoriFromPercentile(skor), jumlah_kejadian: jumlah, persentase_kejadian_saat_hujan: rain };
     });
@@ -149,6 +150,38 @@ const reportRows: [number, Kategori, Cuaca, StatusLaporan, string, boolean, stri
   [3, 'kecelakaan', 'cerah', 'rejected', '2026-10-06', true, 'Tabrakan di Buahbatu.', 'Foto yang dilampirkan bukan foto kejadian, melainkan gambar dari internet.'],
   [7, 'near_miss', 'hujan', 'rejected', '2026-10-09', true, 'Hampir tertabrak truk di Cinunuk.', 'Deskripsi tidak sesuai dengan foto; waktu dan lokasi pada foto berbeda.'],
 ];
+
+// Reports of the last 7 days, dated from "now" so the Admin Beranda (laporan hari ini, grafik 7 hari) always has something
+// to show. Reports per day, oldest first, the last one is today. About one in four has no photo (auto_approved, weight 0,5);
+// photo reports of the last 4 days wait for review, older ones are decided.
+const DAILY_REPORTS = [2, 3, 1, 4, 2, 3, 4];
+const RECENT_TEXT = [
+  'Motor tergelincir di tikungan, aspal licin setelah hujan.',
+  'Mobil menabrak pembatas jalan karena jarak pandang pendek.',
+  'Dua motor bersenggolan, salah satu pengendara jatuh.',
+  'Pejalan kaki hampir tertabrak saat menyeberang dekat pertigaan.',
+  'Angkot berhenti mendadak, motor di belakang menghindar ke kanan.',
+  'Truk berbelok tanpa lampu sein, mobil di sebelahnya mengerem mendadak.',
+];
+
+function recentRows(): typeof reportRows {
+  const rows: typeof reportRows = [];
+  let n = 0;
+  DAILY_REPORTS.forEach((count, i) => {
+    const daysAgo = DAILY_REPORTS.length - 1 - i;
+    // The browser's local date, the same day the Admin Beranda counts as "hari ini" (todayIso in lib/format).
+    const d = new Date(Date.now() - daysAgo * 86_400_000);
+    const date = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    for (let k = 0; k < count; k++, n++) {
+      const foto = n % 4 !== 3;
+      const status: StatusLaporan = !foto ? 'auto_approved' : daysAgo >= 4 ? (n % 2 ? 'approved' : 'rejected') : 'pending_review';
+      const alasan = status === 'rejected' ? 'Foto buram dan lokasi kejadian tidak dapat dipastikan.' : undefined;
+      rows.push([(n * 5) % 16 + 1, n % 3 === 0 ? 'near_miss' : 'kecelakaan', n % 2 ? 'hujan' : 'cerah', status, date, foto, RECENT_TEXT[n % RECENT_TEXT.length], alasan]);
+    }
+  });
+  return rows;
+}
+reportRows.push(...recentRows());
 
 const APPROVE_REASONS = [
   'Bukti foto jelas dan lokasi sesuai dengan koordinat laporan.',

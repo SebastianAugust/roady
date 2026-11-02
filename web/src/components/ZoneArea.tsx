@@ -24,19 +24,23 @@ interface Props {
   marker?: boolean;
   /** Makes the circle and the marker clickable. */
   onSelect?: (zoneId: number) => void;
+  /** Called with the zone id when the pointer enters it and with undefined when it leaves. */
+  onHover?: (zoneId: number | undefined) => void;
 }
 
 /**
  * A zone as an AREA: a circle of its own radius_zona around its centre, plus (on the zone map) a marker at the centre so
  * a zone stays visible and clickable when zoomed far out. Higher risk and the picked zone are drawn on top.
  */
-export function ZoneArea({ zone, emphasis, marker = false, onSelect }: Props) {
+export function ZoneArea({ zone, emphasis, marker = false, onSelect, onHover }: Props) {
   const color = RISK_COLOR[zone.kategori_risiko];
   const position = { lat: zone.center_latitude, lng: zone.center_longitude };
   const selected = emphasis === 'selected';
   const dim = emphasis === 'dim';
   const zIndex = (selected ? 100 : 0) + (RISK_ORDER.length - RISK_ORDER.indexOf(zone.kategori_risiko));
   const select = onSelect ? () => onSelect(zone.zona_id) : undefined;
+  const enter = onHover ? () => onHover(zone.zona_id) : undefined;
+  const leave = onHover ? () => onHover(undefined) : undefined;
   return (
     <>
       <Circle
@@ -50,6 +54,8 @@ export function ZoneArea({ zone, emphasis, marker = false, onSelect }: Props) {
         clickable={onSelect !== undefined}
         zIndex={zIndex}
         onClick={select}
+        onMouseOver={enter}
+        onMouseOut={leave}
       />
       {marker ? (
         <Marker
@@ -67,6 +73,8 @@ export function ZoneArea({ zone, emphasis, marker = false, onSelect }: Props) {
             strokeWeight: 2,
           }}
           onClick={select}
+          onMouseOver={enter}
+          onMouseOut={leave}
         />
       ) : null}
     </>

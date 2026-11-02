@@ -1,0 +1,163 @@
+/* The side menu: a floating glass panel, as tall as the screen, that stays put while the page scrolls. */
+.sidebar {
+  position: sticky;
+  top: var(--space-sm);
+  z-index: 1000;
+  align-self: start;
+  height: calc(100dvh - var(--space-sm) * 2);
+  margin: var(--space-sm) 0 var(--space-sm) var(--space-sm);
+  padding: var(--space-lg) var(--space-sm) var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  border-radius: var(--radius-nav);
+}
+
+.sidebar-brand {
+  padding-inline: var(--space-sm);
+  color: var(--color-text-primary);
+  font-family: var(--font-display);
+  font-size: var(--text-brand);
+  line-height: 1;
+  text-decoration: none;
+}
+
+.sidebar-role {
+  margin: calc(var(--space-sm) * -1) 0 0;
+  padding-inline: var(--space-sm);
+  color: var(--color-accent);
+  font-size: var(--text-caption);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sidebar-nav {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.sidebar-nav ul {
+  display: grid;
+  gap: var(--space-xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sidebar-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  min-height: var(--size-touch-min);
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-field);
+  color: var(--color-text-secondary);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-small);
+  text-decoration: none;
+}
+
+.sidebar-item svg {
+  flex: none;
+}
+
+.sidebar-item-label {
+  min-width: 0;
+}
+
+.sidebar-item:hover {
+  background: var(--color-menu-item-hover);
+  color: var(--color-text-primary);
+}
+
+/* The current page: a raised surface with a marker on the left edge. */
+.sidebar-item.active {
+  background: var(--color-surface-raised);
+  color: var(--color-text-primary);
+  box-shadow: inset 3px 0 0 var(--color-accent);
+}
+
+/* Navy on yellow, the same pair as the "Menunggu" status pill (13.6:1). */
+.sidebar-badge {
+  margin-left: auto;
+  min-width: 22px;
+  padding: 0 var(--space-xs);
+  border-radius: 999px;
+  background: var(--color-status-warning);
+  color: var(--color-on-button-primary);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-extrabold);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.sidebar-hint {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  width: 100%;
+  min-height: var(--size-touch-min);
+  padding: var(--space-xs) var(--space-md);
+  border: 1px solid var(--color-nav-item-edge);
+  border-radius: var(--radius-field);
+  background: none;
+  color: var(--color-text-secondary);
+  font-size: var(--text-small);
+  text-align: left;
+  cursor: pointer;
+}
+
+.sidebar-hint:hover {
+  border-color: var(--color-accent);
+  color: var(--color-text-primary);
+}
+
+.sidebar-keys {
+  margin-left: auto;
+  display: inline-flex;
+  gap: 4px;
+}
+
+.sidebar kbd {
+  padding: 1px 6px;
+  border: 1px solid var(--color-border);
+  border-radius: 5px;
+  background: var(--color-nav-item);
+  color: var(--color-text-primary);
+  font: inherit;
+  font-size: var(--text-caption);
+}
+
+/* Narrow screens: the menu becomes a bar above the page, the items scroll sideways, and the shortcut hint goes away. */
+@media (max-width: 900px) {
+  .sidebar {
+    position: static;
+    height: auto;
+    margin: var(--space-sm) var(--space-sm) 0;
+    padding: var(--space-sm) var(--space-md);
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-md);
+    border-radius: var(--radius-card);
+  }
+
+  .sidebar-role,
+  .sidebar-hint {
+    display: none;
+  }
+
+  .sidebar-nav {
+    overflow: auto hidden;
+  }
+
+  .sidebar-nav ul {
+    grid-auto-flow: column;
+    grid-auto-columns: max-content;
+  }
+
+  .sidebar-item {
+    white-space: nowrap;
+  }
+}

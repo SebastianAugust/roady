@@ -59,6 +59,7 @@ export function WaveIcon({ size = 210 }: { size?: number }) {
 const line = { fill: 'none', stroke: 'currentColor', strokeWidth: 1.6, strokeLinecap: 'round', strokeLinejoin: 'round' } as const;
 
 const MENU_ICONS = {
+  beranda: <path {...line} d="M3 11.5 12 4l9 7.5M5.5 10v10h4.5v-6h4v6h4.5V10" />,
   statistik: <path {...line} d="M4 20h16M6 20v-6h3v6M10.5 20V8h3v12M15 20v-9h3v9" />,
   input: <path {...line} d="M4 4h16M12 20V8M7 13l5-5 5 5" />,
   laporan: (

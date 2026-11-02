@@ -1,26 +1,38 @@
-/* The large glass panel under the navbar (radius 64 in glass-reference.html). */
+/* Side menu | content column. The column holds the sticky top bar and the large glass panel (radius 64 in
+   glass-reference.html) with the page. */
+.app-shell {
+  display: grid;
+  grid-template-columns: calc(var(--size-sidebar) + var(--space-sm)) minmax(0, 1fr); /* the menu is 240px, plus its 10px margin */
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.app-col {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 0 var(--space-md) var(--space-md);
+}
+
 .app-main {
-  width: calc(100% - var(--space-page) * 2);
+  width: 100%;
   max-width: var(--size-content-max);
   margin: var(--space-md) auto 0;
   padding: var(--space-lg) var(--space-xl) var(--space-xl);
   border-radius: var(--radius-panel);
 }
 
-.app-shell {
-  min-height: 100vh;
-  min-height: 100dvh;
-  padding-bottom: var(--space-lg);
-}
-
-/* Beranda: header + navbar + a panel that takes the rest of the screen, so the page never scrolls. */
+/* Beranda: a panel that takes the rest of the screen under the top bar, so the page never scrolls. */
 .app-shell-fit {
   height: 100vh;
   height: 100dvh;
   min-height: 0;
-  display: flex;
-  flex-direction: column;
+  grid-template-rows: minmax(0, 1fr);
   overflow: hidden;
+}
+
+.app-shell-fit .app-col {
+  min-height: 0;
 }
 
 .app-shell-fit .app-main {
@@ -32,8 +44,13 @@
 }
 
 @media (max-width: 900px) {
+  .app-shell {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .app-col {
+    padding-inline: var(--space-sm);
+  }
   .app-main {
-    width: calc(100% - var(--space-md) * 2);
     padding: var(--space-md);
     border-radius: var(--radius-card);
   }
@@ -41,6 +58,7 @@
   .app-shell-fit {
     height: auto;
     min-height: 100dvh;
+    grid-template-rows: none;
     overflow: visible;
   }
   .app-shell-fit .app-main {

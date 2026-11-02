@@ -71,3 +71,23 @@ export function pageTitleFor(pathname: string) {
   const hit = PAGE_TITLES.find(([prefix]) => pathname === prefix || pathname.startsWith(`${prefix}/`));
   return hit ? hit[1] : 'Beranda';
 }
+
+const ROLE_NAME: Record<'dishub' | 'admin', string> = { dishub: 'Dishub', admin: 'Admin' };
+
+/**
+ * Breadcrumb of the top bar: ["Dishub", "Statistik Zona"], and one more level on a detail page (["Dishub", "Statistik
+ * Zona", "Detail"]). The last item is also the title.
+ */
+export function breadcrumbFor(pathname: string, role: Role | undefined): string[] {
+  if (role !== 'dishub' && role !== 'admin') return [];
+  const root = ROLE_NAME[role];
+  if (pathname === ROUTES.akun) return [root, 'Profil Akun'];
+  // The deepest menu item whose path is the start of this one ("/" only matches itself).
+  const item = NAV_ITEMS[role]
+    .filter((i) => (i.to === ROUTES.beranda ? pathname === i.to : pathname === i.to || pathname.startsWith(`${i.to}/`)))
+    .sort((a, b) => b.to.length - a.to.length)[0];
+  if (!item) return [root, 'Beranda'];
+  // The Verifikasi split view also lives at /admin/verifikasi/:id (the report open on the right), so it has no "Detail" level.
+  if (pathname === item.to || item.to === ROUTES.verifikasi) return [root, item.label];
+  return [root, item.label, pathname === ROUTES.arsipInput ? 'Input Data' : 'Detail'];
+}

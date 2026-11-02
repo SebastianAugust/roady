@@ -96,7 +96,7 @@ textarea {
 }
 
 /* Links on glass are near-white, so they keep an underline to stay recognisable. */
-.glass a:not(.btn, .navbar-tab, .menu-card, .account-item) {
+.glass a:not(.btn, .sidebar-item, .sidebar-brand, .menu-card, .account-item) {
   text-decoration: underline;
 }
 

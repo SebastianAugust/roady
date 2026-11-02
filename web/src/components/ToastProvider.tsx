@@ -1,20 +1,24 @@
 import { useCallback, useRef, useState, type ReactNode } from 'react';
-import { ToastContext } from './toastContext';
+import { ToastContext, type ShowToast } from './toastContext';
 import './Toast.css';
 
 const VISIBLE_MS = 3000;
+/** A toast with an undo button stays longer, so there is time to reach it. */
+const VISIBLE_WITH_UNDO_MS = 6000;
 /** Matches the fade-out in motion.css (--dur-base). */
 const LEAVE_MS = 200;
 
 interface Toast {
   id: number;
   message: string;
+  undo?: () => void;
   leaving: boolean;
 }
 
 /**
- * Stack of short confirmations (e.g. after verifying a report), top right. Each slides down, stays 3 seconds, fades out,
- * and can be closed with a click. The region is a polite live region, so screen readers read each message once.
+ * Stack of short confirmations (e.g. after verifying a report), top right. Each slides down, stays 3 seconds (6 with an
+ * "Urungkan" button), fades out, and can be closed with a click on its text. The region is a polite live region, so
+ * screen readers read each message once.
  */
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -28,11 +32,11 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     },
     [remove],
   );
-  const show = useCallback(
-    (message: string) => {
+  const show = useCallback<ShowToast>(
+    (message, options) => {
       const id = ++nextId.current;
-      setToasts((t) => [...t, { id, message, leaving: false }]);
-      setTimeout(() => dismiss(id), VISIBLE_MS);
+      setToasts((t) => [...t, { id, message, undo: options?.undo, leaving: false }]);
+      setTimeout(() => dismiss(id), options?.undo ? VISIBLE_WITH_UNDO_MS : VISIBLE_MS);
     },
     [dismiss],
   );
@@ -42,15 +46,23 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       {children}
       <div className="toasts" role="status" aria-live="polite">
         {toasts.map((t) => (
-          <button
-            key={t.id}
-            type="button"
-            className={`toast${t.leaving ? ' toast-leaving' : ''}`}
-            onClick={() => dismiss(t.id)}
-            aria-label={`${t.message} (tutup)`}
-          >
-            {t.message}
-          </button>
+          <div key={t.id} className={`toast${t.leaving ? ' toast-leaving' : ''}`}>
+            <button type="button" className="toast-message" onClick={() => dismiss(t.id)} aria-label={`${t.message} (tutup)`}>
+              {t.message}
+            </button>
+            {t.undo ? (
+              <button
+                type="button"
+                className="toast-undo"
+                onClick={() => {
+                  t.undo?.();
+                  dismiss(t.id);
+                }}
+              >
+                Urungkan
+              </button>
+            ) : null}
+          </div>
         ))}
       </div>
     </ToastContext.Provider>

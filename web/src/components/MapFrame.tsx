@@ -30,6 +30,8 @@ interface Props {
   compact?: boolean;
   /** What to draw once the Google Maps script is ready: a <BaseMap>, legends and panels. */
   children: ReactNode;
+  /** Shown instead of the Google map when there is no key, the script fails or the key is refused (e.g. the schematic map). */
+  fallback?: ReactNode;
 }
 
 /**
@@ -37,7 +39,7 @@ interface Props {
  * dikonfigurasi"), loading (a skeleton) and a script that failed or was refused (EmptyState with a reload button).
  * Children are only mounted once the API is loaded, so they may use the `google.maps` globals.
  */
-export function MapFrame({ className, label, compact = false, children }: Props) {
+export function MapFrame({ className, label, compact = false, children, fallback }: Props) {
   return (
     <div
       className={`map-frame${className ? ` ${className}` : ''}`}
@@ -47,22 +49,24 @@ export function MapFrame({ className, label, compact = false, children }: Props)
     >
       {GOOGLE_MAPS_KEY ? (
         <APIProvider apiKey={GOOGLE_MAPS_KEY} language="id" region="ID">
-          <MapGate compact={compact}>{children}</MapGate>
+          <MapGate compact={compact} fallback={fallback}>
+            {children}
+          </MapGate>
         </APIProvider>
       ) : (
-        <MapMessage kind="missing" compact={compact} />
+        (fallback ?? <MapMessage kind="missing" compact={compact} />)
       )}
     </div>
   );
 }
 
-function MapGate({ compact, children }: { compact: boolean; children: ReactNode }) {
+function MapGate({ compact, children, fallback }: { compact: boolean; children: ReactNode; fallback?: ReactNode }) {
   const status = useApiLoadingStatus();
   const refused = useSyncExternalStore(subscribeAuthFailure, getAuthFailed);
-  if (refused) return <MapMessage kind="refused" compact={compact} />;
+  if (refused) return fallback ?? <MapMessage kind="refused" compact={compact} />;
   if (status === APILoadingStatus.LOADED) return <>{children}</>;
   if (status === APILoadingStatus.FAILED || status === APILoadingStatus.AUTH_FAILURE) {
-    return <MapMessage kind={status === APILoadingStatus.AUTH_FAILURE ? 'refused' : 'failed'} compact={compact} />;
+    return fallback ?? <MapMessage kind={status === APILoadingStatus.AUTH_FAILURE ? 'refused' : 'failed'} compact={compact} />;
   }
   return (
     <div className="map-frame-fill" role="status" aria-label="Memuat peta…">

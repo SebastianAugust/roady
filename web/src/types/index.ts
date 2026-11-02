@@ -154,7 +154,8 @@ export interface Statistics {
 }
 
 export type JenisEkspor = 'zona' | 'laporan';
-export type FormatEkspor = 'csv';
+/** API-013 only knows csv; the Ekspor page also writes xlsx and pdf itself from that CSV. */
+export type FormatEkspor = 'csv' | 'xlsx' | 'pdf';
 
 /**
  * API-013 query (usulan). Typed as plain strings because that is what reaches the server (a URL can carry anything);

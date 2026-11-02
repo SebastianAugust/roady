@@ -1,11 +1,13 @@
 /* Simple motion, CSS only. Everything that moves lives inside prefers-reduced-motion: no-preference, so with reduced
    motion requested nothing here animates or transitions; the end state is simply shown at once.
    Values: --ease-out, --dur-fast, --dur-base, --dur-enter (src/theme/tokens.ts).
-   rise-in   pages: fade in while moving up 8px, 220ms.
+   rise-in   pages: fade in while moving up 8px, 350ms (the page that follows the skeleton, AppLayout).
    pop-in    dropdown, dialog: scale .96 to 1 plus fade, --dur-base, from the trigger (transform-origin).
    Utilities
      .rise         fade + move up 14px, --dur-enter.
-     .stagger      children rise one after another, 60ms apart (up to 6).
+     .stagger      children rise one after another, 60ms apart (up to 8).
+     .pop          scale .96 to 1 plus fade, --dur-base.
+     .slide-in-right  slides in from the right edge, 300ms (Drawer).
      .rise-rows    <tbody>: rows rise 70ms apart (the first 8; later ones show at once).
      .shake        a short horizontal shake, 400ms (invalid form).
      .shimmer      a highlight sliding over a skeleton block, 1.2s loop.
@@ -66,6 +68,15 @@
     }
   }
 
+  @keyframes slide-in-right {
+    from {
+      transform: translateX(100%);
+    }
+    to {
+      transform: none;
+    }
+  }
+
   @keyframes toast-in {
     from {
       opacity: 0;
@@ -105,6 +116,15 @@
     }
   }
 
+  @keyframes grow {
+    from {
+      transform: scaleY(0);
+    }
+    to {
+      transform: none;
+    }
+  }
+
   @keyframes spin {
     to {
       transform: rotate(360deg);
@@ -113,11 +133,11 @@
 
   /* ---- Utilities ---- */
   .rise {
-    animation: rise var(--dur-enter) var(--ease-out) backwards;
+    animation: rise var(--dur-enter) var(--ease) backwards;
   }
 
   .stagger > * {
-    animation: rise var(--dur-enter) var(--ease-out) backwards;
+    animation: rise var(--dur-enter) var(--ease) backwards;
     animation-delay: 60ms;
   }
   .stagger > :nth-child(2) {
@@ -132,12 +152,18 @@
   .stagger > :nth-child(5) {
     animation-delay: 300ms;
   }
-  .stagger > :nth-child(n + 6) {
+  .stagger > :nth-child(6) {
     animation-delay: 360ms;
+  }
+  .stagger > :nth-child(7) {
+    animation-delay: 420ms;
+  }
+  .stagger > :nth-child(n + 8) {
+    animation-delay: 480ms;
   }
 
   .rise-rows > tr {
-    animation: rise var(--dur-enter) var(--ease-out) backwards;
+    animation: rise var(--dur-enter) var(--ease) backwards;
   }
   .rise-rows > tr:nth-child(2) {
     animation-delay: 70ms;
@@ -164,6 +190,14 @@
     animation: none;
   }
 
+  .pop {
+    animation: pop-in var(--dur-base) var(--ease) backwards;
+  }
+
+  .slide-in-right {
+    animation: slide-in-right 300ms var(--ease) backwards;
+  }
+
   .shake {
     animation: shake 400ms ease-in-out;
   }
@@ -180,7 +214,7 @@
   .app-main > :not(.home),
   .home-wave,
   .home-head {
-    animation: rise-in 220ms ease-out backwards;
+    animation: rise-in 350ms var(--ease) backwards;
   }
 
   .menu-cards > .menu-card {
@@ -204,24 +238,43 @@
 
   .account-popup {
     transform-origin: top right;
-    animation: pop-in var(--dur-base) var(--ease-out) backwards;
+    animation: pop-in var(--dur-base) var(--ease) backwards;
   }
 
   /* The dialog's transform-origin is set from the button that opened it (Dialog.tsx). */
   .dialog[open] {
-    animation: pop-in var(--dur-base) var(--ease-out) backwards;
+    animation: pop-in var(--dur-base) var(--ease) backwards;
   }
 
   .dialog[open]::backdrop {
-    animation: fade-in var(--dur-base) var(--ease-out) backwards;
+    animation: fade-in var(--dur-base) var(--ease) backwards;
   }
 
   .toast {
-    animation: toast-in 300ms var(--ease-out) backwards;
+    animation: toast-in 300ms var(--ease) backwards;
+  }
+
+  .drawer-scrim,
+  .palette-scrim {
+    animation: fade-in var(--dur-base) var(--ease) backwards;
+  }
+
+  .drawer {
+    animation: slide-in-right 300ms var(--ease) backwards;
+  }
+
+  .palette {
+    animation: pop-in var(--dur-base) var(--ease) backwards;
   }
 
   .toast-leaving {
-    animation: fade-out var(--dur-base) var(--ease-out) forwards;
+    animation: fade-out var(--dur-base) var(--ease) forwards;
+  }
+
+  /* Bars of a bar chart: they grow from the baseline, one after another (delay set inline per bar). */
+  .bar-grow {
+    transform-origin: bottom;
+    animation: grow 700ms var(--ease) backwards;
   }
 
   .btn-spinner {
@@ -229,6 +282,11 @@
   }
 
   /* Interactive elements: a soft change instead of a jump. */
+  .sidebar-item,
+  .sidebar-hint,
+  .switch,
+  .switch::after,
+  .chip,
   .btn,
   .navbar-tab,
   .account-chip,
@@ -241,7 +299,7 @@
       color var(--dur-base) ease,
       box-shadow var(--dur-base) ease,
       filter var(--dur-base) ease,
-      transform var(--dur-fast) var(--ease-out);
+      transform var(--dur-fast) var(--ease);
   }
 
   .btn:hover:not(:disabled, [aria-busy='true']) {
@@ -258,15 +316,17 @@
 
   /* Cards that open something rise 2px and their shadow strengthens in 180ms. */
   .menu-card,
-  .stat-tile-button {
+  .stat-tile-button,
+  .hover-lift {
     transition:
       border-color 180ms ease,
       box-shadow 180ms ease,
-      transform 180ms var(--ease-out);
+      transform 180ms var(--ease);
   }
 
   .menu-card:hover,
-  .stat-tile-button:hover {
+  .stat-tile-button:hover,
+  .hover-lift:hover {
     transform: translateY(-2px);
     box-shadow: var(--effect-card-hover-shadow), var(--effect-glass-in-shadow);
   }

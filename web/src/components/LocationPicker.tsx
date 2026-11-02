@@ -3,6 +3,7 @@ import { useMap } from '@vis.gl/react-google-maps';
 import { BaseMap } from './BaseMap';
 import { MapFrame } from './MapFrame';
 import { PlacePin } from './PlacePin';
+import { SchematicMapView } from './SchematicMapView';
 import './LocationPicker.css';
 
 interface Props {
@@ -10,6 +11,8 @@ interface Props {
   value: { lat: number; lng: number } | undefined;
   onPick: (lat: number, lng: number) => void;
 }
+
+const noop = () => undefined;
 
 /** Keeps the typed point in view. */
 function FollowValue({ value }: Pick<Props, 'value'>) {
@@ -23,11 +26,16 @@ function FollowValue({ value }: Pick<Props, 'value'>) {
 /**
  * Figma Input Data Resmi map (beside Latitude/Longitude): click the map to fill the coordinates, or type them.
  * The point is a location, not a risk category, so it is the accent pin with a white edge. No address lookup happens here.
+ * Without a Google Maps key the schematic map stands in, and a click on it picks a point the same way.
  */
 export function LocationPicker({ value, onPick }: Props) {
   return (
     <div className="location-picker">
-      <MapFrame className="location-map" label="Peta untuk memilih titik koordinat">
+      <MapFrame
+        className="location-map"
+        label="Peta untuk memilih titik koordinat"
+        fallback={<SchematicMapView zones={[]} onSelect={noop} onHover={noop} onPickPoint={onPick} pin={value} />}
+      >
         <BaseMap
           zoom={12}
           cursor="crosshair"

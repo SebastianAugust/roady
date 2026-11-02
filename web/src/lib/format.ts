@@ -43,8 +43,14 @@ export function formatWib(iso: string) {
   return `${d.getDate()}-${pad(d.getMonth() + 1)}-${d.getFullYear()} · ${pad(d.getHours())}.${pad(d.getMinutes())} WIB`;
 }
 
+/** A date in the browser's time zone as YYYY-MM-DD. */
+export const localDayKey = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+
 /** Today in the browser's time zone as YYYY-MM-DD (for date inputs). */
-export function todayIso() {
-  const d = new Date();
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+export const todayIso = () => localDayKey(new Date());
+
+/** Who entered a record, from the role part of a kode_pengguna (20261022-02-0001): 01 is Admin, 02 is Dishub. */
+export function sumberOf(kode: string) {
+  const code = kode.split('-')[1];
+  return code === '01' ? 'Admin' : code === '02' ? 'Dishub' : 'Lainnya';
 }

@@ -53,6 +53,7 @@ export const realApi: ApiClient = {
   getDishubAccident: (id) => request(`/api/dishub/accidents/${id}`),
   getAdminReports: (q) => request(`/api/admin/reports${query(q)}`),
   verifyReport: (id, body) => request(`/api/admin/reports/${id}/verify`, { method: 'PATCH', body: JSON.stringify(body) }),
+  revertVerification: (id) => request(`/api/admin/reports/${id}/revert`, { method: 'PATCH' }),
   getAccidents: (q) => request(`/api/admin/accidents${query(q ?? {})}`),
   getDeletedAccidents: (q) => request(`/api/admin/accidents/deleted${query(q ?? {})}`),
   getAccident: (id) => request(`/api/admin/accidents/${id}`),
@@ -60,4 +61,5 @@ export const realApi: ApiClient = {
   async deleteAccident(id, body) {
     await send(`/api/admin/accidents/${id}`, { method: 'DELETE', body: JSON.stringify(body) });
   },
+  restoreAccident: (id) => request(`/api/admin/accidents/${id}/restore`, { method: 'POST' }),
 };

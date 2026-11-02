@@ -1,0 +1,44 @@
+/* Above the sticky side menu and the page panel, so the account popup opens over them. */
+.topbar {
+  position: sticky;
+  top: var(--space-sm);
+  z-index: 1100;
+  margin-top: var(--space-sm);
+  padding: var(--space-sm) var(--space-md) var(--space-sm) var(--space-lg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  border-radius: var(--radius-nav);
+}
+
+.topbar-text {
+  min-width: 0;
+}
+
+.topbar-crumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--color-text-secondary);
+  font-size: var(--text-caption);
+}
+
+.topbar-crumbs [aria-current='page'] {
+  color: var(--color-text-primary);
+}
+
+.topbar-title {
+  font-family: var(--font-display);
+  font-size: var(--text-h2);
+  line-height: 1.2;
+}
+
+@media (max-width: 900px) {
+  .topbar {
+    margin-inline: var(--space-sm);
+  }
+}

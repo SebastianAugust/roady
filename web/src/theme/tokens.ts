@@ -73,6 +73,9 @@ export const colors = {
   placeholder: '#9AA6B8',
   focusRing: 'rgba(157,183,232,0.3)',
   // Loading skeleton: the base block and the moving highlight.
+  // Selected row of a list (command palette) and the off track of a Switch.
+  selection: 'rgba(157,183,232,0.18)',
+  switchOff: 'rgba(255,255,255,0.14)',
   skeleton: 'rgba(255,255,255,0.08)',
   skeletonShine: 'rgba(255,255,255,0.18)',
 } as const;
@@ -103,9 +106,9 @@ export const effects = {
   buttonHoverShadow: `0 4px 12px ${colors.activeShadow}`,
 } as const;
 
-/** Motion (src/motion.css), written as --ease-out, --dur-fast, --dur-base and --dur-enter. */
+/** Motion (src/motion.css), written as --ease, --dur-fast, --dur-base and --dur-enter. */
 export const motion = {
-  easeOut: 'cubic-bezier(.2,.8,.2,1)',
+  ease: 'cubic-bezier(.2,.8,.2,1)',
   durFast: '120ms',
   durBase: '200ms',
   durEnter: '500ms',
@@ -138,7 +141,7 @@ export const radius = {
 } as const;
 
 export const size = {
-  navbar: 216, // account chip + tab bar, with their padding
+  sidebar: 240, // the side menu
   touchMin: 44,
   avatar: 44,
   field: 42,

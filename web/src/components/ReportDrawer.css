@@ -1,0 +1,47 @@
+.report-drawer-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm);
+  color: var(--color-text-secondary);
+  font-size: var(--text-small);
+}
+
+.report-drawer-photo {
+  display: block;
+  width: 100%;
+  max-height: 240px;
+  object-fit: cover;
+  border-radius: var(--radius-field);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+}
+
+.report-drawer-nophoto {
+  padding: var(--space-md);
+  border: 1px dashed var(--color-nav-item-edge);
+  border-radius: var(--radius-field);
+  color: var(--color-text-secondary);
+  font-size: var(--text-small);
+}
+
+.report-drawer-facts {
+  display: grid;
+  gap: var(--space-sm);
+  margin: 0;
+}
+
+.report-drawer-facts dt {
+  color: var(--color-text-secondary);
+  font-size: var(--text-caption);
+}
+
+.report-drawer-facts dd {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-xs);
+  margin: 0;
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-small);
+}

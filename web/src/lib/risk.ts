@@ -1,12 +1,9 @@
 import { colors } from '../theme/tokens';
+import { kategoriDariSkor } from './zoneScore';
 import type { KategoriRisiko } from '../types';
 
-/** docs/01-scoring-formula.md, step 5: <50 hijau, 50..80 kuning, >80 merah. */
-export function kategoriFromPercentile(p: number): KategoriRisiko {
-  if (p > 80) return 'merah';
-  if (p >= 50) return 'kuning';
-  return 'hijau';
-}
+/** docs/01-scoring-formula.md, step 5: <50 hijau, 50..80 kuning, >80 merah (the one rule lives in shared/zoneScore.ts). */
+export const kategoriFromPercentile: (p: number) => KategoriRisiko = kategoriDariSkor;
 
 export const RISK_LABEL: Record<KategoriRisiko, string> = {
   merah: 'Risiko Tinggi',

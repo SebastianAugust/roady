@@ -16,7 +16,6 @@ import { KecelakaanListPage } from './pages/KecelakaanListPage';
 import { LaporanDetailPage } from './pages/LaporanDetailPage';
 import { LaporanPage } from './pages/LaporanPage';
 import { LoginPage } from './pages/LoginPage';
-import { VerifikasiDetailPage } from './pages/VerifikasiDetailPage';
 import { VerifikasiPage } from './pages/VerifikasiPage';
 import { ZonaDetailPage } from './pages/ZonaDetailPage';
 import { ROUTES } from './routes';
@@ -52,7 +51,7 @@ export function App() {
 
                 <Route element={<RequireRole roles={ADMIN_ONLY} />}>
                   <Route path={ROUTES.verifikasi} element={<VerifikasiPage />} />
-                  <Route path={`${ROUTES.verifikasi}/:id`} element={<VerifikasiDetailPage />} />
+                  <Route path={`${ROUTES.verifikasi}/:id`} element={<VerifikasiPage />} />
                   <Route path={ROUTES.kecelakaan} element={<KecelakaanListPage />} />
                   <Route path={`${ROUTES.kecelakaan}/:id`} element={<KecelakaanDetailPage />} />
                 </Route>

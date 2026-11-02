@@ -7,7 +7,7 @@
   display: flex;
   align-items: center;
   gap: var(--space-md);
-  min-width: 280px;
+  min-width: 220px;
   padding: var(--space-sm) var(--space-md) var(--space-sm) var(--space-lg);
   border-radius: calc(var(--radius-card) + var(--space-xs));
   cursor: pointer;
@@ -118,4 +118,20 @@
   color: var(--color-text-primary);
   font-size: var(--text-small);
   font-variant-numeric: tabular-nums;
+}
+
+/* Phones: the chip shrinks to role + avatar so the breadcrumb keeps its room. */
+@media (max-width: 640px) {
+  .account-chip {
+    min-width: 0;
+  }
+
+  .account-email {
+    display: none;
+  }
+
+  .account-popup {
+    width: max-content;
+    min-width: 200px;
+  }
 }
