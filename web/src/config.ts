@@ -19,6 +19,12 @@ export const ZONES_FETCH_RADIUS_M = 40000;
  */
 export const GOOGLE_MAPS_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY ?? '';
 
+/**
+ * The mobile app running in the browser (`npm run web:preview` in mobile/), shown in a phone frame after a pengemudi
+ * account signs in here (MobilePreviewPage, for presentations).
+ */
+export const MOBILE_PREVIEW_URL: string = import.meta.env.VITE_MOBILE_PREVIEW_URL || 'http://localhost:19006';
+
 // Wide enough that the whole viewport at the start zoom (about 0.85 degrees across on a 1280 px map) fits inside the bounds;
 // a narrower box makes Google pin the map centre to the middle of the box and ignore where we point the camera.
 const MARGIN_DEG = 0.25;

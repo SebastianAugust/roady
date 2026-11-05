@@ -4,6 +4,8 @@ export const ROUTES = {
   login: '/login',
   beranda: '/',
   akun: '/akun',
+  // Pengemudi: the mobile app in a phone frame (presentation preview), outside the Dishub/Admin shell
+  mobile: '/mobile',
   // Dishub only
   statistik: '/statistik',
   arsip: '/arsip',

@@ -1,13 +1,36 @@
 import * as SecureStore from 'expo-secure-store';
+import { Platform } from 'react-native';
 import type { LoginResponse, Role } from '../types';
 
 const SESSION_KEY = 'roady.session';
 const PREFS_KEY = 'roady.notificationPrefs';
 const ROLES: Role[] = ['pengemudi', 'dishub', 'admin'];
+const KEY_PREFIX = 'roady.';
 
-// SecureStore throws on platforms without a keystore (web) or when the keystore fails. The app then still works, the session just does not persist.
+/**
+ * On web (the phone-frame preview in the web dashboard) there is no keystore, so values go to localStorage instead.
+ * `?reset=1` in the URL clears them first, so the preview can start again from the splash and onboarding.
+ */
+const webStore: Storage | undefined = (() => {
+  if (Platform.OS !== 'web') return undefined;
+  try {
+    const store = globalThis.localStorage;
+    if (new URLSearchParams(globalThis.location?.search).get('reset') === '1') {
+      Object.keys(store)
+        .filter((k) => k.startsWith(KEY_PREFIX))
+        .forEach((k) => store.removeItem(k));
+      globalThis.history?.replaceState(null, '', globalThis.location.pathname);
+    }
+    return store;
+  } catch {
+    return undefined;
+  }
+})();
+
+// SecureStore throws on platforms without a keystore or when the keystore fails. The app then still works, the session just does not persist.
 async function read(key: string): Promise<string | null> {
   try {
+    if (webStore) return webStore.getItem(key);
     return await SecureStore.getItemAsync(key);
   } catch {
     return null;
@@ -16,7 +39,8 @@ async function read(key: string): Promise<string | null> {
 
 async function write(key: string, value: string) {
   try {
-    await SecureStore.setItemAsync(key, value);
+    if (webStore) webStore.setItem(key, value);
+    else await SecureStore.setItemAsync(key, value);
   } catch {
     // Not persisted; see above.
   }
@@ -24,7 +48,8 @@ async function write(key: string, value: string) {
 
 async function remove(key: string) {
   try {
-    await SecureStore.deleteItemAsync(key);
+    if (webStore) webStore.removeItem(key);
+    else await SecureStore.deleteItemAsync(key);
   } catch {
     // Nothing stored or no keystore.
   }

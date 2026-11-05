@@ -1,5 +1,5 @@
 import { useState, type AnimationEvent, type FormEvent, type KeyboardEvent } from 'react';
-import { Link, Navigate, useLocation } from 'react-router-dom';
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { api, ApiError } from '../api';
 import { useAuth } from '../auth/useAuth';
 import { RoleNotAllowedError } from '../auth/jwt';
@@ -10,6 +10,7 @@ import { TextField } from '../components/TextField';
 import { APP_NAME } from '../constants';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { canOpen, ROUTES } from '../routes';
+import type { MobilePreviewState } from './MobilePreviewPage';
 import './LoginPage.css';
 
 const PASSWORD_MIN_LENGTH = 6;
@@ -24,14 +25,15 @@ const PASSWORD_ID = 'login-password';
 
 /**
  * Login (docs/design/admin/Login.png, docs/design/dishub/Login.png; the same screen for both) as one glass card
- * centred on the screen: wordmark (a link to /login), title, form. Dishub and Admin sign in here; pengemudi accounts
- * are turned away. The form is checked in the browser first (email shape, password length); one alert above the button
+ * centred on the screen: wordmark (a link to /login), title, form. Dishub and Admin sign in here; a pengemudi account
+ * does not enter the dashboard but is sent to the mobile app in a phone frame (MobilePreviewPage, docs/05 #45). The form is checked in the browser first (email shape, password length); one alert above the button
  * says what is wrong and the form shakes. Afterwards it returns to the page that asked for a login only when the new
  * role may open it (e.g. not to an Admin URL after signing in as Dishub); otherwise to Beranda.
  */
 export function LoginPage() {
   usePageTitle('Masuk');
   const { role, signIn } = useAuth();
+  const navigate = useNavigate();
   const from = (useLocation().state as { from?: string } | null)?.from ?? '/';
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -60,7 +62,8 @@ export function LoginPage() {
       // The new role re-renders this page, and the <Navigate> above takes it on.
       signIn(token);
     } catch (err) {
-      if (err instanceof RoleNotAllowedError) fail(err.message);
+      // The password was right but the account is a pengemudi: show the mobile app instead (no token is kept).
+      if (err instanceof RoleNotAllowedError) navigate(ROUTES.mobile, { state: { pengemudi: true, email: email.trim() } satisfies MobilePreviewState });
       else if (err instanceof ApiError) fail(err.status === 401 ? MSG_WRONG : 'Gagal masuk. Coba lagi.');
       else fail('Tidak dapat terhubung ke server. Periksa koneksi lalu coba lagi.');
     } finally {

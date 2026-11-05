@@ -16,6 +16,7 @@ import { KecelakaanListPage } from './pages/KecelakaanListPage';
 import { LaporanDetailPage } from './pages/LaporanDetailPage';
 import { LaporanPage } from './pages/LaporanPage';
 import { LoginPage } from './pages/LoginPage';
+import { MobilePreviewPage } from './pages/MobilePreviewPage';
 import { VerifikasiPage } from './pages/VerifikasiPage';
 import { ZonaDetailPage } from './pages/ZonaDetailPage';
 import { ROUTES } from './routes';
@@ -25,7 +26,7 @@ const ADMIN_ONLY = ['admin'] as const;
 
 // Admin and Dishub are two separate apps (docs/05 #30): each has its own branch behind its own guard, so typing the
 // other role's URL gives the 403 page. Beranda and Akun exist for both, with content for the signed-in role.
-// Pengemudi never gets past the first guard (and is turned away at Login).
+// Pengemudi never gets past the first guard; Login sends it to /mobile (the mobile app in a phone frame) instead.
 export function App() {
   return (
     <AuthProvider>
@@ -33,6 +34,7 @@ export function App() {
         <BrowserRouter>
           <Routes>
             <Route path={ROUTES.login} element={<LoginPage />} />
+            <Route path={ROUTES.mobile} element={<MobilePreviewPage />} />
             <Route element={<RequireRole roles={WEB_ROLES} />}>
               <Route element={<AppLayout />}>
                 <Route path={ROUTES.beranda} element={<HomePage />} />

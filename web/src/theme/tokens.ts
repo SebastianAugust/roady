@@ -41,6 +41,10 @@ export const colors = {
   menuItemHover: 'rgba(255,255,255,0.10)',
   menuDanger: '#FFB4AB', // soft red for Keluar: 7.2:1 on surfaceRaised, >= 4.5:1 under the hover tint
   menuShadowColor: 'rgba(0,0,0,0.5)',
+  // Phone frame of the mobile preview (MobilePreviewPage): near-black body with a thin light rim, as a real handset.
+  deviceBody: '#05080F',
+  deviceRim: 'rgba(255,255,255,0.22)',
+  deviceShadow: 'rgba(0,0,0,0.55)',
 
   // Page background (AppBackground), from docs/design/glass-reference.html: navy base with soft light.
   pageTop: '#0f2447',
@@ -164,6 +168,7 @@ export const radius = {
   glassCard: 20, // every glass card of the app shell
   navBar: 22, // the pill nav bar
   navPill: 15, // one pill of the nav
+  phone: 54, // outer corner of the mobile preview handset (PhoneFrame)
 } as const;
 
 export const size = {
@@ -174,6 +179,11 @@ export const size = {
   buttonMinWidth: 116,
   formWidth: 420, // form column of the centred cards (403 page); the Login card itself is 400 max
   contentMax: 1280,
+  // Mobile preview: the app screen at its Figma size (412x892), the status bar drawn by the frame above it, the bezel around it.
+  phoneScreenWidth: 412,
+  phoneScreenHeight: 892,
+  phoneStatusBar: 34,
+  phoneBezel: 12,
 } as const;
 
 export const fontFamily = {
