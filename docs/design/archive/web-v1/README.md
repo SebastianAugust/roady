@@ -72,7 +72,7 @@ Jeda berurutan:
 | `.sidebar-item`, `.sidebar-hint`, `.switch`, `.switch::after`, `.chip`, `.btn`, `.account-chip`, `.account-item`, `.quick-reason`, `.field-input` (dan `.navbar-tab`, sudah tidak ada komponennya) | `background-color`, `border-color`, `color`, `box-shadow`, `filter` 200ms `ease`; `transform` 120ms `--ease` | Perubahan halus saat hover, fokus, dan toggle. `.switch::after` memakai `transform` untuk menggeser kenop |
 | `.btn:hover` | `filter: brightness(.92)`, naik 1px, bayangan tombol | Hanya bila tidak `disabled` dan tidak `aria-busy` |
 | `.btn:active` | `brightness(.85)`, kembali ke 0 + skala 0,98, tanpa bayangan | |
-| `.menu-card`, `.stat-tile-button`, `.hover-lift` | `border-color`, `box-shadow` 180ms `ease`; `transform` 180ms `--ease` | Hover: naik 2px + bayangan kartu. Active (`.menu-card`, `.stat-tile-button`): turun + skala 0,99. `.hover-lift` dipakai `KpiCard`, `WeatherCard`, `WeekBars`, panel di `DishubHome` dan `AdminHome`; `.stat-tile-button` di `StatTile`. `.menu-card` (`MenuCard`) tidak dipakai halaman mana pun sekarang |
+| `.stat-tile-button`, `.hover-lift` | `border-color`, `box-shadow` 180ms `ease`; `transform` 180ms `--ease` | Hover: naik 2px + bayangan kartu. Active (`.stat-tile-button`): turun + skala 0,99. `.hover-lift` dipakai `KpiCard`, `WeatherCard`, `WeekBars`, panel di `DishubHome` dan `AdminHome`; `.stat-tile-button` di `StatTile`. `.menu-card` (`MenuCard`) dihapus (keputusan #44) |
 | `.schematic-zone .schematic-area` | `fill-opacity` 200ms `ease` | Hover zona di peta SVG (`SchematicMap.css`), dibungkus `no-preference` |
 | `.ekspor-progress i` | `width` 200ms `--ease` | Bar progres Ekspor (`EksporPage.css`), dibungkus `no-preference` |
 

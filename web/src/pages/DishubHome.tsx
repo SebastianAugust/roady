@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { api } from '../api';
 import { KpiCard } from '../components/KpiCard';
 import { LoadState } from '../components/LoadState';
-import { MenuCard } from '../components/MenuCard';
 import { PageHeader } from '../components/PageHeader';
 import { RiskBadge } from '../components/RiskBadge';
 import { Skeleton } from '../components/Skeleton';
@@ -11,7 +10,6 @@ import { StatTilesSkeleton } from '../components/StatTilesSkeleton';
 import { WeatherCard } from '../components/WeatherCard';
 import { WeekBars } from '../components/WeekBars';
 import { EmptyState } from '../components/ui';
-import { APP_NAME } from '../constants';
 import { useApi } from '../hooks/useApi';
 import { todayIso } from '../lib/format';
 import { useRainSimulation } from '../lib/rainSimulation';
@@ -27,8 +25,7 @@ const reportDay = (r: Laporan) => r.tanggal_kejadian;
  * Beranda of Dishub (docs/design/prototype-web-v2.html): three counters, the weather card with the global "Simulasi
  * hujan" switch, reports of the last 7 days, and the 4 most dangerous zones with their score. Scores follow the rain
  * simulation (lib/zoneRisk.ts). Data: API-011 statistics, the zone list and API-012 reports, none of it naming a reporter.
- * Above them, the menu cards of prototype-web-cards.html with a count pill each, taken from the data the page behind the
- * card shows: red zones (with the rain simulation, as Statistik Zona), the archive total, the reports of Detail Laporan.
+ * No menu cards: Statistik Zona, Arsip & Input, Detail Laporan and Ekspor Data are already in the nav pills (decision #44).
  */
 export function DishubHome() {
   const loadStats = useCallback(() => api.getStatistics(), []);
@@ -37,16 +34,6 @@ export function DishubHome() {
   const { state: stats, retry: retryStats } = useApi(loadStats);
   const { state: zones, retry: retryZones } = useApi(loadZones);
   const { state: reports, retry: retryReports } = useApi(loadReports);
-  const loadArchive = useCallback(() => api.getDishubAccidents({ per_halaman: 1 }), []);
-  const { state: archive } = useApi(loadArchive);
-  const [rain] = useRainSimulation();
-  const redZones = useMemo(
-    () =>
-      stats.status === 'ready' && zones.status === 'ready'
-        ? viewZones(zones.data, stats.data.riwayat_skor, rain).filter((v) => v.kategori === 'merah').length
-        : undefined,
-    [stats, zones, rain],
-  );
 
   const failed = [
     { s: stats, retry: retryStats },
@@ -57,36 +44,6 @@ export function DishubHome() {
   return (
     <>
       <PageHeader title="Selamat Datang, Dishub" subtitle="Kelola data kecelakaan, pantau statistik zona risiko, dan tinjau laporan warga untuk evaluasi keselamatan jalan" />
-      <nav className="menu-cards" aria-label="Pintasan">
-        <MenuCard
-          to={ROUTES.statistik}
-          icon="statistik"
-          title="Statistik Zona"
-          description="Pemetaan tingkat risiko dan sebaran zona rawan lalu lintas"
-          badge={redZones === undefined ? undefined : `${redZones} zona merah`}
-        />
-        <MenuCard
-          to={ROUTES.arsip}
-          icon="input"
-          title="Arsip & Input"
-          description="Tinjau kelengkapan arsip data di bawah ini, atau tambahkan rekam kecelakaan baru ke dalam sistem"
-          badge={archive.status === 'ready' ? `${archive.data.total} arsip` : undefined}
-        />
-        <MenuCard
-          to={ROUTES.laporan}
-          icon="laporan"
-          title="Detail Laporan"
-          description="Pantau dan kelola rekam data kecelakaan yang terintegrasi otomatis dari sistem Dishub"
-          badge={reports.status === 'ready' ? `${reports.data.length} laporan` : undefined}
-        />
-        <MenuCard
-          to={ROUTES.ekspor}
-          icon="ekspor"
-          title="Ekspor Data"
-          description={`Unduh data zona dan laporan ${APP_NAME} untuk kebutuhan laporan internal`}
-          badge="CSV"
-        />
-      </nav>
       {failed && failed.s.status === 'error' ? <LoadState state="error" message={failed.s.message} onRetry={failed.retry} /> : null}
       {stats.status === 'loading' || zones.status === 'loading' || reports.status === 'loading' ? (
         <>

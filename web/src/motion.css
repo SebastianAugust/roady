@@ -228,25 +228,6 @@
       shake 400ms ease-in-out;
   }
 
-  .menu-cards > .menu-card {
-    animation: rise-in 220ms ease-out backwards;
-  }
-  .menu-cards > .menu-card:nth-child(2) {
-    animation-delay: 40ms;
-  }
-  .menu-cards > .menu-card:nth-child(3) {
-    animation-delay: 80ms;
-  }
-  .menu-cards > .menu-card:nth-child(4) {
-    animation-delay: 120ms;
-  }
-  .menu-cards > .menu-card:nth-child(5) {
-    animation-delay: 160ms;
-  }
-  .menu-cards > .menu-card:nth-child(n + 6) {
-    animation-delay: 200ms;
-  }
-
   .account-popup {
     transform-origin: top right;
     animation: pop-in var(--dur-base) var(--ease) backwards;
@@ -329,7 +310,6 @@
   }
 
   /* Cards that open something rise 2px and their shadow strengthens in 180ms. */
-  .menu-card,
   .stat-tile-button,
   .hover-lift,
   .accident-card,
@@ -340,15 +320,13 @@
       transform 180ms var(--ease);
   }
 
-  .menu-card:hover,
   .stat-tile-button:hover,
   .hover-lift:hover {
     transform: translateY(-2px);
     box-shadow: var(--effect-card-hover-shadow), var(--effect-glass-in-shadow);
   }
 
-  /* Menu cards of Beranda and the grid cards of the archive lift 3px, as in the prototype (same 180ms and easing). */
-  .menu-card:hover,
+  /* The grid cards of the archive lift 3px, as in the prototype (same 180ms and easing). */
   .accident-card:hover,
   .report-card:hover {
     transform: translateY(-3px);
@@ -367,7 +345,6 @@
       box-shadow 180ms ease;
   }
 
-  .menu-card:active,
   .stat-tile-button:active {
     transform: translateY(0) scale(0.99);
   }

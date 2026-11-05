@@ -29,7 +29,7 @@ Admin dan Dishub adalah **dua aplikasi web terpisah tanpa akses silang** (keputu
 
 ```
 Login
-  └─ Beranda (sapaan + kartu pintasan, tanpa data)                 /
+  └─ Beranda (sapaan + KPI, cuaca, grafik; tanpa kartu menu)        /
        ├─ Statistik Zona: 4 kartu angka (memfilter tabel), tab "Tabel | Peta"   /statistik
        │     ├─ Tabel: Lokasi, Jumlah Kejadian, Skor Risiko, Kategori Zona (kolom bisa diurutkan, baris bisa diklik) ── Riwayat Skor Zona
        │     │     └─ Detail Zona (belum ada desain Figma): ringkasan, grafik riwayat skor, kejadian resmi, laporan warga   /statistik/:zonaId
@@ -47,7 +47,7 @@ Login
 
 ```
 Login
-  └─ Beranda (sapaan + kartu pintasan, tanpa data)                 /
+  └─ Beranda (sapaan + KPI, cuaca, grafik; tanpa kartu menu)        /
        ├─ Verifikasi Laporan: 3 kartu angka + antrean berfoto ── Setujui / Tolak   /admin/verifikasi
        │     └─ Detail laporan dan foto ── Setujui / Tolak         /admin/verifikasi/:id
        ├─ Kelola Data Kecelakaan: grid data resmi ── DETAIL         /admin/kecelakaan

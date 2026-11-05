@@ -4,7 +4,6 @@ import { api } from '../api';
 import { Button } from '../components/Button';
 import { KpiCard } from '../components/KpiCard';
 import { LoadState } from '../components/LoadState';
-import { MenuCard } from '../components/MenuCard';
 import { PageHeader } from '../components/PageHeader';
 import { Skeleton } from '../components/Skeleton';
 import { StatTilesSkeleton } from '../components/StatTilesSkeleton';
@@ -26,8 +25,7 @@ const reportDay = (r: LaporanAdmin) => r.tanggal_kejadian;
  * Beranda of the Admin (docs/design/prototype-web-v2.html): three counters, the weather card with the global "Simulasi
  * hujan" switch, reports of the last 7 days as a bar chart, and the first reports of the verification queue.
  * Data: API-003 (zones) and API-007 (reports); nothing here names a reporter (NFR-006).
- * Above them, the menu cards of prototype-web-cards.html with a count pill each, taken from the data the page behind the
- * card shows: the reports with a photo waiting in Verifikasi Laporan, and the total of Kelola Data Kecelakaan.
+ * No menu cards: Verifikasi Laporan and Kelola Data Kecelakaan are already in the nav pills (decision #44).
  */
 export function AdminHome() {
   const loadZones = useCallback(
@@ -37,29 +35,10 @@ export function AdminHome() {
   const loadReports = useCallback(() => api.getAdminReports({}), []);
   const { state: zones, retry: retryZones } = useApi(loadZones);
   const { state: reports, retry: retryReports } = useApi(loadReports);
-  const loadAccidents = useCallback(() => api.getAccidents({ per_halaman: 1 }), []);
-  const { state: accidents } = useApi(loadAccidents);
-  const waiting = reports.status === 'ready' ? reports.data.filter((r) => r.status === 'pending_review' && r.foto_url).length : undefined;
 
   return (
     <>
       <PageHeader title="Selamat Datang, Admin" subtitle="Pantau laporan warga dan tindak lanjuti data kecelakaan dengan cepat dan akurat" />
-      <nav className="menu-cards" aria-label="Pintasan">
-        <MenuCard
-          to={ROUTES.verifikasi}
-          icon="verifikasi"
-          title="Verifikasi Laporan"
-          description="Periksa lampiran bukti dari pelapor, lalu tentukan untuk menyetujui atau menolak laporan"
-          badge={waiting === undefined ? undefined : `${waiting} menunggu`}
-        />
-        <MenuCard
-          to={ROUTES.kecelakaan}
-          icon="kecelakaan"
-          title="Kelola Data Kecelakaan"
-          description="Pantau, perbarui, dan atur seluruh rekam data kecelakaan yang tersimpan di dalam sistem"
-          badge={accidents.status === 'ready' ? `${accidents.data.total} data` : undefined}
-        />
-      </nav>
       {zones.status === 'error' ? <LoadState state="error" message={zones.message} onRetry={retryZones} /> : null}
       {reports.status === 'error' ? <LoadState state="error" message={reports.message} onRetry={retryReports} /> : null}
       {zones.status === 'loading' || reports.status === 'loading' ? <HomeSkeleton /> : null}
